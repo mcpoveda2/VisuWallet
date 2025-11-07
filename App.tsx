@@ -15,13 +15,14 @@
 import "global.css"
 import { Text, View } from "react-native";
 import Inicio from "components/Inicio";
+import Categorias from "components/Categorias";
 import { SafeAreaProvider } from "react-native-safe-area-context";
  
 export default function App() {
   return (
     <SafeAreaProvider> 
     
-      <Inicio/>
+      <Categorias/>
     
     </SafeAreaProvider>
     

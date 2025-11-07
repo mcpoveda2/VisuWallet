@@ -19,7 +19,7 @@ export default function Inicio() {
         </Text>
 
         <View className="w-full space-y-5">
-          {/* Botón Telegram */}
+          
           <TouchableOpacity
             activeOpacity={0.8}
             className="bg-sky-600 py-4 rounded-2xl items-center shadow-lg shadow-sky-800 mb-10 mt-20 w-full"
@@ -27,7 +27,7 @@ export default function Inicio() {
             <Text className="text-white text-lg font-semibold">Telegram</Text>
           </TouchableOpacity>
 
-          {/* Botón Cámara */}
+          
           <TouchableOpacity
             activeOpacity={0.8}
             className="bg-emerald-600 py-4 rounded-2xl items-center shadow-lg shadow-emerald-800 mt-20 mb-20 w-full"
@@ -35,7 +35,7 @@ export default function Inicio() {
             <Text className="text-white text-lg font-semibold">Cámara</Text>
           </TouchableOpacity>
 
-          {/* Botón Manual */}
+          
           <TouchableOpacity
             activeOpacity={0.8}
             className="bg-violet-600 py-4 rounded-2xl items-center shadow-lg shadow-violet-800 mt-5 mb-30 w-full"
