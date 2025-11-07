@@ -16,13 +16,14 @@ import "global.css"
 import { Text, View } from "react-native";
 import Inicio from "components/Inicio";
 import Categorias from "components/Categorias";
+import Formulario from "components/Formulario";
 import { SafeAreaProvider } from "react-native-safe-area-context";
  
 export default function App() {
   return (
     <SafeAreaProvider> 
     
-      <Categorias/>
+      <Formulario/>
     
     </SafeAreaProvider>
     
