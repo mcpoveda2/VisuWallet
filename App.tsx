@@ -18,12 +18,13 @@ import Inicio from "components/Inicio";
 import Categorias from "components/Categorias";
 import Formulario from "components/Formulario";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import Home from "components/Home";
  
 export default function App() {
   return (
     <SafeAreaProvider> 
     
-      <Formulario/>
+      <Home/>
     
     </SafeAreaProvider>
     
