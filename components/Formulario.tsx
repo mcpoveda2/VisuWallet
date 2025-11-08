@@ -28,7 +28,7 @@ export default function Formulario() {
   const [payee, setPayee] = useState<string>("");
   const [showCategories, setShowCategories] = useState<boolean>(false);
 
-  const onSave = () => {
+  const onSave = () => {/*
     // aquí iría la lógica para guardar
        const initialState = {
         account: '',
@@ -53,11 +53,13 @@ export default function Formulario() {
         console.log('Record saved:', record);
     }
     return { record, handleChange, saveRecord };
+    */
     console.log({ type, amount, account, category, dateTime, labels, note, payee });
   };
 
   const onCancel = () => {
     // reset o navegación atrás
+
     console.log("cancel");
   };
 
