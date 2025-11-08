@@ -7,21 +7,52 @@ import {
   TouchableOpacity,
   TextInput,
   Pressable,
+  Modal,
+  Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Categorias from "./Categorias";
+import { db } from "utils/firebase.js";
+import { collection, addDoc } from "firebase/firestore";
+
+
 
 export default function Formulario() {
   const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
   const [amount, setAmount] = useState<string>("");
   const [account, setAccount] = useState<string>("Cuenta transaccional");
   const [category, setCategory] = useState<string | null>(null);
-  const [dateTime, setDateTime] = useState<string>("Today, 4:27 PM");
+  const [dateTime, setDateTime] = useState<string>(new Date().toString());
   const [labels, setLabels] = useState<string>(""); // could be an array later
   const [note, setNote] = useState<string>("");
   const [payee, setPayee] = useState<string>("");
+  const [showCategories, setShowCategories] = useState<boolean>(false);
 
   const onSave = () => {
     // aquí iría la lógica para guardar
+       const initialState = {
+        account: '',
+        category: '',
+        date: '',
+        details: '',
+        labels: [],
+        type: '',
+    };
+    const [record, setRecord] = useState(initialState);
+    const handleChange = (field: string, value: string) => {
+        setRecord({ ...record, [field]: value });
+    }
+    const saveRecord = async () => {
+        try {
+            await addDoc(collection(db, 'registro'), { ...record });
+            Alert.alert('Success', 'Record saved successfully!');
+        } catch (e: unknown) {
+            Alert.alert('Error', 'Failed to save record.');
+        }
+        // Simulate saving the record to a database
+        console.log('Record saved:', record);
+    }
+    return { record, handleChange, saveRecord };
     console.log({ type, amount, account, category, dateTime, labels, note, payee });
   };
 
@@ -128,7 +159,7 @@ export default function Formulario() {
           </TouchableOpacity>
 
           {/* Category row (Required if null) */}
-          <TouchableOpacity activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">
+          <TouchableOpacity onPress={() => setShowCategories(true)} activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">
             <View>
               <Text className="text-white font-medium">Category</Text>
             </View>
@@ -141,6 +172,16 @@ export default function Formulario() {
               <Text className="text-neutral-400">{">"}</Text>
             </View>
           </TouchableOpacity>
+
+          <Modal visible={showCategories} animationType="slide">
+            <Categorias
+              onSelect={(c: string) => {
+                setCategory(c);
+                setShowCategories(false);
+              }}
+              onClose={() => setShowCategories(false)}
+            />
+          </Modal>
 
           {/* Date & Time row */}
           <TouchableOpacity activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">
