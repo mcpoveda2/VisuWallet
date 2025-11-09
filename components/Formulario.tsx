@@ -28,34 +28,61 @@ export default function Formulario() {
   const [payee, setPayee] = useState<string>("");
   const [showCategories, setShowCategories] = useState<boolean>(false);
 
-  const onSave = () => {/*
-    // aquí iría la lógica para guardar
-       const initialState = {
-        account: '',
-        category: '',
-        date: '',
-        details: '',
-        labels: [],
-        type: '',
-    };
-    const [record, setRecord] = useState(initialState);
-    const handleChange = (field: string, value: string) => {
-        setRecord({ ...record, [field]: value });
-    }
-    const saveRecord = async () => {
-        try {
-            await addDoc(collection(db, 'registro'), { ...record });
-            Alert.alert('Success', 'Record saved successfully!');
-        } catch (e: unknown) {
-            Alert.alert('Error', 'Failed to save record.');
-        }
-        // Simulate saving the record to a database
-        console.log('Record saved:', record);
-    }
-    return { record, handleChange, saveRecord };
-    */
-    console.log({ type, amount, account, category, dateTime, labels, note, payee });
+  // aquí iría la lógica para guardar
+  const initialState = {
+    account,
+    category: category ?? '',
+    date: dateTime,
+    details: note,
+    labels: labels ? labels.split(',').map(s => s.trim()).filter(Boolean) : [],
+    type,
+    amount: Number(amount) || 0,
+    payee,
   };
+  const [record, setRecord] = useState(initialState);
+  const handleChange = (field: string, value: string) => {
+    setRecord(prev => ({ ...prev, [field]: value }));
+    switch (field) {
+      case 'type':
+        setType(value as "expense" | "income" | "transfer");
+        break;
+      case 'amount':
+        setAmount(value);
+        break;
+      case 'account':
+        setAccount(value);
+        break;
+      case 'category':
+        setCategory(value || null);
+        break;
+      case 'date':
+        setDateTime(value);
+        break;
+      case 'labels':
+        setLabels(value);
+        break;
+      case 'details':
+      case 'note':
+        setNote(value);
+        break;
+      case 'payee':
+        setPayee(value);
+        break;
+      default:
+        break;
+    }
+  }
+  const saveRecord = async (rec?: typeof record) => {
+    const toSave = rec ?? record;
+    try {
+      await addDoc(collection(db, 'registro'), { ...toSave });
+      Alert.alert('Success', 'Record saved successfully!');
+      console.log('Record saved:', toSave);
+    } catch (e: unknown) {
+      console.error(e);
+      Alert.alert('Error', 'Failed to save record.');
+    }
+  }
 
   const onCancel = () => {
     // reset o navegación atrás
@@ -73,7 +100,32 @@ export default function Formulario() {
 
         <Text className="text-base font-semibold text-white">Add Record</Text>
 
-        <TouchableOpacity onPress={onSave} activeOpacity={0.7}>
+        <TouchableOpacity
+          onPress={() => {
+            // validación mínima
+            if (!category) {
+              Alert.alert('Validation', 'Category is required.');
+              return;
+            }
+            if (!amount) {
+              Alert.alert('Validation', 'Amount is required.');
+              return;
+            }
+            const recToSave = {
+              account,
+              category: category ?? '',
+              date: dateTime,
+              details: note,
+              labels: labels ? labels.split(',').map(s => s.trim()).filter(Boolean) : [],
+              type,
+              amount: Number(amount) || 0,
+              payee,
+            };
+            setRecord(recToSave);
+            saveRecord(recToSave);
+          }}
+          activeOpacity={0.7}
+        >
           <Text className="text-sky-400 font-medium">Save</Text>
         </TouchableOpacity>
       </View>
@@ -87,10 +139,13 @@ export default function Formulario() {
         <View className="px-4 mt-3">
           <View className="flex-row bg-neutral-800 rounded-xl p-1">
             <Pressable
-              onPress={() => setType("expense")}
-              className={`flex-1 rounded-lg py-2 items-center justify-center ${
-                type === "expense" ? "bg-neutral-700" : ""
-              }`}
+              onPress={() => {
+                const next: "expense" | "income" | "transfer" = "expense";
+                setType(next);
+                handleChange("type", next);
+              }}
+              className={`flex-1 rounded-lg py-2 items-center justify-center ${type === "expense" ? "bg-neutral-700" : ""
+                }`}
             >
               <Text className={`${type === "expense" ? "text-white" : "text-neutral-400"} font-medium`}>
                 Expense
@@ -98,10 +153,13 @@ export default function Formulario() {
             </Pressable>
 
             <Pressable
-              onPress={() => setType("income")}
-              className={`flex-1 rounded-lg py-2 items-center justify-center ${
-                type === "income" ? "bg-neutral-700" : ""
-              }`}
+              onPress={() => {
+                const next: "expense" | "income" | "transfer" = "income";
+                setType(next);
+                handleChange("type", next);
+              }}
+              className={`flex-1 rounded-lg py-2 items-center justify-center ${type === "income" ? "bg-neutral-700" : ""
+                }`}
             >
               <Text className={`${type === "income" ? "text-white" : "text-neutral-400"} font-medium`}>
                 Income
@@ -109,10 +167,13 @@ export default function Formulario() {
             </Pressable>
 
             <Pressable
-              onPress={() => setType("transfer")}
-              className={`flex-1 rounded-lg py-2 items-center justify-center ${
-                type === "transfer" ? "bg-neutral-700" : ""
-              }`}
+              onPress={() => {
+                const next: "expense" | "income" | "transfer" = "transfer";
+                setType(next);
+                handleChange("type", next);
+              }}
+              className={`flex-1 rounded-lg py-2 items-center justify-center ${type === "transfer" ? "bg-neutral-700" : ""
+                }`}
             >
               <Text className={`${type === "transfer" ? "text-white" : "text-neutral-400"} font-medium`}>
                 Transfer
@@ -135,6 +196,7 @@ export default function Formulario() {
               // permitir solo números y punto
               const filtered = t.replace(/[^0-9.]/g, "");
               setAmount(filtered);
+              handleChange("amount", filtered);
             }}
             keyboardType="numeric"
             placeholder="0"
@@ -179,6 +241,7 @@ export default function Formulario() {
             <Categorias
               onSelect={(c: string) => {
                 setCategory(c);
+                handleChange("category", c);
                 setShowCategories(false);
               }}
               onClose={() => setShowCategories(false)}
