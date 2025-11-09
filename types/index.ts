@@ -3,7 +3,8 @@
 export interface Cuenta {
     id:string;
     nombre:string;
-    balance:number;
+  balance:number;
+  numero?: string;
 }
 
 // se podría colocar tambien una interface Transaccoin con id, tipo, categoria, monto, date.

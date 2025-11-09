@@ -1,6 +1,6 @@
 // components/DetalleCuenta.tsx
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -8,6 +8,10 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import TransaccionItem from "./ItemTransaccion";  // ← REUTILIZAR
 import { Cuenta } from "../types";
 import { mockTransactions } from "../datosPrueba";
+import { db } from 'utils/firebase.js';
+import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
+
+import { Transaccion } from '../types';
 
 interface DetalleCuentaProps {
   cuenta: Cuenta;
@@ -16,6 +20,64 @@ interface DetalleCuentaProps {
 
 export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
   const insets = useSafeAreaInsets();
+  const [transactions, setTransactions] = useState<Transaccion[]>([]);
+
+  useEffect(() => {
+    const loadForAccount = async () => {
+      try {
+        // If cuenta.numero is available, query by accountId field in Firestore
+        if (cuenta && (cuenta as any).numero) {
+          const accNum = (cuenta as any).numero;
+          // query registro where accountId == accNum ordered by date desc
+          const q = query(collection(db, 'registro'), where('accountId', '==', accNum), orderBy('date', 'desc'));
+          const snap = await getDocs(q);
+          const docs = snap.docs.map(d => {
+            const data = d.data() as any;
+            return {
+              id: d.id,
+              tipo: data.type ?? data.tipo ?? 'expense',
+              categoria: data.category ?? data.categoria ?? '',
+              monto: Number(data.amount ?? data.monto ?? 0),
+              fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
+            } as Transaccion;
+          });
+          setTransactions(docs);
+          return;
+        }
+
+        // Fallback: load all and filter by name/id (best-effort)
+        const snap = await getDocs(collection(db, 'registro'));
+        const docs = snap.docs.map(d => {
+          const data = d.data() as any;
+          return {
+            id: d.id,
+            tipo: data.type ?? data.tipo ?? 'expense',
+            categoria: data.category ?? data.categoria ?? '',
+            monto: Number(data.amount ?? data.monto ?? 0),
+            fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
+            account: data.account ?? data.cuenta ?? '',
+          } as any;
+        });
+
+        const filtered = docs.filter((t: any) => {
+          if (!t.account) return false;
+          return t.account === cuenta.nombre || t.account.includes(cuenta.nombre) || t.account.includes(cuenta.id || '');
+        });
+
+        filtered.sort((a: any, b: any) => {
+          const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
+          const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
+          return tb - ta;
+        });
+
+        setTransactions(filtered as Transaccion[]);
+      } catch (e) {
+        console.warn('Failed to load transactions for account', e);
+        setTransactions([]);
+      }
+    };
+    loadForAccount();
+  }, [cuenta]);
 
   return (
     <SafeAreaView
@@ -77,31 +139,18 @@ export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
 
         {/* Historial */}
         <View className="px-4 pb-8">
-          <Text className="text-neutral-500 text-sm font-semibold mb-3">
-            26 OCTOBER
-          </Text>
-
-          {mockTransactions.map((transaccion) => (
-            <TransaccionItem
-              key={transaccion.id}
-              transaccion={transaccion}
-              variant="detailed"  
-              onPress={() => console.log('Ver transacción', transaccion.id)}
-            />
-          ))}
-
-          <Text className="text-neutral-500 text-sm font-semibold mb-3 mt-6">
-            25 OCTOBER
-          </Text>
-
-          {mockTransactions.map((transaccion) => (
-            <TransaccionItem
-              key={`2-${transaccion.id}`}
-              transaccion={transaccion}
-              variant="detailed"
-              onPress={() => console.log('Ver transacción', transaccion.id)}
-            />
-          ))}
+          {transactions.length === 0 ? (
+            <Text className="text-neutral-400">No hay transacciones para esta cuenta.</Text>
+          ) : (
+            transactions.map((transaccion) => (
+              <TransaccionItem
+                key={transaccion.id}
+                transaccion={transaccion}
+                variant="detailed"
+                onPress={() => console.log('Ver transacción', transaccion.id)}
+              />
+            ))
+          )}
         </View>
       </ScrollView>
 

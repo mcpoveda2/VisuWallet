@@ -65,6 +65,7 @@ export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
           id: d.id,
           nombre: data.propietario ?? data.nombre ?? `Cuenta ${d.id}`,
           balance: Number(data.saldo ?? data.balance ?? 0),
+          numero: data.numero ?? '',
         };
       });
       setAccounts(accs);

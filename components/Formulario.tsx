@@ -32,6 +32,8 @@ export default function Formulario({onBack}:FormularioProps) {
   const [note, setNote] = useState<string>("");
   const [payee, setPayee] = useState<string>("");
   const [showCategories, setShowCategories] = useState<boolean>(false);
+  const [showAccountsModal, setShowAccountsModal] = useState<boolean>(false);
+  const [accounts, setAccounts] = useState<Array<{ id: string; tipo?: string; numero?: string; saldo?: number; cedula?: string; propietario?: string; email?: string }>>([]);
   const [showNoteModal, setShowNoteModal] = useState<boolean>(false);
   const [showPayeeModal, setShowPayeeModal] = useState<boolean>(false);
   const [showLabelsModal, setShowLabelsModal] = useState<boolean>(false);
@@ -110,6 +112,30 @@ export default function Formulario({onBack}:FormularioProps) {
     load();
   }, []);
 
+  const loadAccounts = async () => {
+    try {
+      const snapAcc = await getDocs(collection(db, 'cuentas'));
+      const accs = snapAcc.docs.map(d => {
+        const data = d.data() as any;
+        return {
+          id: d.id,
+          tipo: data.tipo || 'corriente',
+          numero: data.numero || '',
+          saldo: data.saldo ? Number(data.saldo) : 0,
+          cedula: data.cedula || '',
+          propietario: data.propietario || data.titular || '',
+          email: data.email || '',
+        };
+      });
+      // sort by propietario then numero
+      accs.sort((a,b) => (a.propietario || '').localeCompare(b.propietario || '') || (a.numero || '').localeCompare(b.numero || ''));
+      setAccounts(accs);
+    } catch (e) {
+      console.warn('Failed to load cuentas', e);
+      setAccounts([]);
+    }
+  };
+
   const addUserLabel = async (label: string) => {
     const l = label.trim();
     if (!l) return;
@@ -147,12 +173,15 @@ export default function Formulario({onBack}:FormularioProps) {
       await addDoc(collection(db, 'registro'), { ...toSave });
       Alert.alert('Success', 'Record saved successfully!');
       console.log('Record saved:', toSave);
+      onBack();  // ← : llamar a la función onBack
     } catch (e: unknown) {
       console.error(e);
       Alert.alert('Error', 'Failed to save record.');
     }
   };
-
+  const createAgain = () => {
+    // Funcion para despues de crear un registro poder crear otro sin salir del formulario
+  }
   const onCancel = () => {
     onBack();  // ← : llamar a la función onBack
   };
@@ -161,7 +190,7 @@ export default function Formulario({onBack}:FormularioProps) {
     <SafeAreaView className="flex-1 bg-neutral-900">
       {/* Top bar */}
       <View className="flex-row items-center justify-between px-4 py-3">
-        <TouchableOpacity onPress={onCancel} activeOpacity={0.7}>
+        <TouchableOpacity onPress={()=> onCancel()} activeOpacity={0.7}>
           <Text className="text-sky-400 font-medium">Cancel</Text>
         </TouchableOpacity>
 
@@ -261,7 +290,7 @@ export default function Formulario({onBack}:FormularioProps) {
         <View className="px-4">
           <Text className="text-xs text-neutral-400 mb-3">GENERAL</Text>
 
-          <TouchableOpacity activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">
+          <TouchableOpacity onPress={() => { setShowAccountsModal(true); loadAccounts(); }} activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">
             <View>
               <Text className="text-white font-medium">Account</Text>
               <Text className="text-neutral-400 text-sm">{account}</Text>
@@ -292,6 +321,53 @@ export default function Formulario({onBack}:FormularioProps) {
               }}
               onClose={() => setShowCategories(false)}
             />
+          </Modal>
+
+          <Modal visible={showAccountsModal} animationType="slide">
+            <View className="flex-1 bg-black/50 justify-center px-4">
+              <View className="w-full bg-neutral-900 rounded-lg p-4">
+                <Text className="text-white text-lg font-semibold mb-3">Seleccionar cuenta</Text>
+                <View className="max-h-[60vh]">
+                  <ScrollView>
+                    {accounts.length === 0 ? (
+                      <Text className="text-neutral-400">No hay cuentas registradas.</Text>
+                    ) : (
+                      accounts.map((c) => (
+                        <TouchableOpacity
+                          key={c.id}
+                          onPress={() => {
+                            const display = c.propietario ? `${c.propietario} — ${c.numero || ''}` : (c.numero || 'Cuenta');
+                            setAccount(display);
+                            handleChange('account', display);
+                            setShowAccountsModal(false);
+                          }}
+                          className="py-3 border-b border-neutral-800"
+                        >
+                          <View className="flex-row items-center justify-between">
+                            <View className="flex-1 pr-2">
+                              <View className="flex-row items-center">
+                                <Text className="text-white font-medium">{c.propietario || 'Cuenta'}</Text>
+                                <Text className="text-neutral-400 text-xs ml-2">{c.tipo ? c.tipo.charAt(0).toUpperCase() + c.tipo.slice(1) : ''}</Text>
+                              </View>
+                              <Text className="text-neutral-400 text-sm mt-1">{c.numero}</Text>
+                            </View>
+                            <View className="items-end">
+                              <Text className="text-white font-bold">${(c.saldo || 0).toFixed(2)}</Text>
+                              <Text className="text-neutral-400 text-xs">{c.cedula || ''}</Text>
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                      ))
+                    )}
+                  </ScrollView>
+                </View>
+                <View className="flex-row justify-end mt-4">
+                  <TouchableOpacity onPress={() => setShowAccountsModal(false)} className="px-3 py-2">
+                    <Text className="text-sky-400">Cerrar</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
           </Modal>
 
           <TouchableOpacity activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">

@@ -34,15 +34,6 @@ export default function App() {
   return (
     <SafeAreaProvider>
       {/* Renderizar la pantalla según el estado */}
-      {currentScreen === 'home' ? (
-        <Home 
-          
-          onPressAdd={() => navigateTo('inicio')}
-          onPressAccount={navigateToAccountDetail}
-       
-          {...({ onPressAccount: navigateToAccountDetail } as any)}
-        />
-      ) : null}
 
       {currentScreen === 'home' && (
         <Home 
