@@ -26,7 +26,7 @@ export default function App() {
   return (
     <SafeAreaProvider> 
     
-      <Home/>
+      <Formulario/>
     
     </SafeAreaProvider>
     
