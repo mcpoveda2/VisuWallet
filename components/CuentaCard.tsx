@@ -11,21 +11,19 @@ interface CuentaCardProps {
 export default function CuentaCard({cuenta, onPress}: CuentaCardProps){
 
     return (
-        <TouchableOpacity 
+        <TouchableOpacity
             onPress={onPress}
             activeOpacity={0.8}
-            className="bg-neutral-800  rounded-2x1 p-4 w-[48%] mb-4"
-            > 
-             <View className={`bg-neutral-950 w-10 h-10 rounded-xl items-center justify-center mb-3`}>
-                 <MaterialCommunityIcons name="bank" size={24} color="white" />
+            className="bg-neutral-800 rounded-2xl p-4 w-[48%] items-center justify-center mb-4"
+        >
+            <View className="w-10 h-10 bg-blue-500 rounded-full items-center justify-center mb-2">
+                <MaterialCommunityIcons name="bank" size={24} color="white" />
             </View>
 
             <Text className="text-neutral-400 text-xs font-medium mb-1" numberOfLines={1}>
-                    {cuenta.nombre}
+                {cuenta.nombre}
             </Text>
-          <Text className="text-white text-2xl font-bold">
-                ${cuenta.balance.toFixed(2)}
-            </Text>    
+            <Text className="text-white text-2xl font-bold">${cuenta.balance.toFixed(2)}</Text>
         </TouchableOpacity>
     )
 }
