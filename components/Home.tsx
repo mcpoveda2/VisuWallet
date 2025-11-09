@@ -1,3 +1,5 @@
+// components/Home.tsx
+
 import React from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -6,15 +8,17 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import CuentaCard from "./CuentaCard";
 import TransaccionItem from "./ItemTransaccion";
 import GraficoBalance from "./GraficoBalance";
-import NavBar from "./NavBar";  // ← IMPORTAR
+import NavBar from "./NavBar";
 
 import { mockAccounts, mockTransactions, getTotalBalance } from "../datosPrueba";
+import { Cuenta } from "../types";
 
 interface HomeProps {
-  onPressAdd: () => void;  // ← NUEVA PROP
+  onPressAdd: () => void;
+  onPressAccount: (cuenta: Cuenta) => void;
 }
 
-export default function Home({ onPressAdd }: HomeProps) {  // ← RECIBIR PROP
+export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
   const insets = useSafeAreaInsets();
   const balanceTotal = getTotalBalance();
   const nombreUsuario = "Sebas";
@@ -24,14 +28,14 @@ export default function Home({ onPressAdd }: HomeProps) {  // ← RECIBIR PROP
       className="flex-1 bg-black"
       style={{
         paddingTop: insets.top,
-        paddingBottom: 0,  // ← CAMBIAR: Sin padding abajo (la navbar lo maneja)
+        paddingBottom: 0,
       }}
     >
       <ScrollView 
         className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ 
-          paddingBottom: 90  // ← AGREGAR: Espacio para la navbar
+          paddingBottom: 90
         }}
       >
         {/* Header: Saludo + Íconos */}
@@ -66,7 +70,7 @@ export default function Home({ onPressAdd }: HomeProps) {  // ← RECIBIR PROP
               <CuentaCard
                 key={cuenta.id}
                 cuenta={cuenta}
-                onPress={() => console.log('Ir a detalle de', cuenta.nombre)}
+                onPress={() => onPressAccount(cuenta)}
               />
             ))}
 
@@ -109,8 +113,7 @@ export default function Home({ onPressAdd }: HomeProps) {  // ← RECIBIR PROP
         </View>
       </ScrollView>
 
-      {/* NavBar */}
-      <NavBar onPressAdd={onPressAdd} />  {/* ← AGREGAR */}
+      <NavBar onPressAdd={onPressAdd} />
     </SafeAreaView>
   );
 }
