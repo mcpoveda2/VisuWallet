@@ -33,7 +33,10 @@ export default function App() {
       {/* Renderizar la pantalla según el estado */}
       {currentScreen === 'home' ? (
         <Home 
+          
           onPressAdd={() => navigateTo('inicio')}
+          onPressAccount={navigateToAccountDetail}
+       
           {...({ onPressAccount: navigateToAccountDetail } as any)}
         />
       ) : null}
