@@ -32,6 +32,11 @@ export default function App() {
   return (
     <SafeAreaProvider>
       {/* Renderizar la pantalla según el estado */}
+      {currentScreen === 'home' ? (
+        <Home onPressAdd={() => navigateTo('inicio')} />
+      ) : null}
+
+      {currentScreen === 'inicio' ? (
       {currentScreen === 'home' && (
         <Home 
           onPressAdd={() => navigateTo('inicio')}
@@ -44,10 +49,11 @@ export default function App() {
           onPressManual={() => navigateTo('formulario')}
           onBack={() => navigateTo('home')}
         />
-      )}
-      
-      {currentScreen === 'formulario' && (
+      ) : null}
+
+      {currentScreen === 'formulario' ? (
         <Formulario onBack={() => navigateTo('home')} />
+      ) : null}
       )}
       
       {currentScreen === 'detalleCuenta' && selectedAccount && (

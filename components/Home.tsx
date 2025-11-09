@@ -1,3 +1,4 @@
+import React, { useEffect, useState } from "react";
 // components/Home.tsx
 
 import React from "react";
@@ -8,6 +9,15 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import CuentaCard from "./CuentaCard";
 import TransaccionItem from "./ItemTransaccion";
 import GraficoBalance from "./GraficoBalance";
+import NavBar from "./NavBar";  // ← IMPORTAR
+import TransaccionList from './TransaccionList';
+import AddCuenta from './AddCuenta';
+
+import { mockTransactions } from "../datosPrueba";
+import { db } from "utils/firebase.js";
+import { collection, getDocs } from "firebase/firestore";
+import { Transaccion } from "../types";
+import TransactionDetails from './TransactionDetails';
 import NavBar from "./NavBar";
 
 import { mockAccounts, mockTransactions, getTotalBalance } from "../datosPrueba";
@@ -20,8 +30,56 @@ interface HomeProps {
 
 export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
   const insets = useSafeAreaInsets();
-  const balanceTotal = getTotalBalance();
   const nombreUsuario = "Sebas";
+  const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
+  const [transactions, setTransactions] = useState<Transaccion[]>(mockTransactions);
+  const balanceTotal = accounts.reduce((s, a) => s + (a.balance || 0), 0);
+  const [selectedTx, setSelectedTx] = useState<Transaccion | null>(null);
+  const [showAllTransactions, setShowAllTransactions] = useState(false);
+  const [showAddCuenta, setShowAddCuenta] = useState(false);
+
+  // Load transactions and accounts from Firestore
+  const loadAll = async () => {
+    try {
+      // transactions
+      const snap = await getDocs(collection(db, 'registro'));
+      const docs = snap.docs.map(d => {
+        const data = d.data() as any;
+        return {
+          id: d.id,
+          tipo: data.type ?? data.tipo ?? 'expense',
+          categoria: data.category ?? data.categoria ?? '',
+          monto: Number(data.amount ?? data.monto ?? 0),
+          fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
+        } as Transaccion;
+      });
+      docs.sort((a,b) => {
+        const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
+        const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
+        return tb - ta;
+      });
+      setTransactions(docs.slice(0,4));
+
+      // accounts
+      const snapAcc = await getDocs(collection(db, 'cuentas'));
+      const accs = snapAcc.docs.map(d => {
+        const data = d.data() as any;
+        return {
+          id: d.id,
+          nombre: data.propietario ?? data.nombre ?? `Cuenta ${d.id}`,
+          balance: Number(data.saldo ?? data.balance ?? 0),
+        };
+      });
+      setAccounts(accs);
+    } catch (e) {
+      console.warn('Failed to load data from Firestore, using fallbacks', e);
+      // leave transactions as mocks and accounts empty
+    }
+  };
+
+  useEffect(() => {
+    loadAll();
+  }, []);
 
   return (
     <SafeAreaView
@@ -66,16 +124,16 @@ export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
         {/* Grid de cuentas */}
         <View className="px-6 mb-6">
           <View className="flex-row flex-wrap justify-between">
-            {mockAccounts.map((cuenta) => (
+            {accounts.map((cuenta) => (
               <CuentaCard
                 key={cuenta.id}
-                cuenta={cuenta}
+                cuenta={{ id: cuenta.id, nombre: cuenta.nombre, balance: cuenta.balance }}
                 onPress={() => onPressAccount(cuenta)}
               />
             ))}
 
             <TouchableOpacity
-              onPress={() => console.log('Agregar cuenta')}
+              onPress={() => setShowAddCuenta(true)}
               activeOpacity={0.8}
               className="bg-neutral-800 rounded-2xl p-4 w-[48%] items-center justify-center mb-4"
             >
@@ -98,22 +156,28 @@ export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
             <Text className="text-white text-xl font-bold">
               Transacciones recientes
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={() => setShowAllTransactions(true)}>
               <MaterialCommunityIcons name="chevron-right" size={24} color="#737373" />
             </TouchableOpacity>
           </View>
 
-          {mockTransactions.map((transaccion) => (
+          {transactions.map((transaccion) => (
             <TransaccionItem
               key={transaccion.id}
               transaccion={transaccion}
-              onPress={() => console.log('Ver transacción', transaccion.id)}
+              onPress={() => setSelectedTx(transaccion)}
             />
           ))}
         </View>
       </ScrollView>
 
-      <NavBar onPressAdd={onPressAdd} />
+      {/* NavBar */}
+      <NavBar onPressAdd={onPressAdd} />  {/* ← AGREGAR */}
+
+      {/* Transaction details modal */}
+      <TransactionDetails visible={!!selectedTx} transaccion={selectedTx} onClose={() => setSelectedTx(null)} />
+      <TransaccionList visible={showAllTransactions} onClose={() => setShowAllTransactions(false)} />
+  <AddCuenta visible={showAddCuenta} onClose={() => setShowAddCuenta(false)} onSaved={async (id) => { console.log('Cuenta guardada', id); await loadAll(); }} />
     </SafeAreaView>
   );
 }
