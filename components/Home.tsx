@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 // components/Home.tsx
 
-import React from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -18,9 +17,7 @@ import { db } from "utils/firebase.js";
 import { collection, getDocs } from "firebase/firestore";
 import { Transaccion } from "../types";
 import TransactionDetails from './TransactionDetails';
-import NavBar from "./NavBar";
 
-import { mockAccounts, mockTransactions, getTotalBalance } from "../datosPrueba";
 import { Cuenta } from "../types";
 
 interface HomeProps {
