@@ -1,0 +1,1612 @@
+[
+  {
+    "fecha": "2024-01-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1400000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-01-05",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 42000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2024-01-08",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 15000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2024-01-12",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 35000,
+    "descripcion": "Cine"
+  },
+  {
+    "fecha": "2024-01-15",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 110000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2024-01-18",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 28000,
+    "descripcion": "Restaurante"
+  },
+  {
+    "fecha": "2024-01-22",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 65000,
+    "descripcion": "Artículos limpieza"
+  },
+  {
+    "fecha": "2024-01-25",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 12000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2024-01-28",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 45000,
+    "descripcion": "Farmacia"
+  },
+  {
+    "fecha": "2024-02-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1400000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-02-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 48000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2024-02-07",
+    "tipo": "gasto",
+    "categoria": "Ropa",
+    "monto": 125000,
+    "descripcion": "Zapatos"
+  },
+  {
+    "fecha": "2024-02-10",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 18000,
+    "descripcion": "Mantenimiento"
+  },
+  {
+    "fecha": "2024-02-14",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 55000,
+    "descripcion": "San Valentín"
+  },
+  {
+    "fecha": "2024-02-17",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 85000,
+    "descripcion": "Luz"
+  },
+  {
+    "fecha": "2024-02-20",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 32000,
+    "descripcion": "Comida rápida"
+  },
+  {
+    "fecha": "2024-02-23",
+    "tipo": "gasto",
+    "categoria": "Educación",
+    "monto": 180000,
+    "descripcion": "Curso"
+  },
+  {
+    "fecha": "2024-02-26",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 9500,
+    "descripcion": "Taxi"
+  },
+  {
+    "fecha": "2024-03-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1400000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-03-05",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 52000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2024-03-08",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 88000,
+    "descripcion": "Decoración"
+  },
+  {
+    "fecha": "2024-03-11",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 22000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2024-03-14",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 42000,
+    "descripcion": "Teatro"
+  },
+  {
+    "fecha": "2024-03-17",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 115000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2024-03-20",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 38000,
+    "descripcion": "Almuerzo"
+  },
+  {
+    "fecha": "2024-03-23",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 75000,
+    "descripcion": "Médico"
+  },
+  {
+    "fecha": "2024-03-26",
+    "tipo": "gasto",
+    "categoria": "Otros",
+    "monto": 45000,
+    "descripcion": "Regalos"
+  },
+  {
+    "fecha": "2024-03-29",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 14000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2024-04-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1400000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-04-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 45000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2024-04-07",
+    "tipo": "gasto",
+    "categoria": "Ropa",
+    "monto": 155000,
+    "descripcion": "Ropa trabajo"
+  },
+  {
+    "fecha": "2024-04-10",
+    "tipo": "ingreso",
+    "categoria": "Bono",
+    "monto": 180000,
+    "descripcion": "Bono trimestral"
+  },
+  {
+    "fecha": "2024-04-13",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 19000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2024-04-16",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 62000,
+    "descripcion": "Concierto"
+  },
+  {
+    "fecha": "2024-04-19",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 90000,
+    "descripcion": "Celular"
+  },
+  {
+    "fecha": "2024-04-22",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 35000,
+    "descripcion": "Cena"
+  },
+  {
+    "fecha": "2024-04-25",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 72000,
+    "descripcion": "Utensilios"
+  },
+  {
+    "fecha": "2024-04-28",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 11000,
+    "descripcion": "Taxi"
+  },
+  {
+    "fecha": "2024-05-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1450000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-05-05",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 58000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2024-05-08",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 25000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2024-05-11",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 48000,
+    "descripcion": "Salida"
+  },
+  {
+    "fecha": "2024-05-14",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 120000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2024-05-17",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 42000,
+    "descripcion": "Restaurante"
+  },
+  {
+    "fecha": "2024-05-20",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 135000,
+    "descripcion": "Odontólogo"
+  },
+  {
+    "fecha": "2024-05-23",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 95000,
+    "descripcion": "Electrodomésticos"
+  },
+  {
+    "fecha": "2024-05-26",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 16000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2024-05-29",
+    "tipo": "gasto",
+    "categoria": "Otros",
+    "monto": 38000,
+    "descripcion": "Varios"
+  },
+  {
+    "fecha": "2024-06-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1450000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-06-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 52000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2024-06-07",
+    "tipo": "gasto",
+    "categoria": "Educación",
+    "monto": 220000,
+    "descripcion": "Certificación"
+  },
+  {
+    "fecha": "2024-06-10",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 18000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2024-06-13",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 55000,
+    "descripcion": "Videojuegos"
+  },
+  {
+    "fecha": "2024-06-16",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 88000,
+    "descripcion": "Luz"
+  },
+  {
+    "fecha": "2024-06-19",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 36000,
+    "descripcion": "Comida"
+  },
+  {
+    "fecha": "2024-06-22",
+    "tipo": "gasto",
+    "categoria": "Ropa",
+    "monto": 175000,
+    "descripcion": "Ropa nueva"
+  },
+  {
+    "fecha": "2024-06-25",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 13000,
+    "descripcion": "Taxi"
+  },
+  {
+    "fecha": "2024-06-28",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 68000,
+    "descripcion": "Reparaciones"
+  },
+  {
+    "fecha": "2024-07-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1450000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-07-05",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 62000,
+    "descripcion": "Supermercado grande"
+  },
+  {
+    "fecha": "2024-07-08",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 28000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2024-07-11",
+    "tipo": "ingreso",
+    "categoria": "Bono",
+    "monto": 200000,
+    "descripcion": "Bono semestral"
+  },
+  {
+    "fecha": "2024-07-14",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 75000,
+    "descripcion": "Spa"
+  },
+  {
+    "fecha": "2024-07-17",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 125000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2024-07-20",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 48000,
+    "descripcion": "Cena romántica"
+  },
+  {
+    "fecha": "2024-07-23",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 95000,
+    "descripcion": "Chequeo"
+  },
+  {
+    "fecha": "2024-07-26",
+    "tipo": "gasto",
+    "categoria": "Otros",
+    "monto": 55000,
+    "descripcion": "Regalo"
+  },
+  {
+    "fecha": "2024-07-29",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 15000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2024-08-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1450000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-08-05",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 54000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2024-08-08",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 82000,
+    "descripcion": "Artículos hogar"
+  },
+  {
+    "fecha": "2024-08-11",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 22000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2024-08-14",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 42000,
+    "descripcion": "Cine"
+  },
+  {
+    "fecha": "2024-08-17",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 92000,
+    "descripcion": "Celular"
+  },
+  {
+    "fecha": "2024-08-20",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 39000,
+    "descripcion": "Restaurante"
+  },
+  {
+    "fecha": "2024-08-23",
+    "tipo": "gasto",
+    "categoria": "Educación",
+    "monto": 165000,
+    "descripcion": "Curso online"
+  },
+  {
+    "fecha": "2024-08-26",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 14000,
+    "descripcion": "Taxi"
+  },
+  {
+    "fecha": "2024-08-29",
+    "tipo": "gasto",
+    "categoria": "Ropa",
+    "monto": 145000,
+    "descripcion": "Chaqueta"
+  },
+  {
+    "fecha": "2024-09-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1500000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-09-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 58000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2024-09-07",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 25000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2024-09-10",
+    "tipo": "ingreso",
+    "categoria": "Venta",
+    "monto": 320000,
+    "descripcion": "Venta laptop"
+  },
+  {
+    "fecha": "2024-09-13",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 65000,
+    "descripcion": "Concierto"
+  },
+  {
+    "fecha": "2024-09-16",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 118000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2024-09-19",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 45000,
+    "descripcion": "Almuerzo familiar"
+  },
+  {
+    "fecha": "2024-09-22",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 88000,
+    "descripcion": "Farmacia"
+  },
+  {
+    "fecha": "2024-09-25",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 75000,
+    "descripcion": "Decoración"
+  },
+  {
+    "fecha": "2024-09-28",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 16000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2024-10-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1500000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-10-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 52000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2024-10-07",
+    "tipo": "gasto",
+    "categoria": "Ropa",
+    "monto": 185000,
+    "descripcion": "Zapatos"
+  },
+  {
+    "fecha": "2024-10-10",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 19000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2024-10-13",
+    "tipo": "ingreso",
+    "categoria": "Bono",
+    "monto": 250000,
+    "descripcion": "Bono desempeño"
+  },
+  {
+    "fecha": "2024-10-16",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 55000,
+    "descripcion": "Teatro"
+  },
+  {
+    "fecha": "2024-10-19",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 95000,
+    "descripcion": "Luz"
+  },
+  {
+    "fecha": "2024-10-22",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 42000,
+    "descripcion": "Cena"
+  },
+  {
+    "fecha": "2024-10-25",
+    "tipo": "gasto",
+    "categoria": "Otros",
+    "monto": 48000,
+    "descripcion": "Varios"
+  },
+  {
+    "fecha": "2024-10-28",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 13000,
+    "descripcion": "Taxi"
+  },
+  {
+    "fecha": "2024-10-31",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 88000,
+    "descripcion": "Halloween"
+  },
+  {
+    "fecha": "2024-11-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1500000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-11-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 56000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2024-11-07",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 92000,
+    "descripcion": "Electrodomésticos"
+  },
+  {
+    "fecha": "2024-11-10",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 24000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2024-11-13",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 48000,
+    "descripcion": "Salida"
+  },
+  {
+    "fecha": "2024-11-16",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 120000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2024-11-19",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 38000,
+    "descripcion": "Restaurante"
+  },
+  {
+    "fecha": "2024-11-22",
+    "tipo": "gasto",
+    "categoria": "Educación",
+    "monto": 195000,
+    "descripcion": "Curso"
+  },
+  {
+    "fecha": "2024-11-25",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 15000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2024-11-28",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 72000,
+    "descripcion": "Médico"
+  },
+  {
+    "fecha": "2024-12-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1500000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2024-12-05",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 68000,
+    "descripcion": "Supermercado grande"
+  },
+  {
+    "fecha": "2024-12-08",
+    "tipo": "ingreso",
+    "categoria": "Bono",
+    "monto": 350000,
+    "descripcion": "Bono Navidad"
+  },
+  {
+    "fecha": "2024-12-11",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 28000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2024-12-14",
+    "tipo": "gasto",
+    "categoria": "Ropa",
+    "monto": 225000,
+    "descripcion": "Ropa Navidad"
+  },
+  {
+    "fecha": "2024-12-17",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 95000,
+    "descripcion": "Fiesta"
+  },
+  {
+    "fecha": "2024-12-20",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 125000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2024-12-23",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 125000,
+    "descripcion": "Cena Navidad"
+  },
+  {
+    "fecha": "2024-12-26",
+    "tipo": "gasto",
+    "categoria": "Otros",
+    "monto": 185000,
+    "descripcion": "Regalos Navidad"
+  },
+  {
+    "fecha": "2024-12-29",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 88000,
+    "descripcion": "Decoración"
+  },
+  {
+    "fecha": "2024-12-31",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 155000,
+    "descripcion": "Año Nuevo"
+  },
+  {
+    "fecha": "2025-01-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1550000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2025-01-05",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 45000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2025-01-08",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 16000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2025-01-11",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 38000,
+    "descripcion": "Cine"
+  },
+  {
+    "fecha": "2025-01-14",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 125000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2025-01-17",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 32000,
+    "descripcion": "Restaurante"
+  },
+  {
+    "fecha": "2025-01-20",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 72000,
+    "descripcion": "Artículos limpieza"
+  },
+  {
+    "fecha": "2025-01-23",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 13000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2025-01-26",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 52000,
+    "descripcion": "Farmacia"
+  },
+  {
+    "fecha": "2025-01-29",
+    "tipo": "gasto",
+    "categoria": "Otros",
+    "monto": 35000,
+    "descripcion": "Varios"
+  },
+  {
+    "fecha": "2025-02-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1550000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2025-02-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 52000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2025-02-07",
+    "tipo": "gasto",
+    "categoria": "Ropa",
+    "monto": 135000,
+    "descripcion": "Zapatos"
+  },
+  {
+    "fecha": "2025-02-10",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 22000,
+    "descripcion": "Mantenimiento"
+  },
+  {
+    "fecha": "2025-02-14",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 68000,
+    "descripcion": "San Valentín"
+  },
+  {
+    "fecha": "2025-02-17",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 92000,
+    "descripcion": "Luz"
+  },
+  {
+    "fecha": "2025-02-20",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 38000,
+    "descripcion": "Comida rápida"
+  },
+  {
+    "fecha": "2025-02-23",
+    "tipo": "gasto",
+    "categoria": "Educación",
+    "monto": 195000,
+    "descripcion": "Curso"
+  },
+  {
+    "fecha": "2025-02-26",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 11000,
+    "descripcion": "Taxi"
+  },
+  {
+    "fecha": "2025-03-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1550000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2025-03-05",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 58000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2025-03-08",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 95000,
+    "descripcion": "Decoración"
+  },
+  {
+    "fecha": "2025-03-11",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 25000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2025-03-14",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 52000,
+    "descripcion": "Teatro"
+  },
+  {
+    "fecha": "2025-03-17",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 128000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2025-03-20",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 42000,
+    "descripcion": "Almuerzo"
+  },
+  {
+    "fecha": "2025-03-23",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 85000,
+    "descripcion": "Médico"
+  },
+  {
+    "fecha": "2025-03-26",
+    "tipo": "gasto",
+    "categoria": "Otros",
+    "monto": 48000,
+    "descripcion": "Regalos"
+  },
+  {
+    "fecha": "2025-03-29",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 16000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2025-04-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1550000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2025-04-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 48000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2025-04-07",
+    "tipo": "gasto",
+    "categoria": "Ropa",
+    "monto": 165000,
+    "descripcion": "Ropa trabajo"
+  },
+  {
+    "fecha": "2025-04-10",
+    "tipo": "ingreso",
+    "categoria": "Bono",
+    "monto": 220000,
+    "descripcion": "Bono trimestral"
+  },
+  {
+    "fecha": "2025-04-13",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 22000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2025-04-16",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 72000,
+    "descripcion": "Concierto"
+  },
+  {
+    "fecha": "2025-04-19",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 98000,
+    "descripcion": "Celular"
+  },
+  {
+    "fecha": "2025-04-22",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 38000,
+    "descripcion": "Cena"
+  },
+  {
+    "fecha": "2025-04-25",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 78000,
+    "descripcion": "Utensilios"
+  },
+  {
+    "fecha": "2025-04-28",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 13000,
+    "descripcion": "Taxi"
+  },
+  {
+    "fecha": "2025-05-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1600000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2025-05-05",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 62000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2025-05-08",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 28000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2025-05-11",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 55000,
+    "descripcion": "Salida"
+  },
+  {
+    "fecha": "2025-05-14",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 132000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2025-05-17",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 45000,
+    "descripcion": "Restaurante"
+  },
+  {
+    "fecha": "2025-05-20",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 145000,
+    "descripcion": "Odontólogo"
+  },
+  {
+    "fecha": "2025-05-23",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 105000,
+    "descripcion": "Electrodomésticos"
+  },
+  {
+    "fecha": "2025-05-26",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 18000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2025-05-29",
+    "tipo": "gasto",
+    "categoria": "Otros",
+    "monto": 42000,
+    "descripcion": "Varios"
+  },
+  {
+    "fecha": "2025-06-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1600000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2025-06-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 55000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2025-06-07",
+    "tipo": "gasto",
+    "categoria": "Educación",
+    "monto": 235000,
+    "descripcion": "Certificación"
+  },
+  {
+    "fecha": "2025-06-10",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 22000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2025-06-13",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 62000,
+    "descripcion": "Videojuegos"
+  },
+  {
+    "fecha": "2025-06-16",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 95000,
+    "descripcion": "Luz"
+  },
+  {
+    "fecha": "2025-06-19",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 38000,
+    "descripcion": "Comida"
+  },
+  {
+    "fecha": "2025-06-22",
+    "tipo": "gasto",
+    "categoria": "Ropa",
+    "monto": 195000,
+    "descripcion": "Ropa nueva"
+  },
+  {
+    "fecha": "2025-06-25",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 15000,
+    "descripcion": "Taxi"
+  },
+  {
+    "fecha": "2025-06-28",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 75000,
+    "descripcion": "Reparaciones"
+  },
+  {
+    "fecha": "2025-07-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1600000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2025-07-05",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 68000,
+    "descripcion": "Supermercado grande"
+  },
+  {
+    "fecha": "2025-07-08",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 32000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2025-07-11",
+    "tipo": "ingreso",
+    "categoria": "Bono",
+    "monto": 280000,
+    "descripcion": "Bono semestral"
+  },
+  {
+    "fecha": "2025-07-14",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 85000,
+    "descripcion": "Spa"
+  },
+  {
+    "fecha": "2025-07-17",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 135000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2025-07-20",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 52000,
+    "descripcion": "Cena romántica"
+  },
+  {
+    "fecha": "2025-07-23",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 105000,
+    "descripcion": "Chequeo"
+  },
+  {
+    "fecha": "2025-07-26",
+    "tipo": "gasto",
+    "categoria": "Otros",
+    "monto": 62000,
+    "descripcion": "Regalo"
+  },
+  {
+    "fecha": "2025-07-29",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 17000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2025-08-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1600000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2025-08-05",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 58000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2025-08-08",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 88000,
+    "descripcion": "Artículos hogar"
+  },
+  {
+    "fecha": "2025-08-11",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 25000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2025-08-14",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 48000,
+    "descripcion": "Cine"
+  },
+  {
+    "fecha": "2025-08-17",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 98000,
+    "descripcion": "Celular"
+  },
+  {
+    "fecha": "2025-08-20",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 42000,
+    "descripcion": "Restaurante"
+  },
+  {
+    "fecha": "2025-08-23",
+    "tipo": "gasto",
+    "categoria": "Educación",
+    "monto": 175000,
+    "descripcion": "Curso online"
+  },
+  {
+    "fecha": "2025-08-26",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 16000,
+    "descripcion": "Taxi"
+  },
+  {
+    "fecha": "2025-08-29",
+    "tipo": "gasto",
+    "categoria": "Ropa",
+    "monto": 155000,
+    "descripcion": "Chaqueta"
+  },
+  {
+    "fecha": "2025-09-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1650000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2025-09-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 62000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2025-09-07",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 28000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2025-09-10",
+    "tipo": "ingreso",
+    "categoria": "Venta",
+    "monto": 380000,
+    "descripcion": "Venta muebles"
+  },
+  {
+    "fecha": "2025-09-13",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 72000,
+    "descripcion": "Concierto"
+  },
+  {
+    "fecha": "2025-09-16",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 128000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2025-09-19",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 48000,
+    "descripcion": "Almuerzo familiar"
+  },
+  {
+    "fecha": "2025-09-22",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 92000,
+    "descripcion": "Farmacia"
+  },
+  {
+    "fecha": "2025-09-25",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 82000,
+    "descripcion": "Decoración"
+  },
+  {
+    "fecha": "2025-09-28",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 18000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2025-10-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1650000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2025-10-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 56000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2025-10-07",
+    "tipo": "gasto",
+    "categoria": "Ropa",
+    "monto": 195000,
+    "descripcion": "Zapatos"
+  },
+  {
+    "fecha": "2025-10-10",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 22000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2025-10-13",
+    "tipo": "ingreso",
+    "categoria": "Bono",
+    "monto": 300000,
+    "descripcion": "Bono desempeño"
+  },
+  {
+    "fecha": "2025-10-16",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 62000,
+    "descripcion": "Teatro"
+  },
+  {
+    "fecha": "2025-10-19",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 102000,
+    "descripcion": "Luz"
+  },
+  {
+    "fecha": "2025-10-22",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 45000,
+    "descripcion": "Cena"
+  },
+  {
+    "fecha": "2025-10-25",
+    "tipo": "gasto",
+    "categoria": "Otros",
+    "monto": 52000,
+    "descripcion": "Varios"
+  },
+  {
+    "fecha": "2025-10-28",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 15000,
+    "descripcion": "Taxi"
+  },
+  {
+    "fecha": "2025-10-31",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 95000,
+    "descripcion": "Halloween"
+  },
+  {
+    "fecha": "2025-11-01",
+    "tipo": "ingreso",
+    "categoria": "Salario",
+    "monto": 1650000,
+    "descripcion": "Pago mensual"
+  },
+  {
+    "fecha": "2025-11-04",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 60000,
+    "descripcion": "Supermercado"
+  },
+  {
+    "fecha": "2025-11-07",
+    "tipo": "gasto",
+    "categoria": "Hogar",
+    "monto": 98000,
+    "descripcion": "Electrodomésticos"
+  },
+  {
+    "fecha": "2025-11-10",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 28000,
+    "descripcion": "Gasolina"
+  },
+  {
+    "fecha": "2025-11-13",
+    "tipo": "gasto",
+    "categoria": "Entretenimiento",
+    "monto": 55000,
+    "descripcion": "Salida"
+  },
+  {
+    "fecha": "2025-11-16",
+    "tipo": "gasto",
+    "categoria": "Servicios",
+    "monto": 132000,
+    "descripcion": "Internet"
+  },
+  {
+    "fecha": "2025-11-19",
+    "tipo": "gasto",
+    "categoria": "Alimentación",
+    "monto": 42000,
+    "descripcion": "Restaurante"
+  },
+  {
+    "fecha": "2025-11-22",
+    "tipo": "gasto",
+    "categoria": "Educación",
+    "monto": 210000,
+    "descripcion": "Curso"
+  },
+  {
+    "fecha": "2025-11-25",
+    "tipo": "gasto",
+    "categoria": "Transporte",
+    "monto": 17000,
+    "descripcion": "Uber"
+  },
+  {
+    "fecha": "2025-11-28",
+    "tipo": "gasto",
+    "categoria": "Salud",
+    "monto": 78000,
+    "descripcion": "Médico"
+  }
+]

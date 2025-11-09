@@ -1,0 +1,231 @@
+fecha,tipo,categoria,monto,descripcion
+2024-01-01,ingreso,Salario,1400000,Pago mensual
+2024-01-05,gasto,Alimentación,42000,Supermercado
+2024-01-08,gasto,Transporte,15000,Gasolina
+2024-01-12,gasto,Entretenimiento,35000,Cine
+2024-01-15,gasto,Servicios,110000,Internet
+2024-01-18,gasto,Alimentación,28000,Restaurante
+2024-01-22,gasto,Hogar,65000,Artículos limpieza
+2024-01-25,gasto,Transporte,12000,Uber
+2024-01-28,gasto,Salud,45000,Farmacia
+2024-02-01,ingreso,Salario,1400000,Pago mensual
+2024-02-04,gasto,Alimentación,48000,Supermercado
+2024-02-07,gasto,Ropa,125000,Zapatos
+2024-02-10,gasto,Transporte,18000,Mantenimiento
+2024-02-14,gasto,Entretenimiento,55000,San Valentín
+2024-02-17,gasto,Servicios,85000,Luz
+2024-02-20,gasto,Alimentación,32000,Comida rápida
+2024-02-23,gasto,Educación,180000,Curso
+2024-02-26,gasto,Transporte,9500,Taxi
+2024-03-01,ingreso,Salario,1400000,Pago mensual
+2024-03-05,gasto,Alimentación,52000,Supermercado
+2024-03-08,gasto,Hogar,88000,Decoración
+2024-03-11,gasto,Transporte,22000,Gasolina
+2024-03-14,gasto,Entretenimiento,42000,Teatro
+2024-03-17,gasto,Servicios,115000,Internet
+2024-03-20,gasto,Alimentación,38000,Almuerzo
+2024-03-23,gasto,Salud,75000,Médico
+2024-03-26,gasto,Otros,45000,Regalos
+2024-03-29,gasto,Transporte,14000,Uber
+2024-04-01,ingreso,Salario,1400000,Pago mensual
+2024-04-04,gasto,Alimentación,45000,Supermercado
+2024-04-07,gasto,Ropa,155000,Ropa trabajo
+2024-04-10,ingreso,Bono,180000,Bono trimestral
+2024-04-13,gasto,Transporte,19000,Gasolina
+2024-04-16,gasto,Entretenimiento,62000,Concierto
+2024-04-19,gasto,Servicios,90000,Celular
+2024-04-22,gasto,Alimentación,35000,Cena
+2024-04-25,gasto,Hogar,72000,Utensilios
+2024-04-28,gasto,Transporte,11000,Taxi
+2024-05-01,ingreso,Salario,1450000,Pago mensual
+2024-05-05,gasto,Alimentación,58000,Supermercado
+2024-05-08,gasto,Transporte,25000,Gasolina
+2024-05-11,gasto,Entretenimiento,48000,Salida
+2024-05-14,gasto,Servicios,120000,Internet
+2024-05-17,gasto,Alimentación,42000,Restaurante
+2024-05-20,gasto,Salud,135000,Odontólogo
+2024-05-23,gasto,Hogar,95000,Electrodomésticos
+2024-05-26,gasto,Transporte,16000,Uber
+2024-05-29,gasto,Otros,38000,Varios
+2024-06-01,ingreso,Salario,1450000,Pago mensual
+2024-06-04,gasto,Alimentación,52000,Supermercado
+2024-06-07,gasto,Educación,220000,Certificación
+2024-06-10,gasto,Transporte,18000,Gasolina
+2024-06-13,gasto,Entretenimiento,55000,Videojuegos
+2024-06-16,gasto,Servicios,88000,Luz
+2024-06-19,gasto,Alimentación,36000,Comida
+2024-06-22,gasto,Ropa,175000,Ropa nueva
+2024-06-25,gasto,Transporte,13000,Taxi
+2024-06-28,gasto,Hogar,68000,Reparaciones
+2024-07-01,ingreso,Salario,1450000,Pago mensual
+2024-07-05,gasto,Alimentación,62000,Supermercado grande
+2024-07-08,gasto,Transporte,28000,Gasolina
+2024-07-11,ingreso,Bono,200000,Bono semestral
+2024-07-14,gasto,Entretenimiento,75000,Spa
+2024-07-17,gasto,Servicios,125000,Internet
+2024-07-20,gasto,Alimentación,48000,Cena romántica
+2024-07-23,gasto,Salud,95000,Chequeo
+2024-07-26,gasto,Otros,55000,Regalo
+2024-07-29,gasto,Transporte,15000,Uber
+2024-08-01,ingreso,Salario,1450000,Pago mensual
+2024-08-05,gasto,Alimentación,54000,Supermercado
+2024-08-08,gasto,Hogar,82000,Artículos hogar
+2024-08-11,gasto,Transporte,22000,Gasolina
+2024-08-14,gasto,Entretenimiento,42000,Cine
+2024-08-17,gasto,Servicios,92000,Celular
+2024-08-20,gasto,Alimentación,39000,Restaurante
+2024-08-23,gasto,Educación,165000,Curso online
+2024-08-26,gasto,Transporte,14000,Taxi
+2024-08-29,gasto,Ropa,145000,Chaqueta
+2024-09-01,ingreso,Salario,1500000,Pago mensual
+2024-09-04,gasto,Alimentación,58000,Supermercado
+2024-09-07,gasto,Transporte,25000,Gasolina
+2024-09-10,ingreso,Venta,320000,Venta laptop
+2024-09-13,gasto,Entretenimiento,65000,Concierto
+2024-09-16,gasto,Servicios,118000,Internet
+2024-09-19,gasto,Alimentación,45000,Almuerzo familiar
+2024-09-22,gasto,Salud,88000,Farmacia
+2024-09-25,gasto,Hogar,75000,Decoración
+2024-09-28,gasto,Transporte,16000,Uber
+2024-10-01,ingreso,Salario,1500000,Pago mensual
+2024-10-04,gasto,Alimentación,52000,Supermercado
+2024-10-07,gasto,Ropa,185000,Zapatos
+2024-10-10,gasto,Transporte,19000,Gasolina
+2024-10-13,ingreso,Bono,250000,Bono desempeño
+2024-10-16,gasto,Entretenimiento,55000,Teatro
+2024-10-19,gasto,Servicios,95000,Luz
+2024-10-22,gasto,Alimentación,42000,Cena
+2024-10-25,gasto,Otros,48000,Varios
+2024-10-28,gasto,Transporte,13000,Taxi
+2024-10-31,gasto,Entretenimiento,88000,Halloween
+2024-11-01,ingreso,Salario,1500000,Pago mensual
+2024-11-04,gasto,Alimentación,56000,Supermercado
+2024-11-07,gasto,Hogar,92000,Electrodomésticos
+2024-11-10,gasto,Transporte,24000,Gasolina
+2024-11-13,gasto,Entretenimiento,48000,Salida
+2024-11-16,gasto,Servicios,120000,Internet
+2024-11-19,gasto,Alimentación,38000,Restaurante
+2024-11-22,gasto,Educación,195000,Curso
+2024-11-25,gasto,Transporte,15000,Uber
+2024-11-28,gasto,Salud,72000,Médico
+2024-12-01,ingreso,Salario,1500000,Pago mensual
+2024-12-05,gasto,Alimentación,68000,Supermercado grande
+2024-12-08,ingreso,Bono,350000,Bono Navidad
+2024-12-11,gasto,Transporte,28000,Gasolina
+2024-12-14,gasto,Ropa,225000,Ropa Navidad
+2024-12-17,gasto,Entretenimiento,95000,Fiesta
+2024-12-20,gasto,Servicios,125000,Internet
+2024-12-23,gasto,Alimentación,125000,Cena Navidad
+2024-12-26,gasto,Otros,185000,Regalos Navidad
+2024-12-29,gasto,Hogar,88000,Decoración
+2024-12-31,gasto,Entretenimiento,155000,Año Nuevo
+2025-01-01,ingreso,Salario,1550000,Pago mensual
+2025-01-05,gasto,Alimentación,45000,Supermercado
+2025-01-08,gasto,Transporte,16000,Gasolina
+2025-01-11,gasto,Entretenimiento,38000,Cine
+2025-01-14,gasto,Servicios,125000,Internet
+2025-01-17,gasto,Alimentación,32000,Restaurante
+2025-01-20,gasto,Hogar,72000,Artículos limpieza
+2025-01-23,gasto,Transporte,13000,Uber
+2025-01-26,gasto,Salud,52000,Farmacia
+2025-01-29,gasto,Otros,35000,Varios
+2025-02-01,ingreso,Salario,1550000,Pago mensual
+2025-02-04,gasto,Alimentación,52000,Supermercado
+2025-02-07,gasto,Ropa,135000,Zapatos
+2025-02-10,gasto,Transporte,22000,Mantenimiento
+2025-02-14,gasto,Entretenimiento,68000,San Valentín
+2025-02-17,gasto,Servicios,92000,Luz
+2025-02-20,gasto,Alimentación,38000,Comida rápida
+2025-02-23,gasto,Educación,195000,Curso
+2025-02-26,gasto,Transporte,11000,Taxi
+2025-03-01,ingreso,Salario,1550000,Pago mensual
+2025-03-05,gasto,Alimentación,58000,Supermercado
+2025-03-08,gasto,Hogar,95000,Decoración
+2025-03-11,gasto,Transporte,25000,Gasolina
+2025-03-14,gasto,Entretenimiento,52000,Teatro
+2025-03-17,gasto,Servicios,128000,Internet
+2025-03-20,gasto,Alimentación,42000,Almuerzo
+2025-03-23,gasto,Salud,85000,Médico
+2025-03-26,gasto,Otros,48000,Regalos
+2025-03-29,gasto,Transporte,16000,Uber
+2025-04-01,ingreso,Salario,1550000,Pago mensual
+2025-04-04,gasto,Alimentación,48000,Supermercado
+2025-04-07,gasto,Ropa,165000,Ropa trabajo
+2025-04-10,ingreso,Bono,220000,Bono trimestral
+2025-04-13,gasto,Transporte,22000,Gasolina
+2025-04-16,gasto,Entretenimiento,72000,Concierto
+2025-04-19,gasto,Servicios,98000,Celular
+2025-04-22,gasto,Alimentación,38000,Cena
+2025-04-25,gasto,Hogar,78000,Utensilios
+2025-04-28,gasto,Transporte,13000,Taxi
+2025-05-01,ingreso,Salario,1600000,Pago mensual
+2025-05-05,gasto,Alimentación,62000,Supermercado
+2025-05-08,gasto,Transporte,28000,Gasolina
+2025-05-11,gasto,Entretenimiento,55000,Salida
+2025-05-14,gasto,Servicios,132000,Internet
+2025-05-17,gasto,Alimentación,45000,Restaurante
+2025-05-20,gasto,Salud,145000,Odontólogo
+2025-05-23,gasto,Hogar,105000,Electrodomésticos
+2025-05-26,gasto,Transporte,18000,Uber
+2025-05-29,gasto,Otros,42000,Varios
+2025-06-01,ingreso,Salario,1600000,Pago mensual
+2025-06-04,gasto,Alimentación,55000,Supermercado
+2025-06-07,gasto,Educación,235000,Certificación
+2025-06-10,gasto,Transporte,22000,Gasolina
+2025-06-13,gasto,Entretenimiento,62000,Videojuegos
+2025-06-16,gasto,Servicios,95000,Luz
+2025-06-19,gasto,Alimentación,38000,Comida
+2025-06-22,gasto,Ropa,195000,Ropa nueva
+2025-06-25,gasto,Transporte,15000,Taxi
+2025-06-28,gasto,Hogar,75000,Reparaciones
+2025-07-01,ingreso,Salario,1600000,Pago mensual
+2025-07-05,gasto,Alimentación,68000,Supermercado grande
+2025-07-08,gasto,Transporte,32000,Gasolina
+2025-07-11,ingreso,Bono,280000,Bono semestral
+2025-07-14,gasto,Entretenimiento,85000,Spa
+2025-07-17,gasto,Servicios,135000,Internet
+2025-07-20,gasto,Alimentación,52000,Cena romántica
+2025-07-23,gasto,Salud,105000,Chequeo
+2025-07-26,gasto,Otros,62000,Regalo
+2025-07-29,gasto,Transporte,17000,Uber
+2025-08-01,ingreso,Salario,1600000,Pago mensual
+2025-08-05,gasto,Alimentación,58000,Supermercado
+2025-08-08,gasto,Hogar,88000,Artículos hogar
+2025-08-11,gasto,Transporte,25000,Gasolina
+2025-08-14,gasto,Entretenimiento,48000,Cine
+2025-08-17,gasto,Servicios,98000,Celular
+2025-08-20,gasto,Alimentación,42000,Restaurante
+2025-08-23,gasto,Educación,175000,Curso online
+2025-08-26,gasto,Transporte,16000,Taxi
+2025-08-29,gasto,Ropa,155000,Chaqueta
+2025-09-01,ingreso,Salario,1650000,Pago mensual
+2025-09-04,gasto,Alimentación,62000,Supermercado
+2025-09-07,gasto,Transporte,28000,Gasolina
+2025-09-10,ingreso,Venta,380000,Venta muebles
+2025-09-13,gasto,Entretenimiento,72000,Concierto
+2025-09-16,gasto,Servicios,128000,Internet
+2025-09-19,gasto,Alimentación,48000,Almuerzo familiar
+2025-09-22,gasto,Salud,92000,Farmacia
+2025-09-25,gasto,Hogar,82000,Decoración
+2025-09-28,gasto,Transporte,18000,Uber
+2025-10-01,ingreso,Salario,1650000,Pago mensual
+2025-10-04,gasto,Alimentación,56000,Supermercado
+2025-10-07,gasto,Ropa,195000,Zapatos
+2025-10-10,gasto,Transporte,22000,Gasolina
+2025-10-13,ingreso,Bono,300000,Bono desempeño
+2025-10-16,gasto,Entretenimiento,62000,Teatro
+2025-10-19,gasto,Servicios,102000,Luz
+2025-10-22,gasto,Alimentación,45000,Cena
+2025-10-25,gasto,Otros,52000,Varios
+2025-10-28,gasto,Transporte,15000,Taxi
+2025-10-31,gasto,Entretenimiento,95000,Halloween
+2025-11-01,ingreso,Salario,1650000,Pago mensual
+2025-11-04,gasto,Alimentación,60000,Supermercado
+2025-11-07,gasto,Hogar,98000,Electrodomésticos
+2025-11-10,gasto,Transporte,28000,Gasolina
+2025-11-13,gasto,Entretenimiento,55000,Salida
+2025-11-16,gasto,Servicios,132000,Internet
+2025-11-19,gasto,Alimentación,42000,Restaurante
+2025-11-22,gasto,Educación,210000,Curso
+2025-11-25,gasto,Transporte,17000,Uber
+2025-11-28,gasto,Salud,78000,Médico
