@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from "react";
+// components/Home.tsx
+
+import React from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
@@ -15,12 +18,17 @@ import { db } from "utils/firebase.js";
 import { collection, getDocs } from "firebase/firestore";
 import { Transaccion } from "../types";
 import TransactionDetails from './TransactionDetails';
+import NavBar from "./NavBar";
+
+import { mockAccounts, mockTransactions, getTotalBalance } from "../datosPrueba";
+import { Cuenta } from "../types";
 
 interface HomeProps {
-  onPressAdd: () => void;  // ← NUEVA PROP
+  onPressAdd: () => void;
+  onPressAccount: (cuenta: Cuenta) => void;
 }
 
-export default function Home({ onPressAdd }: HomeProps) {  // ← RECIBIR PROP
+export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
   const insets = useSafeAreaInsets();
   const nombreUsuario = "Sebas";
   const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
@@ -120,7 +128,7 @@ export default function Home({ onPressAdd }: HomeProps) {  // ← RECIBIR PROP
               <CuentaCard
                 key={cuenta.id}
                 cuenta={{ id: cuenta.id, nombre: cuenta.nombre, balance: cuenta.balance }}
-                onPress={() => console.log('Ir a detalle de', cuenta.nombre)}
+                onPress={() => onPressAccount(cuenta)}
               />
             ))}
 
