@@ -1,6 +1,6 @@
 import { initializeApp, getApps } from 'firebase/app';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getFirestore } from 'firebase/firestore';
+import { getAuth, signInAnonymously } from 'firebase/auth';
 
 // Read Firebase config from environment variables (EXPO_PUBLIC_*)
 const firebaseConfig = {
@@ -14,8 +14,22 @@ const firebaseConfig = {
   measurementId: process.env.EXPO_PUBLIC_FIREBASE_MEASUREMENT_ID,
 };
 
-const app =  initializeApp(firebaseConfig);
+const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
+const auth = getAuth(app);
+
+async function ensureAnonymousSignIn() {
+  try {
+    if (!auth.currentUser) {
+      const res = await signInAnonymously(auth);
+      return res.user;
+    }
+    return auth.currentUser;
+  } catch (e) {
+    console.error('Failed to sign in anonymously', e);
+    return null;
+  }
+}
 
 export default app;
-export { db };
+export { db, auth, ensureAnonymousSignIn };

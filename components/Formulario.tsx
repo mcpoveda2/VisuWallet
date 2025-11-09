@@ -1,5 +1,5 @@
 // components/AddRecord.tsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -11,11 +11,11 @@ import {
   Alert,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import Categorias from "./Categorias";
-import { db } from "utils/firebase.js";
-import { collection, addDoc } from "firebase/firestore";
-
-
+import { db, ensureAnonymousSignIn } from "utils/firebase.js";
+import { collection, addDoc, getDocs, query, where, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 
 export default function Formulario() {
   const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
@@ -27,21 +27,29 @@ export default function Formulario() {
   const [note, setNote] = useState<string>("");
   const [payee, setPayee] = useState<string>("");
   const [showCategories, setShowCategories] = useState<boolean>(false);
+  const [showNoteModal, setShowNoteModal] = useState<boolean>(false);
+  const [showPayeeModal, setShowPayeeModal] = useState<boolean>(false);
+  const [showLabelsModal, setShowLabelsModal] = useState<boolean>(false);
+  const recommendedLabels = ["Food", "Transport", "Shopping", "Salary", "Rent"];
+  const [userLabels, setUserLabels] = useState<{ id: string; name: string }[]>([]);
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+  const [newLabel, setNewLabel] = useState<string>("");
 
-  // aquí iría la lógica para guardar
   const initialState = {
-    account,
-    category: category ?? '',
-    date: dateTime,
-    details: note,
-    labels: labels ? labels.split(',').map(s => s.trim()).filter(Boolean) : [],
-    type,
-    amount: Number(amount) || 0,
-    payee,
+    account: '',
+    category: '',
+    date: '',
+    details: '',
+    labels: [] as string[],
+    type: 'expense' as "expense" | "income" | "transfer",
+    amount: 0,
+    payee: '',
   };
+
   const [record, setRecord] = useState(initialState);
+
   const handleChange = (field: string, value: string) => {
-    setRecord(prev => ({ ...prev, [field]: value }));
+    setRecord((prev) => ({ ...prev, [field]: value } as any));
     switch (field) {
       case 'type':
         setType(value as "expense" | "income" | "transfer");
@@ -71,7 +79,63 @@ export default function Formulario() {
       default:
         break;
     }
-  }
+  };
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const labelsCol = collection(db, 'labels');
+        const snap = await getDocs(labelsCol);
+        const results = snap.docs.map((d) => ({ id: d.id, name: (d.data() as any).name }));
+        setUserLabels(results);
+      } catch (e) {
+        console.warn('Failed to load labels from Firestore, falling back to local storage', e);
+        try {
+          const raw = await AsyncStorage.getItem('labels_local');
+          if (raw) {
+            const parsed = JSON.parse(raw) as string[];
+            const mapped = parsed.map((name, idx) => ({ id: `local-${idx}-${name}`, name }));
+            setUserLabels(mapped);
+          }
+        } catch (err) {
+          console.error('Failed to load labels from AsyncStorage', err);
+        }
+      }
+    };
+    load();
+  }, []);
+
+  const addUserLabel = async (label: string) => {
+    const l = label.trim();
+    if (!l) return;
+    if (userLabels.find((u) => u.name === l)) return;
+    try {
+      // try Firestore public collection 'labels' first
+      const ref = await addDoc(collection(db, 'labels'), { name: l, createdAt: serverTimestamp() });
+      const next = [...userLabels, { id: ref.id, name: l }];
+      setUserLabels(next);
+      setNewLabel('');
+    } catch (e) {
+      console.warn('Failed to add label to Firestore, falling back to local storage', e);
+      try {
+        const nextNames = userLabels.map(u => u.name).concat([l]);
+        await AsyncStorage.setItem('labels_local', JSON.stringify(nextNames));
+        const next = [...userLabels, { id: `local-${Date.now()}-${l}`, name: l }];
+        setUserLabels(next);
+        setNewLabel('');
+      } catch (err) {
+        console.error('Failed to persist label locally', err);
+      }
+    }
+  };
+
+  const toggleLabel = (label: string) => {
+    setSelectedLabels((prev) => {
+      if (prev.includes(label)) return prev.filter((p) => p !== label);
+      return [...prev, label];
+    });
+  };
+
   const saveRecord = async (rec?: typeof record) => {
     const toSave = rec ?? record;
     try {
@@ -82,12 +146,10 @@ export default function Formulario() {
       console.error(e);
       Alert.alert('Error', 'Failed to save record.');
     }
-  }
+  };
 
   const onCancel = () => {
-    // reset o navegación atrás
-
-    console.log("cancel");
+    console.log('cancel');
   };
 
   return (
@@ -102,7 +164,6 @@ export default function Formulario() {
 
         <TouchableOpacity
           onPress={() => {
-            // validación mínima
             if (!category) {
               Alert.alert('Validation', 'Category is required.');
               return;
@@ -111,18 +172,20 @@ export default function Formulario() {
               Alert.alert('Validation', 'Amount is required.');
               return;
             }
+
             const recToSave = {
               account,
               category: category ?? '',
               date: dateTime,
               details: note,
-              labels: labels ? labels.split(',').map(s => s.trim()).filter(Boolean) : [],
+              labels: labels ? labels.split(',').map((s) => s.trim()).filter(Boolean) : [],
               type,
               amount: Number(amount) || 0,
               payee,
             };
-            setRecord(recToSave);
-            saveRecord(recToSave);
+
+            setRecord(recToSave as any);
+            saveRecord(recToSave as any);
           }}
           activeOpacity={0.7}
         >
@@ -130,73 +193,54 @@ export default function Formulario() {
         </TouchableOpacity>
       </View>
 
-      {/* Content */}
-      <ScrollView
-        contentContainerStyle={{ paddingBottom: 40 }}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false}>
         {/* Segment: Expense / Income / Transfer */}
         <View className="px-4 mt-3">
           <View className="flex-row bg-neutral-800 rounded-xl p-1">
             <Pressable
               onPress={() => {
-                const next: "expense" | "income" | "transfer" = "expense";
+                const next: "expense" | "income" | "transfer" = 'expense';
                 setType(next);
-                handleChange("type", next);
+                handleChange('type', next);
               }}
-              className={`flex-1 rounded-lg py-2 items-center justify-center ${type === "expense" ? "bg-neutral-700" : ""
-                }`}
-            >
-              <Text className={`${type === "expense" ? "text-white" : "text-neutral-400"} font-medium`}>
-                Expense
-              </Text>
+              className={`flex-1 rounded-lg py-2 items-center justify-center ${type === 'expense' ? 'bg-neutral-700' : ''}`}>
+              <Text className={`${type === 'expense' ? 'text-white' : 'text-neutral-400'} font-medium`}>Expense</Text>
             </Pressable>
 
             <Pressable
               onPress={() => {
-                const next: "expense" | "income" | "transfer" = "income";
+                const next: "expense" | "income" | "transfer" = 'income';
                 setType(next);
-                handleChange("type", next);
+                handleChange('type', next);
               }}
-              className={`flex-1 rounded-lg py-2 items-center justify-center ${type === "income" ? "bg-neutral-700" : ""
-                }`}
-            >
-              <Text className={`${type === "income" ? "text-white" : "text-neutral-400"} font-medium`}>
-                Income
-              </Text>
+              className={`flex-1 rounded-lg py-2 items-center justify-center ${type === 'income' ? 'bg-neutral-700' : ''}`}>
+              <Text className={`${type === 'income' ? 'text-white' : 'text-neutral-400'} font-medium`}>Income</Text>
             </Pressable>
 
             <Pressable
               onPress={() => {
-                const next: "expense" | "income" | "transfer" = "transfer";
+                const next: "expense" | "income" | "transfer" = 'transfer';
                 setType(next);
-                handleChange("type", next);
+                handleChange('type', next);
               }}
-              className={`flex-1 rounded-lg py-2 items-center justify-center ${type === "transfer" ? "bg-neutral-700" : ""
-                }`}
-            >
-              <Text className={`${type === "transfer" ? "text-white" : "text-neutral-400"} font-medium`}>
-                Transfer
-              </Text>
+              className={`flex-1 rounded-lg py-2 items-center justify-center ${type === 'transfer' ? 'bg-neutral-700' : ''}`}>
+              <Text className={`${type === 'transfer' ? 'text-white' : 'text-neutral-400'} font-medium`}>Transfer</Text>
             </Pressable>
           </View>
         </View>
 
         {/* Amount area */}
         <View className="px-4 mt-6 flex-row items-center justify-between">
-          {/* Currency badge */}
           <View className="bg-neutral-800 px-3 py-2 rounded-lg mr-3">
             <Text className="text-neutral-300 font-medium">USD</Text>
           </View>
 
-          {/* Amount input (big) */}
           <TextInput
             value={amount}
             onChangeText={(t) => {
-              // permitir solo números y punto
-              const filtered = t.replace(/[^0-9.]/g, "");
+              const filtered = t.replace(/[^0-9.]/g, '');
               setAmount(filtered);
-              handleChange("amount", filtered);
+              handleChange('amount', filtered);
             }}
             keyboardType="numeric"
             placeholder="0"
@@ -206,23 +250,20 @@ export default function Formulario() {
           />
         </View>
 
-        {/* Divider */}
         <View className="h-px bg-neutral-800 my-6 mx-4" />
 
         {/* GENERAL header */}
         <View className="px-4">
           <Text className="text-xs text-neutral-400 mb-3">GENERAL</Text>
 
-          {/* Account row */}
           <TouchableOpacity activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">
             <View>
               <Text className="text-white font-medium">Account</Text>
               <Text className="text-neutral-400 text-sm">{account}</Text>
             </View>
-            <Text className="text-neutral-400">{">"}</Text>
+            <Text className="text-neutral-400">{'>'}</Text>
           </TouchableOpacity>
 
-          {/* Category row (Required if null) */}
           <TouchableOpacity onPress={() => setShowCategories(true)} activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">
             <View>
               <Text className="text-white font-medium">Category</Text>
@@ -233,7 +274,7 @@ export default function Formulario() {
               ) : (
                 <Text className="text-red-500 mr-2">Required</Text>
               )}
-              <Text className="text-neutral-400">{">"}</Text>
+              <Text className="text-neutral-400">{'>'}</Text>
             </View>
           </TouchableOpacity>
 
@@ -241,27 +282,25 @@ export default function Formulario() {
             <Categorias
               onSelect={(c: string) => {
                 setCategory(c);
-                handleChange("category", c);
+                handleChange('category', c);
                 setShowCategories(false);
               }}
               onClose={() => setShowCategories(false)}
             />
           </Modal>
 
-          {/* Date & Time row */}
           <TouchableOpacity activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">
             <View>
               <Text className="text-white font-medium">Date & Time</Text>
               <Text className="text-neutral-400 text-sm">{dateTime}</Text>
             </View>
-            <Text className="text-neutral-400">{">"}</Text>
+            <Text className="text-neutral-400">{'>'}</Text>
           </TouchableOpacity>
 
-          {/* Labels row */}
-          <TouchableOpacity activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">
+          <TouchableOpacity onPress={() => { setSelectedLabels(labels ? labels.split(',').map(s=>s.trim()).filter(Boolean) : []); setShowLabelsModal(true); }} activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">
             <View>
               <Text className="text-white font-medium">Labels</Text>
-              <Text className="text-neutral-400 text-sm">{labels ? labels : "—"}</Text>
+              <Text className="text-neutral-400 text-sm">{labels ? labels : '—'}</Text>
             </View>
             <Text className="text-sky-400 text-xl">+</Text>
           </TouchableOpacity>
@@ -271,18 +310,168 @@ export default function Formulario() {
         <View className="px-4 mt-6">
           <Text className="text-xs text-neutral-400 mb-3">MORE DETAIL</Text>
 
-          {/* Note */}
-          <TouchableOpacity activeOpacity={0.7} className="bg-neutral-800 py-4 px-4 rounded-xl mb-3">
+          <TouchableOpacity onPress={() => setShowNoteModal(true)} activeOpacity={0.7} className="bg-neutral-800 py-4 px-4 rounded-xl mb-3">
             <Text className="text-white font-medium">Note</Text>
-            <Text className="text-neutral-400 text-sm mt-1">{note ? note : "—"}</Text>
+            <Text className="text-neutral-400 text-sm mt-1">{note ? note : '—'}</Text>
           </TouchableOpacity>
 
-          {/* Payee */}
-          <TouchableOpacity activeOpacity={0.7} className="bg-neutral-800 py-4 px-4 rounded-xl mb-6">
+          <TouchableOpacity onPress={() => setShowPayeeModal(true)} activeOpacity={0.7} className="bg-neutral-800 py-4 px-4 rounded-xl mb-6">
             <Text className="text-white font-medium">Payee</Text>
-            <Text className="text-neutral-400 text-sm mt-1">{payee ? payee : "—"}</Text>
+            <Text className="text-neutral-400 text-sm mt-1">{payee ? payee : '—'}</Text>
           </TouchableOpacity>
         </View>
+
+        {/* Note modal */}
+        <Modal visible={showNoteModal} animationType="slide" transparent>
+          <View className="flex-1 justify-center items-center bg-black/50 px-4">
+            <View className="w-full bg-neutral-900 rounded-lg p-4">
+              <Text className="text-white font-medium mb-2">Note</Text>
+              <TextInput
+                value={note}
+                onChangeText={(t) => setNote(t)}
+                multiline
+                autoFocus
+                placeholder="Add a note..."
+                placeholderTextColor="#666"
+                className="min-h-[80px] text-white mb-4"
+              />
+              <View className="flex-row justify-end">
+                <TouchableOpacity onPress={() => setShowNoteModal(false)} className="px-3 py-2">
+                  <Text className="text-neutral-400">Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    handleChange('note', note);
+                    setShowNoteModal(false);
+                  }}
+                  className="px-3 py-2"
+                >
+                  <Text className="text-sky-400">Save</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Payee modal */}
+        <Modal visible={showPayeeModal} animationType="slide" transparent>
+          <View className="flex-1 justify-center items-center bg-black/50 px-4">
+            <View className="w-full bg-neutral-900 rounded-lg p-4">
+              <Text className="text-white font-medium mb-2">Payee</Text>
+              <TextInput
+                value={payee}
+                onChangeText={(t) => setPayee(t)}
+                autoFocus
+                placeholder="Add a payee..."
+                placeholderTextColor="#666"
+                className="text-white mb-4"
+              />
+              <View className="flex-row justify-end">
+                <TouchableOpacity onPress={() => setShowPayeeModal(false)} className="px-3 py-2">
+                  <Text className="text-neutral-400">Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    handleChange('payee', payee);
+                    setShowPayeeModal(false);
+                  }}
+                  className="px-3 py-2"
+                >
+                  <Text className="text-sky-400">Save</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+
+        {/* Labels modal */}
+        <Modal visible={showLabelsModal} animationType="slide" transparent>
+          <View className="flex-1 justify-center items-center bg-black/50 px-4">
+            <View className="w-full bg-neutral-900 rounded-lg p-4">
+              <Text className="text-white font-medium mb-2">Labels</Text>
+
+              <Text className="text-neutral-400 text-sm mb-2">Recommended</Text>
+              <View className="flex-row flex-wrap mb-3">
+                {recommendedLabels.map((l) => {
+                  const active = selectedLabels.includes(l);
+                  return (
+                    <TouchableOpacity
+                      key={l}
+                      onPress={() => toggleLabel(l)}
+                      className={`px-3 py-2 mr-2 mb-2 rounded-full ${active ? 'bg-sky-400' : 'bg-neutral-800'}`}
+                    >
+                      <Text className={`${active ? 'text-white' : 'text-neutral-300'}`}>{l}</Text>
+                    </TouchableOpacity>
+                  );
+                })}
+              </View>
+
+              <Text className="text-neutral-400 text-sm mb-2">Your labels</Text>
+              <View className="flex-row flex-wrap mb-3">
+                {userLabels.map((l) => {
+                  const active = selectedLabels.includes(l.name);
+                  return (
+                    <View key={l.id} className="flex-row items-center mr-2 mb-2">
+                      <TouchableOpacity
+                        onPress={() => toggleLabel(l.name)}
+                        className={`px-3 py-2 rounded-full ${active ? 'bg-sky-400' : 'bg-neutral-800'}`}
+                      >
+                        <Text className={`${active ? 'text-white' : 'text-neutral-300'}`}>{l.name}</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={async () => {
+                          try {
+                            // delete from Firestore
+                            await deleteDoc(doc(db, 'user_labels', l.id));
+                            const next = userLabels.filter((x) => x.id !== l.id);
+                            setUserLabels(next);
+                            // also unselect if selected
+                            setSelectedLabels((prev) => prev.filter((p) => p !== l.name));
+                          } catch (e) {
+                            console.error('Failed to delete user label', e);
+                          }
+                        }}
+                        className="ml-2"
+                      >
+                        <Text className="text-neutral-400">✕</Text>
+                      </TouchableOpacity>
+                    </View>
+                  );
+                })}
+              </View>
+
+              <View className="flex-row items-center mb-4">
+                <TextInput
+                  value={newLabel}
+                  onChangeText={(t) => setNewLabel(t)}
+                  placeholder="Create new label"
+                  placeholderTextColor="#666"
+                  className="flex-1 text-white bg-neutral-800 px-3 py-2 rounded-lg mr-2"
+                />
+                <TouchableOpacity onPress={() => addUserLabel(newLabel)} className="px-3 py-2 bg-sky-400 rounded-lg">
+                  <Text className="text-white">Add</Text>
+                </TouchableOpacity>
+              </View>
+
+              <View className="flex-row justify-end">
+                <TouchableOpacity onPress={() => setShowLabelsModal(false)} className="px-3 py-2">
+                  <Text className="text-neutral-400">Cancel</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => {
+                    const labelsStr = selectedLabels.join(', ');
+                    setLabels(labelsStr);
+                    handleChange('labels', labelsStr);
+                    setShowLabelsModal(false);
+                  }}
+                  className="px-3 py-2"
+                >
+                  <Text className="text-sky-400">Save</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );
