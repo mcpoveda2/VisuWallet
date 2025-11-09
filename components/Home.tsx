@@ -1,5 +1,3 @@
-// components/Home.tsx
-
 import React from "react";
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,10 +6,15 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import CuentaCard from "./CuentaCard";
 import TransaccionItem from "./ItemTransaccion";
 import GraficoBalance from "./GraficoBalance";
+import NavBar from "./NavBar";  // ← IMPORTAR
 
 import { mockAccounts, mockTransactions, getTotalBalance } from "../datosPrueba";
 
-export default function Home() {
+interface HomeProps {
+  onPressAdd: () => void;  // ← NUEVA PROP
+}
+
+export default function Home({ onPressAdd }: HomeProps) {  // ← RECIBIR PROP
   const insets = useSafeAreaInsets();
   const balanceTotal = getTotalBalance();
   const nombreUsuario = "Sebas";
@@ -21,23 +24,24 @@ export default function Home() {
       className="flex-1 bg-black"
       style={{
         paddingTop: insets.top,
-        paddingBottom: insets.bottom,
+        paddingBottom: 0,  // ← CAMBIAR: Sin padding abajo (la navbar lo maneja)
       }}
     >
       <ScrollView 
         className="flex-1"
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ 
+          paddingBottom: 90  // ← AGREGAR: Espacio para la navbar
+        }}
       >
         {/* Header: Saludo + Íconos */}
         <View className="flex-row items-center justify-between px-6 py-4">
-          {/* Saludo */}
           <View>
             <Text className="text-white text-2xl font-bold">
               Hola, <Text className="text-pink-500">{nombreUsuario}</Text>
             </Text>
           </View>
 
-          {/* Íconos de notificaciones y configuración */}
           <View className="flex-row gap-3">
             <TouchableOpacity 
               className="w-10 h-10 bg-neutral-800 rounded-full items-center justify-center"
@@ -55,10 +59,9 @@ export default function Home() {
           </View>
         </View>
 
-        {/* Grid de cuentas (2x2) */}
+        {/* Grid de cuentas */}
         <View className="px-6 mb-6">
           <View className="flex-row flex-wrap justify-between">
-            {/* Mapear las cuentas */}
             {mockAccounts.map((cuenta) => (
               <CuentaCard
                 key={cuenta.id}
@@ -67,7 +70,6 @@ export default function Home() {
               />
             ))}
 
-            {/* Botón "Agregar cuenta" */}
             <TouchableOpacity
               onPress={() => console.log('Agregar cuenta')}
               activeOpacity={0.8}
@@ -81,7 +83,7 @@ export default function Home() {
           </View>
         </View>
 
-        {/* Sección del gráfico */}
+        {/* Gráfico */}
         <View className="px-6">
           <GraficoBalance balance={balanceTotal} />
         </View>
@@ -97,7 +99,6 @@ export default function Home() {
             </TouchableOpacity>
           </View>
 
-          {/* Lista de transacciones */}
           {mockTransactions.map((transaccion) => (
             <TransaccionItem
               key={transaccion.id}
@@ -107,6 +108,9 @@ export default function Home() {
           ))}
         </View>
       </ScrollView>
+
+      {/* NavBar */}
+      <NavBar onPressAdd={onPressAdd} />  {/* ← AGREGAR */}
     </SafeAreaView>
   );
 }

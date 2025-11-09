@@ -17,7 +17,12 @@ import Categorias from "./Categorias";
 import { db, ensureAnonymousSignIn } from "utils/firebase.js";
 import { collection, addDoc, getDocs, query, where, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 
-export default function Formulario() {
+
+interface FormularioProps {
+  onBack: () => void;  
+}
+
+export default function Formulario({onBack}:FormularioProps) {
   const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
   const [amount, setAmount] = useState<string>("");
   const [account, setAccount] = useState<string>("Cuenta transaccional");
@@ -149,7 +154,7 @@ export default function Formulario() {
   };
 
   const onCancel = () => {
-    console.log('cancel');
+    onBack();  // ← : llamar a la función onBack
   };
 
   return (
@@ -300,7 +305,7 @@ export default function Formulario() {
           <TouchableOpacity onPress={() => { setSelectedLabels(labels ? labels.split(',').map(s=>s.trim()).filter(Boolean) : []); setShowLabelsModal(true); }} activeOpacity={0.7} className="flex-row items-center justify-between bg-neutral-800 py-4 px-4 rounded-xl mb-3">
             <View>
               <Text className="text-white font-medium">Labels</Text>
-              <Text className="text-neutral-400 text-sm">{labels ? labels : '—'}</Text>
+              <Text className="text-neutral-400 text-sm">{labels || 'None'}</Text>
             </View>
             <Text className="text-sky-400 text-xl">+</Text>
           </TouchableOpacity>
@@ -312,12 +317,12 @@ export default function Formulario() {
 
           <TouchableOpacity onPress={() => setShowNoteModal(true)} activeOpacity={0.7} className="bg-neutral-800 py-4 px-4 rounded-xl mb-3">
             <Text className="text-white font-medium">Note</Text>
-            <Text className="text-neutral-400 text-sm mt-1">{note ? note : '—'}</Text>
+            <Text className="text-neutral-400 text-sm mt-1">{note || 'None'}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity onPress={() => setShowPayeeModal(true)} activeOpacity={0.7} className="bg-neutral-800 py-4 px-4 rounded-xl mb-6">
             <Text className="text-white font-medium">Payee</Text>
-            <Text className="text-neutral-400 text-sm mt-1">{payee ? payee : '—'}</Text>
+            <Text className="text-neutral-400 text-sm mt-1">{payee || 'None'}</Text>
           </TouchableOpacity>
         </View>
 

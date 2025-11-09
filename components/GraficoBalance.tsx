@@ -12,7 +12,7 @@ export default function GraficoBalance({ balance }: GraficoBalanceProps) {
       {/* Header */}
       <View className="flex-row items-center justify-between mb-4">
         <Text className="text-white text-xl font-bold">Tendencia del Balance</Text>
-        <Text className="text-neutral-500">•••</Text>
+        <Text className="text-neutral-500">...</Text>
       </View>
 
       {/* Balance total */}
