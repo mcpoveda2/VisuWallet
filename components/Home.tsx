@@ -78,14 +78,14 @@ export default function Home({ onPressAdd }: HomeProps) {  // ← RECIBIR PROP
       className="flex-1 bg-black"
       style={{
         paddingTop: insets.top,
-        paddingBottom: 0,  // ← CAMBIAR: Sin padding abajo (la navbar lo maneja)
+        paddingBottom: 0,
       }}
     >
       <ScrollView 
         className="flex-1"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ 
-          paddingBottom: 90  // ← AGREGAR: Espacio para la navbar
+          paddingBottom: 90
         }}
       >
         {/* Header: Saludo + Íconos */}

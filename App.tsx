@@ -1,16 +1,4 @@
-// import { ScreenContent } from 'components/ScreenContent';
-// import { StatusBar } from 'expo-status-bar';
-
-// import './global.css';
-
-// export default function App() {
-//   return (
-//     <>
-//       <ScreenContent title="Home" path="App.tsx"></ScreenContent>
-//       <StatusBar style="auto" />
-//     </>
-//   );
-// }
+// App.tsx
 
 import "global.css";
 import { useState } from "react";
@@ -20,20 +8,34 @@ import Home from "components/Home";
 import Inicio from "components/Inicio";
 import Formulario from "components/Formulario";
 
+import { Cuenta } from "./types";
+
 export default function App() {
   // Estado para controlar qué pantalla mostrar
-  const [currentScreen, setCurrentScreen] = useState<'home' | 'inicio' | 'formulario'>('home');
+  const [currentScreen, setCurrentScreen] = useState<'home' | 'inicio' | 'formulario' | 'detalleCuenta'>('home');
+  
+  // Estado para guardar la cuenta seleccionada
+  const [selectedAccount, setSelectedAccount] = useState<Cuenta | null>(null);
 
   // Función para cambiar de pantalla
-  const navigateTo = (screen: 'home' | 'inicio' | 'formulario') => {
+  const navigateTo = (screen: 'home' | 'inicio' | 'formulario' | 'detalleCuenta') => {
     setCurrentScreen(screen);
+  };
+
+  // Función para navegar al detalle de una cuenta
+  const navigateToAccountDetail = (cuenta: Cuenta) => {
+    setSelectedAccount(cuenta);
+    setCurrentScreen('detalleCuenta');
   };
 
   return (
     <SafeAreaProvider>
       {/* Renderizar la pantalla según el estado */}
       {currentScreen === 'home' ? (
-        <Home onPressAdd={() => navigateTo('inicio')} />
+        <Home 
+          onPressAdd={() => navigateTo('inicio')}
+          {...({ onPressAccount: navigateToAccountDetail } as any)}
+        />
       ) : null}
 
       {currentScreen === 'inicio' ? (
@@ -46,6 +48,7 @@ export default function App() {
       {currentScreen === 'formulario' ? (
         <Formulario onBack={() => navigateTo('home')} />
       ) : null}
+
     </SafeAreaProvider>
   );
 }

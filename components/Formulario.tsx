@@ -426,8 +426,8 @@ export default function Formulario({onBack}:FormularioProps) {
                       <TouchableOpacity
                         onPress={async () => {
                           try {
-                            // delete from Firestore (public labels collection)
-                            await deleteDoc(doc(db, 'labels', l.id));
+                            // delete from Firestore
+                            await deleteDoc(doc(db, 'user_labels', l.id));
                             const next = userLabels.filter((x) => x.id !== l.id);
                             setUserLabels(next);
                             // also unselect if selected
