@@ -23,9 +23,10 @@ import { Cuenta } from "../types";
 interface HomeProps {
   onPressAdd: () => void;
   onPressAccount: (cuenta: Cuenta) => void;
+  onPressEstadisticas?: () => void;
 }
 
-export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
+export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas }: HomeProps) {
   const insets = useSafeAreaInsets();
   const nombreUsuario = "Sebas";
   const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
@@ -170,7 +171,7 @@ export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
       </ScrollView>
 
       {/* NavBar */}
-      <NavBar onPressAdd={onPressAdd} />  {/* ← AGREGAR */}
+      <NavBar onPressAdd={onPressAdd} onPressEstadisticas={onPressEstadisticas} />
 
       {/* Transaction details modal */}
       <TransactionDetails visible={!!selectedTx} transaccion={selectedTx} onClose={() => setSelectedTx(null)} />

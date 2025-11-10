@@ -9,19 +9,20 @@ import Home from "components/Home";
 import Inicio from "components/Inicio";
 import Formulario from "components/Formulario";
 import DetalleCuenta from "components/DetalleCuenta";
+import Estadisticas from "components/Estadisticas";
 
 import { Cuenta } from "./types";
 
 
 export default function App() {
   // Estado para controlar qué pantalla mostrar
-  const [currentScreen, setCurrentScreen] = useState<'home' | 'inicio' | 'formulario' | 'detalleCuenta'>('home');
-  
+  const [currentScreen, setCurrentScreen] = useState<'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas'>('home');
+
   // Estado para guardar la cuenta seleccionada
   const [selectedAccount, setSelectedAccount] = useState<Cuenta | null>(null);
 
   // Función para cambiar de pantalla
-  const navigateTo = (screen: 'home' | 'inicio' | 'formulario' | 'detalleCuenta') => {
+  const navigateTo = (screen: 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas') => {
     setCurrentScreen(screen);
   };
 
@@ -36,9 +37,10 @@ export default function App() {
       {/* Renderizar la pantalla según el estado */}
 
       {currentScreen === 'home' && (
-        <Home 
+        <Home
           onPressAdd={() => navigateTo('inicio')}
           onPressAccount={navigateToAccountDetail}
+          onPressEstadisticas={() => navigateTo('estadisticas')}
         />
       )}
       
@@ -53,10 +55,14 @@ export default function App() {
       ) : null}
       
       {currentScreen === 'detalleCuenta' && selectedAccount && (
-        <DetalleCuenta 
+        <DetalleCuenta
           cuenta={selectedAccount}
           onBack={() => navigateTo('home')}
         />
+      )}
+
+      {currentScreen === 'estadisticas' && (
+        <Estadisticas onBack={() => navigateTo('home')} />
       )}
     </SafeAreaProvider>
   );
