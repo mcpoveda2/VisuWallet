@@ -1,6 +1,6 @@
 import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 interface InicioProps {
@@ -9,18 +9,15 @@ interface InicioProps {
 }
 
 export default function Inicio({ onPressManual, onBack }: InicioProps) {  // ← RECIBIR PROPS
-  const insets = useSafeAreaInsets();
+  
 
   return (
     <SafeAreaView
-      className="flex-1 bg-black"
-      style={{
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
-      }}
+      className="flex-1 bg-black p-safe m-safe"
+
     >
       {/* Botón de volver */}
-      <View className="px-6 py-4">
+      <View className="px-6 py-4 -mt-16">
         <TouchableOpacity onPress={onBack} activeOpacity={0.7}>
           <MaterialCommunityIcons name="close" size={28} color="white" />
         </TouchableOpacity>

@@ -81,14 +81,14 @@ export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-black"
+      className="flex-1 bg-black m-safe p-safe"
       style={{
         paddingTop: insets.top,
         paddingBottom: insets.bottom,
       }}
     >
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 py-3">
+      <View className="flex-row items-center justify-between px-4 -mt-16">
         <TouchableOpacity onPress={onBack} activeOpacity={0.7} className="flex-row items-center">
           <MaterialCommunityIcons name="chevron-left" size={28} color="#3b82f6" />
           <Text className="text-blue-500 text-base font-medium">Back</Text>
