@@ -84,10 +84,10 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
   return (
     <SafeAreaView
       className="flex-1 bg-black m-safe p-safe"
-      style={{
-        paddingTop: insets.top,
-        paddingBottom: 0,
-      }}
+ //     style={{
+      //   paddingTop: insets.top,
+      //   paddingBottom: 0,
+      // }}
     >
       <ScrollView 
         className="flex-1 -mt-16"

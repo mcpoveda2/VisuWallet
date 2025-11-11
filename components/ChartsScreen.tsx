@@ -180,8 +180,8 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-black">
-      <ScrollView className="flex-1" style={{ paddingBottom: 90 }}>
+    <SafeAreaView className="flex-1 bg-black m-safe p-safe">
+      <ScrollView className="flex-1 -mt-16" style={{ paddingBottom: 90 }}>
         {/* Header */}
         <View className="bg-neutral-900 pt-6 pb-6 px-5">
           {onBack && (
