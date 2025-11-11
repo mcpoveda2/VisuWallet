@@ -23,9 +23,11 @@ import { Cuenta } from "../types";
 interface HomeProps {
   onPressAdd: () => void;
   onPressAccount: (cuenta: Cuenta) => void;
+  onPressEstadisticas?: () => void;
+  onPressCharts?: () => void;
 }
 
-export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
+export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, onPressCharts }: HomeProps) {
   const insets = useSafeAreaInsets();
   const nombreUsuario = "Sebas";
   const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
@@ -145,7 +147,7 @@ export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
 
         {/* Gráfico */}
         <View className="px-6">
-          <GraficoBalance balance={balanceTotal} />
+          <GraficoBalance balance={balanceTotal} onPressShowMore={onPressCharts} />
         </View>
 
         {/* Transacciones recientes */}
@@ -169,8 +171,10 @@ export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
         </View>
       </ScrollView>
 
-      {/* NavBar y modales */}
-      <NavBar onPressAdd={onPressAdd} />
+      {/* NavBar */}
+      <NavBar onPressAdd={onPressAdd} onPressEstadisticas={onPressEstadisticas} onPressCharts={onPressCharts} />
+
+      {/* Transaction details modal */}
       <TransactionDetails visible={!!selectedTx} transaccion={selectedTx} onClose={() => setSelectedTx(null)} />
       <TransaccionList visible={showAllTransactions} onClose={() => setShowAllTransactions(false)} />
       <AddCuenta visible={showAddCuenta} onClose={() => setShowAddCuenta(false)} onSaved={async (id) => { console.log('Cuenta guardada', id); await loadAll(); }} />

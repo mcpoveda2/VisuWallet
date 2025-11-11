@@ -3,9 +3,11 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 interface NavBarProps {
   onPressAdd: () => void;  // Función que se ejecuta al tocar el "+"
+  onPressEstadisticas?: () => void;  // Función que se ejecuta al tocar "Estadísticas"
+  onPressCharts?: () => void;  // Función que se ejecuta al tocar "Gráficos"
 }
 
-export default function NavBar({ onPressAdd }: NavBarProps) {
+export default function NavBar({ onPressAdd, onPressEstadisticas, onPressCharts }: NavBarProps) {
   return (
     <View className="absolute bottom-0 left-0 right-0 bg-neutral-900 border-t border-neutral-800">
       <View className="flex-row items-center justify-around py-3">
@@ -19,8 +21,9 @@ export default function NavBar({ onPressAdd }: NavBarProps) {
         </TouchableOpacity>
 
         {/* Estadísticas */}
-        <TouchableOpacity 
-          className="items-center justify-center px-1 py-2"
+        <TouchableOpacity
+          onPress={onPressEstadisticas}
+          className="items-center justify-center px-4 py-2"
           activeOpacity={0.7}
         >
           <MaterialCommunityIcons name="chart-bar" size={24} color="#737373" />
@@ -44,7 +47,8 @@ export default function NavBar({ onPressAdd }: NavBarProps) {
         </TouchableOpacity>
 
         {/* Gráficos */}
-        <TouchableOpacity 
+        <TouchableOpacity
+          onPress={onPressCharts}
           className="items-center justify-center px-4 py-2"
           activeOpacity={0.7}
         >
