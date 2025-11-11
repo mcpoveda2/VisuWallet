@@ -172,7 +172,13 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
       </ScrollView>
 
       {/* NavBar */}
-      <NavBar onPressAdd={onPressAdd} onPressEstadisticas={onPressEstadisticas} onPressCharts={onPressCharts} />
+      <NavBar
+        onPressAdd={onPressAdd}
+        onPressHome={() => {}}
+        onPressEstadisticas={onPressEstadisticas}
+        onPressCharts={onPressCharts}
+        activeScreen="home"
+      />
 
       {/* Transaction details modal */}
       <TransactionDetails visible={!!selectedTx} transaccion={selectedTx} onClose={() => setSelectedTx(null)} />

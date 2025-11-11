@@ -15,9 +15,13 @@ import {
 } from '../utils/filtrosFecha';
 import { agruparPorCategoria, obtenerTendenciaMensual } from '../utils/agregaciones';
 import GraficosPastel from './GraficosPastel';
+import NavBar from './NavBar';
 
 interface ChartsScreenProps {
   onBack?: () => void;
+  onPressAdd?: () => void;
+  onPressHome?: () => void;
+  onPressEstadisticas?: () => void;
 }
 
 interface TransaccionConCuenta extends Transaccion {
@@ -35,7 +39,7 @@ interface CuentaFirestore {
   email: string;
 }
 
-export default function ChartsScreen({ onBack }: ChartsScreenProps) {
+export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressEstadisticas }: ChartsScreenProps) {
   const [filtroSeleccionado, setFiltroSeleccionado] = useState<FiltroRango>('mes');
   const [fechaReferencia, setFechaReferencia] = useState<Date>(new Date());
   const [todasLasTransacciones, setTodasLasTransacciones] = useState<TransaccionConCuenta[]>([]);
@@ -190,9 +194,6 @@ export default function ChartsScreen({ onBack }: ChartsScreenProps) {
           )}
           <Text className="text-3xl font-bold text-white">
             Gráficos
-          </Text>
-          <Text className="text-xs text-neutral-400 mt-1">
-            Visualiza tus transacciones
           </Text>
         </View>
 
@@ -533,6 +534,17 @@ export default function ChartsScreen({ onBack }: ChartsScreenProps) {
           </View>
         </View>
       </Modal>
+
+      {/* NavBar */}
+      {onPressAdd && (
+        <NavBar
+          onPressAdd={onPressAdd}
+          onPressHome={onPressHome}
+          onPressEstadisticas={onPressEstadisticas}
+          onPressCharts={() => {}}
+          activeScreen="charts"
+        />
+      )}
     </SafeAreaView>
   );
 }

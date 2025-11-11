@@ -64,11 +64,21 @@ export default function App() {
       )}
 
       {currentScreen === 'estadisticas' && (
-        <Estadisticas onBack={() => navigateTo('home')} />
+        <Estadisticas
+          onBack={() => navigateTo('home')}
+          onPressAdd={() => navigateTo('inicio')}
+          onPressHome={() => navigateTo('home')}
+          onPressCharts={() => navigateTo('charts')}
+        />
       )}
 
       {currentScreen === 'charts' && (
-        <ChartsScreen onBack={() => navigateTo('home')} />
+        <ChartsScreen
+          onBack={() => navigateTo('home')}
+          onPressAdd={() => navigateTo('inicio')}
+          onPressHome={() => navigateTo('home')}
+          onPressEstadisticas={() => navigateTo('estadisticas')}
+        />
       )}
     </SafeAreaProvider>
   );

@@ -3,31 +3,46 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 interface NavBarProps {
   onPressAdd: () => void;  // Función que se ejecuta al tocar el "+"
+  onPressHome?: () => void;  // Función que se ejecuta al tocar "Resumen"
   onPressEstadisticas?: () => void;  // Función que se ejecuta al tocar "Estadísticas"
   onPressCharts?: () => void;  // Función que se ejecuta al tocar "Gráficos"
+  activeScreen?: 'home' | 'estadisticas' | 'charts';  // Pantalla activa
 }
 
-export default function NavBar({ onPressAdd, onPressEstadisticas, onPressCharts }: NavBarProps) {
+export default function NavBar({ onPressAdd, onPressHome, onPressEstadisticas, onPressCharts, activeScreen = 'home' }: NavBarProps) {
   return (
     <View className="absolute bottom-0 left-0 right-0 bg-neutral-900 border-t border-neutral-800">
       <View className="flex-row items-center justify-around py-3">
         {/* Home */}
-        <TouchableOpacity 
+        <TouchableOpacity
+          onPress={onPressHome}
           className="items-center justify-center px-1 py-2"
           activeOpacity={0.7}
         >
-          <MaterialCommunityIcons name="view-dashboard" size={24} color="white" />
-          <Text className="text-white text-xs mt-1">Resumen</Text>
+          <MaterialCommunityIcons
+            name="view-dashboard"
+            size={24}
+            color={activeScreen === 'home' ? 'white' : '#737373'}
+          />
+          <Text className={`text-xs mt-1 ${activeScreen === 'home' ? 'text-white' : 'text-neutral-500'}`}>
+            Resumen
+          </Text>
         </TouchableOpacity>
 
-        {/* Estadísticas */}
+        {/* Reporte */}
         <TouchableOpacity
           onPress={onPressEstadisticas}
           className="items-center justify-center px-4 py-2"
           activeOpacity={0.7}
         >
-          <MaterialCommunityIcons name="chart-bar" size={24} color="#737373" />
-          <Text className="text-neutral-500 text-xs mt-1">Estadísticas</Text>
+          <MaterialCommunityIcons
+            name="chart-bar"
+            size={24}
+            color={activeScreen === 'estadisticas' ? 'white' : '#737373'}
+          />
+          <Text className={`text-xs mt-1 ${activeScreen === 'estadisticas' ? 'text-white' : 'text-neutral-500'}`}>
+            Reporte
+          </Text>
         </TouchableOpacity>
 
         {/* Botón + central (más grande) */}
@@ -52,8 +67,14 @@ export default function NavBar({ onPressAdd, onPressEstadisticas, onPressCharts 
           className="items-center justify-center px-4 py-2"
           activeOpacity={0.7}
         >
-          <MaterialCommunityIcons name="chart-line" size={24} color="#737373" />
-          <Text className="text-neutral-500 text-xs mt-1">Gráficos</Text>
+          <MaterialCommunityIcons
+            name="chart-line"
+            size={24}
+            color={activeScreen === 'charts' ? 'white' : '#737373'}
+          />
+          <Text className={`text-xs mt-1 ${activeScreen === 'charts' ? 'text-white' : 'text-neutral-500'}`}>
+            Gráficos
+          </Text>
         </TouchableOpacity>
 
         {/* Perfil */}

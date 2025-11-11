@@ -14,9 +14,13 @@ import {
   FiltroRango
 } from '../utils/filtrosFecha';
 import { obtenerResumenFinanciero, ResumenFinanciero } from '../utils/agregaciones';
+import NavBar from './NavBar';
 
 interface EstadisticasProps {
   onBack?: () => void;
+  onPressAdd?: () => void;
+  onPressHome?: () => void;
+  onPressCharts?: () => void;
 }
 
 interface TransaccionConCuenta extends Transaccion {
@@ -34,7 +38,7 @@ interface CuentaFirestore {
   email: string;
 }
 
-export default function Estadisticas({ onBack }: EstadisticasProps) {
+export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressCharts }: EstadisticasProps) {
   const [filtroSeleccionado, setFiltroSeleccionado] = useState<FiltroRango>('mes');
   const [fechaReferencia, setFechaReferencia] = useState<Date>(new Date());
   const [todasLasTransacciones, setTodasLasTransacciones] = useState<TransaccionConCuenta[]>([]);
@@ -204,10 +208,7 @@ export default function Estadisticas({ onBack }: EstadisticasProps) {
             </TouchableOpacity>
           )}
           <Text className="text-3xl font-bold text-white">
-            Estadísticas
-          </Text>
-          <Text className="text-xs text-neutral-400 mt-1">
-            {todasLasTransacciones.length} transacciones totales
+            Reporte
           </Text>
         </View>
 
@@ -520,6 +521,17 @@ export default function Estadisticas({ onBack }: EstadisticasProps) {
           </View>
         </View>
       </Modal>
+
+      {/* NavBar */}
+      {onPressAdd && (
+        <NavBar
+          onPressAdd={onPressAdd}
+          onPressHome={onPressHome}
+          onPressEstadisticas={() => {}}
+          onPressCharts={onPressCharts}
+          activeScreen="estadisticas"
+        />
+      )}
     </SafeAreaView>
   );
 }
