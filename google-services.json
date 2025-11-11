@@ -1,0 +1,58 @@
+{
+  "project_info": {
+    "project_number": "410749935369",
+    "project_id": "visuwallet",
+    "storage_bucket": "visuwallet.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:410749935369:android:72de88fbef4b46bb6cfdd8",
+        "android_client_info": {
+          "package_name": "com.g5.visuwallet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "410749935369-0l4itskbs31pnnf998scpe694lr7mmhk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.g5.visuwallet",
+            "certificate_hash": "329730d4d9d198fc1cf070be234feaf5ce9cb49b"
+          }
+        },
+        {
+          "client_id": "410749935369-ur5k1tcc7o5825f8j9ukp2qs1fjfvqbt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.g5.visuwallet",
+            "certificate_hash": "92e1f7f40195ea15882c3b159e816a14b8545fc2"
+          }
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWyrzAFOt3lnkvj7jqBhNhPPHqPAJUv90"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "410749935369-hkpavm51iv77vql62pa5ak0jmrup026m.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "410749935369-akhelo8auk50063u4tnl6vbfk544hsbu.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.g5.visuwallet"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

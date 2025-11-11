@@ -3,35 +3,56 @@
     "name": "my-expo-app",
     "slug": "my-expo-app",
     "version": "1.0.0",
-
+    "scheme": "visuwallet",
     "web": {
       "favicon": "./assets/favicon.png"
     },
-
     "experiments": {
       "tsconfigPaths": true
     },
-
-    "plugins": [],
-
+    "plugins": [
+      "expo-web-browser",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "minSdkVersion": 24
+          }
+        }
+      ]
+    ],
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-
     "userInterfaceStyle": "light",
-
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
-      "supportsTablet": true
+      "bundleIdentifier": "com.g5.visuwallet",
+      "supportsTablet": true,
+      "googleServicesFile": "./GoogleService-Info.plist"
     },
     "android": {
+      "package": "com.g5.visuwallet",
+      "googleServicesFile": "./google-services.json",
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
+      }
+    },
+    "extra": {
+      "iosClientId": "410749935369-akhelo8auk50063u4tnl6vbfk544hsbu.apps.googleusercontent.com",
+      "androidClientId": "410749935369-ur5k1tcc7o5825f8j9ukp2qs1fjfvqbt.apps.googleusercontent.com",
+      "webClientId": "410749935369-hkpavm51iv77vql62pa5ak0jmrup026m.apps.googleusercontent.com",
+      "eas": {
+        "projectId": "8efba66f-fc37-43a9-8d46-1c4bc3883c66"
       }
     }
   }
