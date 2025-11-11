@@ -1,14 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, Alert, Image } from 'react-native';
-import { signIn } from '../../firebase/authService';
-import * as Google from 'expo-auth-session/providers/google';
-import { auth } from '../../firebase/firebaseConfig';
+import { signIn, signInWithGoogle } from '../../firebase/authService';
 import { useNavigation } from '@react-navigation/native';
-import { GoogleAuthProvider, signInWithCredential } from 'firebase/auth';
-import * as WebBrowser from 'expo-web-browser';
-import { AntDesign } from '@expo/vector-icons';
-
-WebBrowser.maybeCompleteAuthSession();
+import { GoogleSigninButton, GoogleSignin } from 'react-native-google-signin';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -23,31 +17,29 @@ export default function LoginScreen() {
     }
   };
 
-  const [request, response, promptAsync] = Google.useAuthRequest({
-    androidClientId: '410749935369-ur5k1tcc7o5825f8j9ukp2qs1fjfvqbt.apps.googleusercontent.com',
-  });
-
-  const enviarTokenalServer = async (token: string) => {
-    if (!token) {
-      Alert.alert('Error', 'No se recibió el token');
-      return;
+  const googleLogin = async () => {
+    try {
+      await GoogleSignin.hasPlayServices();
+      const { idToken } = await GoogleSignin.signIn();
+      if (idToken) {
+        await signInWithGoogle(idToken);
+        // AppNavigator detectará el cambio en auth y redirigirá automáticamente
+      } else {
+        Alert.alert('❌ Error', 'No se recibió el token de Google');
+      }
+    } catch (e) {
+      console.error(e);
+      Alert.alert('❌ Error', 'No se pudo iniciar sesión con Google');
     }
-    const credential = GoogleAuthProvider.credential(token);
-    await signInWithCredential(auth, credential);
   };
 
   useEffect(() => {
-    if (response?.type === 'success') {
-      const idToken = (response as any)?.params?.id_token || response.authentication?.idToken;
-      if (idToken) {
-        enviarTokenalServer(idToken);
-      } else {
-        Alert.alert('Error', 'No se recibió el token de Google');
-      }
-    } else if (response?.type === 'error') {
-      Alert.alert('Error', 'No se pudo completar el inicio de sesión');
-    }
-  }, [response]);
+    GoogleSignin.configure({
+      scopes: ['profile', 'email'],
+      webClientId: '410749935369-hkpavm51iv77vql62pa5ak0jmrup026m.apps.googleusercontent.com',
+      offlineAccess: true,
+    });
+  }, []);
 
   return (
     <View className="flex-1 items-center justify-center bg-zinc-900 p-8">
@@ -79,17 +71,12 @@ export default function LoginScreen() {
           <Text className="text-center text-lg font-bold text-white">Ingresar</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity
-          onPress={() => promptAsync()}
-          className="w-full flex-row items-center justify-center space-x-2 rounded-xl bg-white py-4 shadow-lg shadow-red-600/40 active:opacity-80">
-          {/* <AntDesign name="google" size={24} color="#DB4437" /> */}
-          <Image
-            source={require('../../assets/logo_google.png')}
-            style={{ width: 30, height: 30 }}
-            resizeMode="contain"
-          />
-          <Text className="text-center text-lg font-semibold text-black">Ingresar con Google</Text>
-        </TouchableOpacity>
+        <GoogleSigninButton
+          style={{ width: '100%', height: 50, marginBottom: 16 }}
+          size={GoogleSigninButton.Size.Wide}
+          color={GoogleSigninButton.Color.Light}
+          onPress={() => googleLogin()}
+        />
 
         <TouchableOpacity onPress={() => navigation.navigate('Signup' as never)} className="mt-8">
           <Text className="text-center text-zinc-400">

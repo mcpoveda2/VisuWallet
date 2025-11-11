@@ -1,15 +1,12 @@
-// import * as WebBrowser from "expo-web-browser";
-// import * as Google from "expo-auth-session/providers/google";
-// import * as AuthSession from "expo-auth-session";
 import { auth } from "./firebaseConfig";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  // signInWithCredential,
+  signInWithCredential,
   signOut,
-  // GoogleAuthProvider,
+  GoogleAuthProvider,
 } from "firebase/auth";
-// import { useEffect } from "react";
+
 
 
 
@@ -23,6 +20,12 @@ export const signUp = (email: string, password: string) => {
 // Iniciar sesión con email
 export const signIn = (email: string, password: string) => {
   return signInWithEmailAndPassword(auth, email, password);
+};
+
+// Iniciar sesión con Google (recibe idToken de GoogleSignin)
+export const signInWithGoogle = (idToken: string) => {
+  const credential = GoogleAuthProvider.credential(idToken);
+  return signInWithCredential(auth, credential);
 };
 
 // Cerrar sesión

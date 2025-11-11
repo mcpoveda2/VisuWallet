@@ -17,6 +17,5 @@ export default function MainNavigator() {
     // { name: 'Statistics', component: Statistics },
     { name: 'Perfil', component: Perfil, icon: 'person-circle-outline' },
   ];
-
   return <BottomBar tabs={tabs} />;
 }
