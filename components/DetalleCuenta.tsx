@@ -6,6 +6,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import TransaccionItem from "./ItemTransaccion";  // ← REUTILIZAR
+import GraficoUltimos30Dias from "./GraficoUltimos30Dias";
 import { Cuenta } from "../types";
 import { mockTransactions } from "../datosPrueba";
 import { db } from 'utils/firebase.js';
@@ -128,13 +129,8 @@ export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
             </TouchableOpacity>
           </View>
 
-          {/* Placeholder gráfico */}
-          <View className="bg-green-900 rounded-xl h-40 items-center justify-center">
-            <Text className="text-green-400 text-center px-4 font-medium">
-              📊 Gráfico de 30 días{'\n'}
-              (Se implementará después)
-            </Text>
-          </View>
+          {/* Gráfico de 30 días */}
+          <GraficoUltimos30Dias transacciones={transactions} />
         </View>
 
         {/* Historial */}

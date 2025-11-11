@@ -24,9 +24,10 @@ interface HomeProps {
   onPressAdd: () => void;
   onPressAccount: (cuenta: Cuenta) => void;
   onPressEstadisticas?: () => void;
+  onPressCharts?: () => void;
 }
 
-export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas }: HomeProps) {
+export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, onPressCharts }: HomeProps) {
   const insets = useSafeAreaInsets();
   const nombreUsuario = "Sebas";
   const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
@@ -146,7 +147,7 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas }
 
         {/* Gráfico */}
         <View className="px-6">
-          <GraficoBalance balance={balanceTotal} />
+          <GraficoBalance balance={balanceTotal} onPressShowMore={onPressCharts} />
         </View>
 
         {/* Transacciones recientes */}
@@ -171,7 +172,7 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas }
       </ScrollView>
 
       {/* NavBar */}
-      <NavBar onPressAdd={onPressAdd} onPressEstadisticas={onPressEstadisticas} />
+      <NavBar onPressAdd={onPressAdd} onPressEstadisticas={onPressEstadisticas} onPressCharts={onPressCharts} />
 
       {/* Transaction details modal */}
       <TransactionDetails visible={!!selectedTx} transaccion={selectedTx} onClose={() => setSelectedTx(null)} />
