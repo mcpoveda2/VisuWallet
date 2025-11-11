@@ -81,14 +81,14 @@ export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-black"
+      className="flex-1 bg-black m-safe p-safe"
       style={{
         paddingTop: insets.top,
         paddingBottom: 0,
       }}
     >
       <ScrollView 
-        className="flex-1"
+        className="flex-1 -mt-16"
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ 
           paddingBottom: 90
@@ -169,13 +169,11 @@ export default function Home({ onPressAdd, onPressAccount }: HomeProps) {
         </View>
       </ScrollView>
 
-      {/* NavBar */}
-      <NavBar onPressAdd={onPressAdd} />  {/* ← AGREGAR */}
-
-      {/* Transaction details modal */}
+      {/* NavBar y modales */}
+      <NavBar onPressAdd={onPressAdd} />
       <TransactionDetails visible={!!selectedTx} transaccion={selectedTx} onClose={() => setSelectedTx(null)} />
       <TransaccionList visible={showAllTransactions} onClose={() => setShowAllTransactions(false)} />
-  <AddCuenta visible={showAddCuenta} onClose={() => setShowAddCuenta(false)} onSaved={async (id) => { console.log('Cuenta guardada', id); await loadAll(); }} />
+      <AddCuenta visible={showAddCuenta} onClose={() => setShowAddCuenta(false)} onSaved={async (id) => { console.log('Cuenta guardada', id); await loadAll(); }} />
     </SafeAreaView>
   );
 }

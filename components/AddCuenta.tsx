@@ -64,8 +64,8 @@ export default function AddCuenta({ visible, onClose, onSaved }: Props) {
   };
 
   return (
-    <Modal visible={visible} animationType="slide" transparent={false}>
-      <SafeAreaView className="flex-1 bg-black px-4">
+    <Modal visible={visible} animationType="slide" transparent={false} className='mt-20'>
+      <SafeAreaView className="flex-1 bg-black px-4 py-2">
         <View className="flex-row items-center justify-between py-3">
           <Text className="text-white text-lg font-semibold">Agregar cuenta</Text>
           <TouchableOpacity onPress={onClose} className="px-2 py-1">

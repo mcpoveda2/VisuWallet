@@ -11,7 +11,7 @@ export default function NavBar({ onPressAdd }: NavBarProps) {
       <View className="flex-row items-center justify-around py-3">
         {/* Home */}
         <TouchableOpacity 
-          className="items-center justify-center px-4 py-2"
+          className="items-center justify-center px-1 py-2"
           activeOpacity={0.7}
         >
           <MaterialCommunityIcons name="view-dashboard" size={24} color="white" />
@@ -20,7 +20,7 @@ export default function NavBar({ onPressAdd }: NavBarProps) {
 
         {/* Estadísticas */}
         <TouchableOpacity 
-          className="items-center justify-center px-4 py-2"
+          className="items-center justify-center px-1 py-2"
           activeOpacity={0.7}
         >
           <MaterialCommunityIcons name="chart-bar" size={24} color="#737373" />
@@ -30,7 +30,7 @@ export default function NavBar({ onPressAdd }: NavBarProps) {
         {/* Botón + central (más grande) */}
         <TouchableOpacity 
           onPress={onPressAdd}
-          className="bg-blue-500 w-14 h-14 rounded-full items-center justify-center -mt-6"
+          className="bg-blue-500 w-14 h-14 rounded-full items-center justify-center -mt-1"
           activeOpacity={0.8}
           style={{
             shadowColor: '#3b82f6',
