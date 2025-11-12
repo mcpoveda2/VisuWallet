@@ -1,20 +1,54 @@
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import * as ImagePicker from 'expo-image-picker';
 
 interface InicioProps {
-  onPressManual: () => void;  // ← NUEVA PROP
-  onBack: () => void;          // ← NUEVA PROP
+  onPressManual: () => void;
+  onBack: () => void;
+  onPhotoTaken?: (uri: string) => void;
 }
 
-export default function Inicio({ onPressManual, onBack }: InicioProps) {  // ← RECIBIR PROPS
-  
+export default function Inicio({ onPressManual, onBack, onPhotoTaken }: InicioProps) {
+
+  async function requestPermissions() {
+    const camera = await ImagePicker.requestCameraPermissionsAsync();
+    const media = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (camera.status !== 'granted' || media.status !== 'granted') {
+      Alert.alert('Permisos necesarios', 'Permite acceso a la cámara y archivos en ajustes.');
+      return false;
+    }
+    return true;
+  }
+
+  async function openCamera() {
+    const ok = await requestPermissions();
+    if (!ok) return;
+    try {
+      const result = await ImagePicker.launchCameraAsync({
+        allowsEditing: false,
+        quality: 0.8,
+      });
+      // Compatibilidad con distintas versiones de Expo ImagePicker:
+      // result.cancelled (antiguo) o result.canceled (nuevo)
+      // y result.uri (antiguo) o result.assets[0].uri (nuevo)
+      // @ts-ignore
+      const cancelled = result.cancelled ?? result.canceled ?? false;
+      // @ts-ignore
+      const uri = result.uri ?? (result.assets && result.assets[0] && result.assets[0].uri) ?? null;
+      if (!cancelled && uri && onPhotoTaken) {
+        onPhotoTaken(uri);
+      }
+    } catch (e) {
+      console.error('openCamera error', e);
+      Alert.alert('Error', 'No se pudo abrir la cámara');
+    }
+  }
 
   return (
     <SafeAreaView
       className="flex-1 bg-black p-safe m-safe"
-
     >
       {/* Botón de volver */}
       <View className="px-6 py-4 -mt-16">
@@ -37,6 +71,7 @@ export default function Inicio({ onPressManual, onBack }: InicioProps) {  // ←
           </TouchableOpacity>
 
           <TouchableOpacity
+            onPress={openCamera}
             activeOpacity={0.8}
             className="bg-emerald-600 py-4 rounded-2xl items-center shadow-lg shadow-emerald-800 mt-20 mb-20 w-full"
           >
