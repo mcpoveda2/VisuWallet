@@ -46,6 +46,31 @@ export default function Inicio({ onPressManual, onBack, onPhotoTaken }: InicioPr
     }
   }
 
+  async function openGallery() {
+    const ok = await requestPermissions();
+    if (!ok) return;
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: ImagePicker.MediaTypeOptions.Images,
+        allowsEditing: false,
+        quality: 0.8,
+      });
+      // Compatibilidad con distintas versiones de Expo ImagePicker:
+      // result.cancelled (antiguo) o result.canceled (nuevo)
+      // y result.uri (antiguo) o result.assets[0].uri (nuevo)
+      // @ts-ignore
+      const cancelled = result.cancelled ?? result.canceled ?? false;
+      // @ts-ignore
+      const uri = result.uri ?? (result.assets && result.assets[0] && result.assets[0].uri) ?? null;
+      if (!cancelled && uri && onPhotoTaken) {
+        onPhotoTaken(uri);
+      }
+    } catch (e) {
+      console.error('openGallery error', e);
+      Alert.alert('Error', 'No se pudo abrir la galería');
+    }
+  }
+
   return (
     <SafeAreaView
       className="flex-1 bg-black p-safe m-safe"
@@ -73,9 +98,17 @@ export default function Inicio({ onPressManual, onBack, onPhotoTaken }: InicioPr
           <TouchableOpacity
             onPress={openCamera}
             activeOpacity={0.8}
-            className="bg-emerald-600 py-4 rounded-2xl items-center shadow-lg shadow-emerald-800 mt-20 mb-20 w-full"
+            className="bg-emerald-600 py-4 rounded-2xl items-center shadow-lg shadow-emerald-800 mt-20 mb-5 w-full"
           >
             <Text className="text-white text-lg font-semibold">Cámara</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={openGallery}
+            activeOpacity={0.8}
+            className="bg-blue-600 py-4 rounded-2xl items-center shadow-lg shadow-blue-800 w-full"
+          >
+            <Text className="text-white text-lg font-semibold">Galería</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
