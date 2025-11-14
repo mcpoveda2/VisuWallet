@@ -90,7 +90,7 @@ export default function Inicio({ onPressManual, onBack, onPhotoTaken }: InicioPr
         <View className="w-full space-y-5">
           <TouchableOpacity
             activeOpacity={0.8}
-            className="bg-sky-600 py-4 rounded-2xl items-center shadow-lg shadow-sky-800 mb-10 mt-20 w-full"
+            className="bg-sky-600 py-4 rounded-2xl items-center shadow-lg shadow-sky-800 mb-5 mt-20 w-full"
           >
             <Text className="text-white text-lg font-semibold">Telegram</Text>
           </TouchableOpacity>
@@ -98,7 +98,7 @@ export default function Inicio({ onPressManual, onBack, onPhotoTaken }: InicioPr
           <TouchableOpacity
             onPress={openCamera}
             activeOpacity={0.8}
-            className="bg-emerald-600 py-4 rounded-2xl items-center shadow-lg shadow-emerald-800 mt-20 mb-5 w-full"
+            className="bg-emerald-600 py-4 rounded-2xl items-center shadow-lg shadow-emerald-800 mt-5 mb-10 w-full"
           >
             <Text className="text-white text-lg font-semibold">Cámara</Text>
           </TouchableOpacity>
@@ -106,7 +106,7 @@ export default function Inicio({ onPressManual, onBack, onPhotoTaken }: InicioPr
           <TouchableOpacity
             onPress={openGallery}
             activeOpacity={0.8}
-            className="bg-blue-600 py-4 rounded-2xl items-center shadow-lg shadow-blue-800 w-full"
+            className="bg-blue-600 py-4 rounded-2xl items-center shadow-lg shadow-blue-800 w-full mb-15"
           >
             <Text className="text-white text-lg font-semibold">Galería</Text>
           </TouchableOpacity>
@@ -114,7 +114,7 @@ export default function Inicio({ onPressManual, onBack, onPhotoTaken }: InicioPr
           <TouchableOpacity
             onPress={onPressManual}  
             activeOpacity={0.8}
-            className="bg-violet-600 py-4 rounded-2xl items-center shadow-lg shadow-violet-800 mt-5 mb-30 w-full"
+            className="bg-violet-600 py-4 rounded-2xl items-center shadow-lg shadow-violet-800 mt-10 mb-30 w-full"
           >
             <Text className="text-white text-lg font-semibold">Manual</Text>
           </TouchableOpacity>
