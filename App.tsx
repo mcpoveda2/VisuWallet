@@ -1,29 +1,32 @@
 // App.tsx
 // App.tsx
 
-import "global.css";
-import { useState } from "react";
-import { SafeAreaProvider } from "react-native-safe-area-context";
+import 'global.css';
+import { useState } from 'react';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import Home from "components/Home";
-import Inicio from "components/Inicio";
-import Formulario from "components/Formulario";
-import DetalleCuenta from "components/DetalleCuenta";
-import Estadisticas from "components/Estadisticas";
-import ChartsScreen from "components/ChartsScreen";
+import Home from 'components/Home';
+import Inicio from 'components/Inicio';
+import Formulario from 'components/Formulario';
+import DetalleCuenta from 'components/DetalleCuenta';
+import Estadisticas from 'components/Estadisticas';
+import ChartsScreen from 'components/ChartsScreen';
 
-import { Cuenta } from "./types";
-
+import { Cuenta } from './types';
 
 export default function App() {
   // Estado para controlar qué pantalla mostrar
-  const [currentScreen, setCurrentScreen] = useState<'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts'>('home');
+  const [currentScreen, setCurrentScreen] = useState<
+    'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts'
+  >('home');
 
   // Estado para guardar la cuenta seleccionada
   const [selectedAccount, setSelectedAccount] = useState<Cuenta | null>(null);
 
   // Función para cambiar de pantalla
-  const navigateTo = (screen: 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts') => {
+  const navigateTo = (
+    screen: 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts'
+  ) => {
     setCurrentScreen(screen);
   };
 
@@ -45,22 +48,14 @@ export default function App() {
           onPressCharts={() => navigateTo('charts')}
         />
       )}
-      
+
       {currentScreen === 'inicio' && (
-        <Inicio 
-          onPressManual={() => navigateTo('formulario')}
-          onBack={() => navigateTo('home')}
-        />
+        <Inicio onPressManual={() => navigateTo('formulario')} onBack={() => navigateTo('home')} />
       )}
-      {currentScreen === 'formulario' ? (
-        <Formulario onBack={() => navigateTo('home')} />
-      ) : null}
-      
+      {currentScreen === 'formulario' ? <Formulario onBack={() => navigateTo('home')} /> : null}
+
       {currentScreen === 'detalleCuenta' && selectedAccount && (
-        <DetalleCuenta
-          cuenta={selectedAccount}
-          onBack={() => navigateTo('home')}
-        />
+        <DetalleCuenta cuenta={selectedAccount} onBack={() => navigateTo('home')} />
       )}
 
       {currentScreen === 'estadisticas' && (
