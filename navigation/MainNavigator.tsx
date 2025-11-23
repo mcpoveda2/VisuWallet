@@ -1,6 +1,6 @@
 import React from 'react';
 import { BottomBar } from 'components/BottomBar';
-import Perfil from '../views/Application/Perfil';
+import Perfil from '../components/Perfil';
 
 // export type MainTabsParamList = {
 //   Home: undefined;

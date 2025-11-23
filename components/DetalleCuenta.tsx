@@ -7,12 +7,10 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import TransaccionItem from "./ItemTransaccion";  // ← REUTILIZAR
 import GraficoUltimos30Dias from "./GraficoUltimos30Dias";
-import { Cuenta } from "../types";
-import { mockTransactions } from "../datosPrueba";
+import { Cuenta, Transaccion } from "../types";
 import { db } from 'utils/firebase.js';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
 
-import { Transaccion } from '../types';
 
 interface DetalleCuentaProps {
   cuenta: Cuenta;

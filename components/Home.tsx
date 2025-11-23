@@ -15,19 +15,19 @@ import AddCuenta from './AddCuenta';
 import { mockTransactions } from "../datosPrueba";
 import { db } from "utils/firebase.js";
 import { collection, getDocs } from "firebase/firestore";
-import { Transaccion } from "../types";
+import { Transaccion, Cuenta } from "../types";
 import TransactionDetails from './TransactionDetails';
-
-import { Cuenta } from "../types";
 
 interface HomeProps {
   onPressAdd: () => void;
   onPressAccount: (cuenta: Cuenta) => void;
   onPressEstadisticas?: () => void;
   onPressCharts?: () => void;
+  onPressHome?: () => void;
+  onPressPerfil?: () => void;
 }
 
-export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, onPressCharts }: HomeProps) {
+export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, onPressCharts, onPressHome, onPressPerfil }: HomeProps) {
   const insets = useSafeAreaInsets();
   const nombreUsuario = "Sebas";
   const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
@@ -174,9 +174,10 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
       {/* NavBar */}
       <NavBar
         onPressAdd={onPressAdd}
-        onPressHome={() => {}}
+        onPressHome={onPressHome}
         onPressEstadisticas={onPressEstadisticas}
         onPressCharts={onPressCharts}
+        onPressPerfil={onPressPerfil}
         activeScreen="home"
       />
 

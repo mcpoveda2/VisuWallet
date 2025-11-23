@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-// import { ProgressBar } from 'react-native-paper';
+import { View, Text, TouchableOpacity } from 'react-native';
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
-export default function Perfil() {
+export default function Perfil({ onBack }: { onBack?: () => void }) {
   const totalBalance = 120.4;
   const totalAssets = 120.12;
   const totalMoney = 0.28;
@@ -10,6 +10,12 @@ export default function Perfil() {
 
   return (
     <View className="flex-1 bg-[#0B1120] px-6 pt-16">
+      {/* Header / Back */}
+      {onBack && (
+        <TouchableOpacity onPress={onBack} className="absolute left-4 top-12 z-10 w-10 h-10 items-center justify-center">
+          <MaterialCommunityIcons name="arrow-left" size={24} color="white" />
+        </TouchableOpacity>
+      )}
       {/* Título */}
       <Text className="mb-6 text-3xl font-bold text-white">Portfolio</Text>
 

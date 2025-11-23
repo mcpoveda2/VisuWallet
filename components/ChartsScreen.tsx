@@ -7,7 +7,6 @@ import { db } from '../utils/firebase.js';
 import { Transaccion } from '../types';
 import {
   filtrarPorRangoFecha,
-  obtenerPeriodoAnterior,
   obtenerTextoRango,
   irAPeriodoAnterior,
   irAPeriodoSiguiente,
@@ -22,6 +21,7 @@ interface ChartsScreenProps {
   onPressAdd?: () => void;
   onPressHome?: () => void;
   onPressEstadisticas?: () => void;
+  onPressPerfil?: () => void;
 }
 
 interface TransaccionConCuenta extends Transaccion {
@@ -39,7 +39,7 @@ interface CuentaFirestore {
   email: string;
 }
 
-export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressEstadisticas }: ChartsScreenProps) {
+export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressEstadisticas, onPressPerfil }: ChartsScreenProps) {
   const [filtroSeleccionado, setFiltroSeleccionado] = useState<FiltroRango>('mes');
   const [fechaReferencia, setFechaReferencia] = useState<Date>(new Date());
   const [todasLasTransacciones, setTodasLasTransacciones] = useState<TransaccionConCuenta[]>([]);
@@ -355,7 +355,7 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
                       <View className="flex-1 items-center">
                         <View
                           className="w-full bg-green-500 rounded-t"
-                          style={{ height: `${heightIngresos || 8}px`, minHeight: 8 }}
+                          style={{ height: heightIngresos || 8, minHeight: 8 }}
                         />
                         <Text className="text-xs text-green-400 mt-1 text-center">
                           ${Math.round(mes.ingresos / 1000)}k
@@ -366,7 +366,7 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
                       <View className="flex-1 items-center">
                         <View
                           className="w-full bg-red-500 rounded-t"
-                          style={{ height: `${heightGastos || 8}px`, minHeight: 8 }}
+                          style={{ height: heightGastos || 8, minHeight: 8 }}
                         />
                         <Text className="text-xs text-red-400 mt-1 text-center">
                           ${Math.round(mes.gastos / 1000)}k
@@ -542,6 +542,7 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
           onPressHome={onPressHome}
           onPressEstadisticas={onPressEstadisticas}
           onPressCharts={() => {}}
+          onPressPerfil={onPressPerfil}
           activeScreen="charts"
         />
       )}

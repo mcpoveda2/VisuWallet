@@ -11,13 +11,14 @@ import Formulario from 'components/Formulario';
 import DetalleCuenta from 'components/DetalleCuenta';
 import Estadisticas from 'components/Estadisticas';
 import ChartsScreen from 'components/ChartsScreen';
+import Perfil from 'components/Perfil';
 
 import { Cuenta } from './types';
 
 export default function App() {
   // Estado para controlar qué pantalla mostrar
   const [currentScreen, setCurrentScreen] = useState<
-    'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts'
+    'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts' | 'perfil'
   >('home');
 
   // Estado para guardar la cuenta seleccionada
@@ -25,7 +26,7 @@ export default function App() {
 
   // Función para cambiar de pantalla
   const navigateTo = (
-    screen: 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts'
+    screen: 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts' | 'perfil'
   ) => {
     setCurrentScreen(screen);
   };
@@ -46,6 +47,8 @@ export default function App() {
           onPressAccount={navigateToAccountDetail}
           onPressEstadisticas={() => navigateTo('estadisticas')}
           onPressCharts={() => navigateTo('charts')}
+          onPressHome={() => navigateTo('home')}
+          onPressPerfil={() => navigateTo('perfil')}
         />
       )}
 
@@ -64,6 +67,7 @@ export default function App() {
           onPressAdd={() => navigateTo('inicio')}
           onPressHome={() => navigateTo('home')}
           onPressCharts={() => navigateTo('charts')}
+          onPressPerfil={() => navigateTo('perfil')}
         />
       )}
 
@@ -73,7 +77,12 @@ export default function App() {
           onPressAdd={() => navigateTo('inicio')}
           onPressHome={() => navigateTo('home')}
           onPressEstadisticas={() => navigateTo('estadisticas')}
+          onPressPerfil={() => navigateTo('perfil')}
         />
+      )}
+
+      {currentScreen === 'perfil' && (
+        <Perfil onBack={() => navigateTo('home')} />
       )}
     </SafeAreaProvider>
   );

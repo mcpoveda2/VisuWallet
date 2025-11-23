@@ -21,6 +21,7 @@ interface EstadisticasProps {
   onPressAdd?: () => void;
   onPressHome?: () => void;
   onPressCharts?: () => void;
+  onPressPerfil?: () => void;
 }
 
 interface TransaccionConCuenta extends Transaccion {
@@ -38,7 +39,7 @@ interface CuentaFirestore {
   email: string;
 }
 
-export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressCharts }: EstadisticasProps) {
+export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressCharts, onPressPerfil }: EstadisticasProps) {
   const [filtroSeleccionado, setFiltroSeleccionado] = useState<FiltroRango>('mes');
   const [fechaReferencia, setFechaReferencia] = useState<Date>(new Date());
   const [todasLasTransacciones, setTodasLasTransacciones] = useState<TransaccionConCuenta[]>([]);
@@ -529,6 +530,7 @@ export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressC
           onPressHome={onPressHome}
           onPressEstadisticas={() => {}}
           onPressCharts={onPressCharts}
+          onPressPerfil={onPressPerfil}
           activeScreen="estadisticas"
         />
       )}

@@ -2,9 +2,7 @@ import { auth } from "./firebaseConfig";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signInWithCredential,
   signOut,
-  GoogleAuthProvider,
 } from "firebase/auth";
 
 
@@ -22,11 +20,7 @@ export const signIn = (email: string, password: string) => {
   return signInWithEmailAndPassword(auth, email, password);
 };
 
-// Iniciar sesión con Google (recibe idToken de GoogleSignin)
-export const signInWithGoogle = (idToken: string) => {
-  const credential = GoogleAuthProvider.credential(idToken);
-  return signInWithCredential(auth, credential);
-};
+// Google sign-in removed (email/password only)
 
 // Cerrar sesión
 export const logOut = () => {
