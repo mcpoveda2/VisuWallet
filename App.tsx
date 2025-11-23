@@ -12,21 +12,23 @@ import DetalleCuenta from 'components/DetalleCuenta';
 import Estadisticas from 'components/Estadisticas';
 import ChartsScreen from 'components/ChartsScreen';
 import Perfil from 'components/Perfil';
+import Login from 'components/Auth/Login';
+import Signup from 'components/Auth/Signup';
 
 import { Cuenta } from './types';
 
 export default function App() {
   // Estado para controlar qué pantalla mostrar
   const [currentScreen, setCurrentScreen] = useState<
-    'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts' | 'perfil'
-  >('home');
+    'login' | 'signup' | 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts' | 'perfil'
+  >('login');
 
   // Estado para guardar la cuenta seleccionada
   const [selectedAccount, setSelectedAccount] = useState<Cuenta | null>(null);
 
   // Función para cambiar de pantalla
   const navigateTo = (
-    screen: 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts' | 'perfil'
+    screen: 'login' | 'signup' | 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts' | 'perfil'
   ) => {
     setCurrentScreen(screen);
   };
@@ -40,6 +42,14 @@ export default function App() {
   return (
     <SafeAreaProvider>
       {/* Renderizar la pantalla según el estado */}
+
+      {currentScreen === 'login' && (
+        <Login onLoginSuccess={() => navigateTo('home')} onSignup={() => navigateTo('signup')} />
+      )}
+
+      {currentScreen === 'signup' && (
+        <Signup onSignupSuccess={() => navigateTo('home')} onBack={() => navigateTo('login')} />
+      )}
 
       {currentScreen === 'home' && (
         <Home

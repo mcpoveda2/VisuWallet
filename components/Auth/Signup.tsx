@@ -1,14 +1,13 @@
 import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-import type { AuthStackParamList } from '../../navigation/AuthNavigator';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { signUp } from '../../firebase/authService';
 
-type SignupScreenProp = NativeStackNavigationProp<AuthStackParamList, 'Signup'>;
+interface SignupProps {
+  onSignupSuccess?: () => void;
+  onBack?: () => void;
+}
 
-export default function SignupScreen() {
-  const navigation = useNavigation<SignupScreenProp>();
+export default function SignupScreen({ onSignupSuccess, onBack }: SignupProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -24,7 +23,7 @@ export default function SignupScreen() {
 
     try {
       await signUp(email, password);
-      // Una vez creado el usuario, AppNavigator detectará el cambio de auth y redirigirá a Main
+      if (onSignupSuccess) onSignupSuccess();
     } catch (e: any) {
       setError(e.message);
     }
@@ -109,7 +108,7 @@ export default function SignupScreen() {
         </TouchableOpacity>
 
         {/* Enlace de Login */}
-        <TouchableOpacity onPress={() => navigation.navigate('Login' as never)} className="mt-4">
+        <TouchableOpacity onPress={() => onBack && onBack()} className="mt-4">
           <Text className="text-center text-zinc-400">
             ¿Ya tienes cuenta?
             <Text className="font-semibold text-teal-400"> Inicia Sesión</Text>

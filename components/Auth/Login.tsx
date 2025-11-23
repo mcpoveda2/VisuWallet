@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { View, TextInput, Text, TouchableOpacity, Alert } from 'react-native';
 import { signIn } from '../../firebase/authService';
-import { useNavigation } from '@react-navigation/native';
-// Google sign-in removed
 
-export default function LoginScreen() {
+interface LoginProps {
+  onLoginSuccess?: () => void;
+  onSignup?: () => void;
+}
+
+export default function LoginScreen({ onLoginSuccess, onSignup }: LoginProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const navigation = useNavigation();
 
   const handleLogin = async () => {
     try {
       await signIn(email, password);
+      if (onLoginSuccess) onLoginSuccess();
     } catch (error: any) {
       Alert.alert('❌ Error', error.message);
     }
@@ -51,7 +54,7 @@ export default function LoginScreen() {
 
         {/* Google Sign-In removed */}
 
-        <TouchableOpacity onPress={() => navigation.navigate('Signup' as never)} className="mt-8">
+        <TouchableOpacity onPress={() => onSignup && onSignup()} className="mt-8">
           <Text className="text-center text-zinc-400">
             ¿No tienes cuenta?
             <Text className="font-semibold text-teal-400"> Regístrate</Text>
