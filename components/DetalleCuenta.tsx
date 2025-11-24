@@ -10,6 +10,8 @@ import GraficoUltimos30Dias from "./GraficoUltimos30Dias";
 import { Cuenta, Transaccion } from "../types";
 import { db } from 'utils/firebase.js';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { getRecentTransactionsForUser } from '../firebase/firestoreService';
+import { getAuth } from 'firebase/auth';
 
 
 interface DetalleCuentaProps {
@@ -24,41 +26,26 @@ export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
   useEffect(() => {
     const loadForAccount = async () => {
       try {
-        // If cuenta.numero is available, query by accountId field in Firestore
-        if (cuenta && (cuenta as any).numero) {
-          const accNum = (cuenta as any).numero;
-          // query registro where accountId == accNum ordered by date desc
-          const q = query(collection(db, 'registro'), where('accountId', '==', accNum), orderBy('date', 'desc'));
-          const snap = await getDocs(q);
-          const docs = snap.docs.map(d => {
-            const data = d.data() as any;
-            return {
-              id: d.id,
-              tipo: data.type ?? data.tipo ?? 'expense',
-              categoria: data.category ?? data.categoria ?? '',
-              monto: Number(data.amount ?? data.monto ?? 0),
-              fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
-            } as Transaccion;
-          });
-          setTransactions(docs);
-          return;
-        }
+        // Load recent transactions for the current user and filter locally
+        const auth = getAuth();
+          const user = auth.currentUser;
+          if (!user) {
+            setTransactions([]);
+            return;
+          }
 
-        // Fallback: load all and filter by name/id (best-effort)
-        const snap = await getDocs(collection(db, 'registro'));
-        const docs = snap.docs.map(d => {
-          const data = d.data() as any;
-          return {
+          const txs = await getRecentTransactionsForUser(user.uid, 200);
+          const docs = txs.map((d: any) => ({
             id: d.id,
-            tipo: data.type ?? data.tipo ?? 'expense',
-            categoria: data.category ?? data.categoria ?? '',
-            monto: Number(data.amount ?? data.monto ?? 0),
-            fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
-            account: data.account ?? data.cuenta ?? '',
-          } as any;
-        });
+            tipo: d.tipo ?? d.type ?? d.tipo ?? 'expense',
+            categoria: d.categoria ?? d.category ?? '',
+            monto: Number(d.monto ?? d.amount ?? 0),
+            fecha: d.fecha ?? d.date ?? (d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toString() : d.createdAt) : ''),
+            account: d.account ?? d.cuenta ?? '',
+            accountId: d.cuentaId ?? d.accountId ?? '',
+          } as any));
 
-        const filtered = docs.filter((t: any) => {
+          const filtered = docs.filter((t: any) => {
           if (!t.account) return false;
           return t.account === cuenta.nombre || t.account.includes(cuenta.nombre) || t.account.includes(cuenta.id || '');
         });
@@ -69,7 +56,7 @@ export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
           return tb - ta;
         });
 
-        setTransactions(filtered as Transaccion[]);
+          setTransactions(filtered as Transaccion[]);
       } catch (e) {
         console.warn('Failed to load transactions for account', e);
         setTransactions([]);

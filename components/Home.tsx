@@ -15,6 +15,8 @@ import AddCuenta from './AddCuenta';
 import { mockTransactions } from "../datosPrueba";
 import { db } from "utils/firebase.js";
 import { collection, getDocs } from "firebase/firestore";
+import { getCuentasFromUserDoc, getRecentTransactionsForUser } from '../firebase/firestoreService';
+import { getAuth } from 'firebase/auth';
 import { Transaccion, Cuenta } from "../types";
 import TransactionDetails from './TransactionDetails';
 
@@ -40,37 +42,40 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
   // Load transactions and accounts from Firestore
   const loadAll = async () => {
     try {
-      // transactions
-      const snap = await getDocs(collection(db, 'registro'));
-      const docs = snap.docs.map(d => {
-        const data = d.data() as any;
-        return {
-          id: d.id,
-          tipo: data.type ?? data.tipo ?? 'expense',
-          categoria: data.category ?? data.categoria ?? '',
-          monto: Number(data.amount ?? data.monto ?? 0),
-          fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
-        } as Transaccion;
-      });
-      docs.sort((a,b) => {
-        const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
-        const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
-        return tb - ta;
-      });
-      setTransactions(docs.slice(0,4));
+      // transactions: use new transacciones collection via service
+      try {
+        const auth = getAuth();
+        const user = auth.currentUser;
+        if (user) {
+          const txs = await getRecentTransactionsForUser(user.uid, 50);
+          const docs = txs.map((d: any) => ({
+            id: d.id,
+            tipo: d.tipo ?? d.type ?? d.tipo ?? 'expense',
+            categoria: d.categoria ?? d.category ?? '',
+            monto: Number(d.monto ?? d.amount ?? 0),
+            fecha: d.fecha ?? d.date ?? (d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toString() : d.createdAt) : ''),
+          } as Transaccion));
+          docs.sort((a,b) => {
+            const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
+            const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
+            return tb - ta;
+          });
+          setTransactions(docs.slice(0,4));
+        }
+      } catch (err) {
+        console.warn('Failed to load transactions from service', err);
+      }
 
-      // accounts
-      const snapAcc = await getDocs(collection(db, 'cuentas'));
-      const accs = snapAcc.docs.map(d => {
-        const data = d.data() as any;
-        return {
-          id: d.id,
-          nombre: data.propietario ?? data.nombre ?? `Cuenta ${d.id}`,
-          balance: Number(data.saldo ?? data.balance ?? 0),
-          numero: data.numero ?? '',
-        };
-      });
-      setAccounts(accs);
+      // accounts: read embedded cuentas from users/{uid}
+      try {
+        const accs = await getCuentasFromUserDoc();
+        // ensure shape matches Cuenta interface (id, nombre, balance)
+        const mapped = accs.map((c: any) => ({ id: c.id, nombre: c.nombre || c.propietario || 'Cuenta', balance: Number(c.balance ?? c.saldo ?? 0), numero: c.numero ?? '' }));
+        setAccounts(mapped);
+      } catch (err) {
+        console.warn('Failed to load embedded cuentas from user doc', err);
+        setAccounts([]);
+      }
     } catch (e) {
       console.warn('Failed to load data from Firestore, using fallbacks', e);
       // leave transactions as mocks and accounts empty

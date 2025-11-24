@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Modal } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { collection, getDocs } from 'firebase/firestore';
+import { getCuentasFromUserDoc, getRecentTransactionsForUser } from '../firebase/firestoreService';
+import { getAuth } from 'firebase/auth';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import { db } from '../utils/firebase.js';
 import { Transaccion } from '../types';
@@ -54,49 +56,54 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
       try {
         setCargando(true);
 
-        // Cargar cuentas
-        const snapCuentas = await getDocs(collection(db, 'cuentas'));
-        const cuentasData = snapCuentas.docs.map(d => {
-          const data = d.data() as any;
-          return {
+        // Cargar cuentas desde el documento de usuario
+        try {
+          const accs = await getCuentasFromUserDoc();
+          const cuentasData = accs.map((d: any) => ({
             id: d.id,
-            tipo: data.tipo || 'corriente',
-            numero: data.numero || '',
-            saldo: data.saldo ? Number(data.saldo) : 0,
-            cedula: data.cedula || '',
-            propietario: data.propietario || data.titular || '',
-            email: data.email || '',
-          } as CuentaFirestore;
-        });
-        cuentasData.sort((a, b) =>
-          (a.propietario || '').localeCompare(b.propietario || '') ||
-          (a.numero || '').localeCompare(b.numero || '')
-        );
-        setCuentas(cuentasData);
+            tipo: d.tipo || 'corriente',
+            numero: d.numero || '',
+            saldo: d.balance ? Number(d.balance) : Number(d.saldo ?? 0),
+            cedula: d.cedula || '',
+            propietario: d.nombre || d.propietario || d.titular || '',
+            email: d.email || '',
+          } as CuentaFirestore));
+          cuentasData.sort((a: CuentaFirestore, b: CuentaFirestore) =>
+            (a.propietario || '').localeCompare(b.propietario || '') ||
+            (a.numero || '').localeCompare(b.numero || '')
+          );
+          setCuentas(cuentasData);
+        } catch (err) {
+          console.warn('Failed to load cuentas from user doc', err);
+          setCuentas([]);
+        }
 
-        // Cargar transacciones (patrón de Home.tsx)
-        const snap = await getDocs(collection(db, 'registro'));
-        const docs = snap.docs.map(d => {
-          const data = d.data() as any;
-          return {
-            id: d.id,
-            tipo: data.type ?? data.tipo ?? 'expense',
-            categoria: data.category ?? data.categoria ?? '',
-            monto: Number(data.amount ?? data.monto ?? 0),
-            fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
-            account: data.account ?? data.cuenta ?? '',
-            accountId: data.accountId ?? '',
-          } as TransaccionConCuenta;
-        });
-
-        // Ordenar por fecha descendente
-        docs.sort((a, b) => {
-          const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
-          const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
-          return tb - ta;
-        });
-
-        setTodasLasTransacciones(docs);
+        // Cargar transacciones desde la colección top-level `transacciones`
+        try {
+          const auth = getAuth();
+          const user = auth.currentUser;
+          if (user) {
+            const snapTx = await getRecentTransactionsForUser(user.uid, 200);
+            const docs = snapTx.map((d: any) => ({
+              id: d.id,
+              tipo: d.tipo ?? d.type ?? 'expense',
+              categoria: d.categoria ?? d.category ?? '',
+              monto: Number(d.monto ?? d.amount ?? 0),
+              fecha: d.fecha ?? d.date ?? (d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toString() : d.createdAt) : ''),
+              account: d.account ?? d.cuenta ?? '',
+              accountId: d.cuentaId ?? d.accountId ?? '',
+            } as TransaccionConCuenta));
+            docs.sort((a: TransaccionConCuenta, b: TransaccionConCuenta) => {
+              const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
+              const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
+              return tb - ta;
+            });
+            setTodasLasTransacciones(docs);
+          }
+        } catch (err) {
+          console.warn('Error cargando transacciones', err);
+          setTodasLasTransacciones([]);
+        }
       } catch (error) {
         console.warn('Error cargando datos:', error);
         setTodasLasTransacciones([]);
