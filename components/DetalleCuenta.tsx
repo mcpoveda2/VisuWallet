@@ -7,6 +7,7 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import TransaccionItem from "./ItemTransaccion";  // ← REUTILIZAR
 import GraficoUltimos30Dias from "./GraficoUltimos30Dias";
+import NavBar from "./NavBar";
 import { Cuenta } from "../types";
 import { mockTransactions } from "../datosPrueba";
 import { db } from 'utils/firebase.js';
@@ -17,9 +18,13 @@ import { Transaccion } from '../types';
 interface DetalleCuentaProps {
   cuenta: Cuenta;
   onBack: () => void;
+  onPressAdd?: () => void;
+  onPressHome?: () => void;
+  onPressEstadisticas?: () => void;
+  onPressCharts?: () => void;
 }
 
-export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
+export default function DetalleCuenta({ cuenta, onBack, onPressAdd, onPressHome, onPressEstadisticas, onPressCharts }: DetalleCuentaProps) {
   const insets = useSafeAreaInsets();
   const [transactions, setTransactions] = useState<Transaccion[]>([]);
 
@@ -82,14 +87,13 @@ export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
 
   return (
     <SafeAreaView
-      className="flex-1 bg-black m-safe p-safe"
+      className="flex-1 bg-black"
       style={{
-        paddingTop: insets.top,
-        paddingBottom: insets.bottom,
+        paddingBottom: 0,
       }}
     >
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 -mt-16">
+      <View className="flex-row items-center justify-between px-4 pt-4">
         <TouchableOpacity onPress={onBack} activeOpacity={0.7} className="flex-row items-center">
           <MaterialCommunityIcons name="chevron-left" size={28} color="#3b82f6" />
           <Text className="text-blue-500 text-base font-medium">Back</Text>
@@ -104,9 +108,12 @@ export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView 
+      <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={{
+          paddingBottom: 90
+        }}
       >
         {/* Balance Card */}
         <View className="mx-4 mt-4 mb-6 bg-neutral-900 rounded-2xl p-4">
@@ -150,23 +157,14 @@ export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
         </View>
       </ScrollView>
 
-      {/* Botón Record */}
-      <View className="absolute bottom-6 right-6">
-        <TouchableOpacity
-          className="bg-blue-500 flex-row items-center px-6 py-3 rounded-full"
-          activeOpacity={0.8}
-          style={{
-            shadowColor: '#3b82f6',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 8,
-            elevation: 8,
-          }}
-        >
-          <MaterialCommunityIcons name="plus-circle" size={24} color="white" />
-          <Text className="text-white font-semibold text-base ml-2">Record</Text>
-        </TouchableOpacity>
-      </View>
+      {/* NavBar */}
+      <NavBar
+        onPressAdd={onPressAdd || (() => {})}
+        onPressHome={onPressHome || (() => {})}
+        onPressEstadisticas={onPressEstadisticas || (() => {})}
+        onPressCharts={onPressCharts || (() => {})}
+        activeScreen="home"
+      />
     </SafeAreaView>
   );
 }

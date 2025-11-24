@@ -60,6 +60,10 @@ export default function App() {
         <DetalleCuenta
           cuenta={selectedAccount}
           onBack={() => navigateTo('home')}
+          onPressAdd={() => navigateTo('inicio')}
+          onPressHome={() => navigateTo('home')}
+          onPressEstadisticas={() => navigateTo('estadisticas')}
+          onPressCharts={() => navigateTo('charts')}
         />
       )}
 

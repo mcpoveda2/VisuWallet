@@ -8,9 +8,10 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 import CuentaCard from "./CuentaCard";
 import TransaccionItem from "./ItemTransaccion";
 import GraficoBalance from "./GraficoBalance";
-import NavBar from "./NavBar";  // ← IMPORTAR
+import NavBar from "./NavBar";
 import TransaccionList from './TransaccionList';
 import AddCuenta from './AddCuenta';
+import KPICard from './KPICard';
 
 import { mockTransactions } from "../datosPrueba";
 import { db } from "utils/firebase.js";
@@ -32,6 +33,7 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
   const nombreUsuario = "Sebas";
   const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
   const [transactions, setTransactions] = useState<Transaccion[]>(mockTransactions);
+  const [allTransactions, setAllTransactions] = useState<Transaccion[]>([]); // Todas las transacciones para gráficos
   const balanceTotal = accounts.reduce((s, a) => s + (a.balance || 0), 0);
   const [selectedTx, setSelectedTx] = useState<Transaccion | null>(null);
   const [showAllTransactions, setShowAllTransactions] = useState(false);
@@ -57,7 +59,8 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
         const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
         return tb - ta;
       });
-      setTransactions(docs.slice(0,4));
+      setAllTransactions(docs); // Guardar todas las transacciones
+      setTransactions(docs.slice(0,4)); // Solo las primeras 4 para mostrar
 
       // accounts
       const snapAcc = await getDocs(collection(db, 'cuentas'));
@@ -83,24 +86,23 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
 
   return (
     <SafeAreaView
-      className="flex-1 bg-black m-safe p-safe"
+      className="flex-1 bg-black"
       style={{
-        paddingTop: insets.top,
         paddingBottom: 0,
       }}
     >
-      <ScrollView 
-        className="flex-1 -mt-16"
+      <ScrollView
+        className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{ 
+        contentContainerStyle={{
           paddingBottom: 90
         }}
       >
         {/* Header: Saludo + Íconos */}
-        <View className="flex-row items-center justify-between px-6 py-4">
+        <View className="flex-row items-center justify-between px-6 pt-4 pb-4">
           <View>
             <Text className="text-white text-2xl font-bold">
-              Hola, <Text className="text-pink-500">{nombreUsuario}</Text>
+              Hola, <Text className="text-blue-500">{nombreUsuario}</Text>
             </Text>
           </View>
 
@@ -145,9 +147,76 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
           </View>
         </View>
 
-        {/* Gráfico */}
+        {/* KPIs Compactos - Dashboard */}
+        <View className="px-6 mb-4">
+          <View className="flex-row gap-3">
+            {(() => {
+              // Calcular ingresos y gastos del mes actual
+              const hoy = new Date();
+              const inicioMes = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+              const transaccionesMes = allTransactions.filter(t => {
+                const fecha = new Date(t.fecha);
+                return fecha >= inicioMes;
+              });
+
+              const ingresosMes = transaccionesMes
+                .filter(t => t.tipo === 'income')
+                .reduce((sum, t) => sum + t.monto, 0);
+
+              const gastosMes = transaccionesMes
+                .filter(t => t.tipo === 'expense' || t.tipo === 'transfer')
+                .reduce((sum, t) => sum + t.monto, 0);
+
+              const balanceMes = ingresosMes - gastosMes;
+
+              // Calcular cambio vs mes anterior (simplificado)
+              const mesAnterior = new Date(hoy.getFullYear(), hoy.getMonth() - 1, 1);
+              const finMesAnterior = new Date(hoy.getFullYear(), hoy.getMonth(), 0);
+              const transaccionesMesAnterior = allTransactions.filter(t => {
+                const fecha = new Date(t.fecha);
+                return fecha >= mesAnterior && fecha <= finMesAnterior;
+              });
+
+              const balanceMesAnterior = transaccionesMesAnterior
+                .filter(t => t.tipo === 'income')
+                .reduce((sum, t) => sum + t.monto, 0) -
+                transaccionesMesAnterior
+                .filter(t => t.tipo === 'expense' || t.tipo === 'transfer')
+                .reduce((sum, t) => sum + t.monto, 0);
+
+              const cambioPorcentaje = balanceMesAnterior !== 0
+                ? ((balanceMes - balanceMesAnterior) / Math.abs(balanceMesAnterior)) * 100
+                : 0;
+
+              return (
+                <>
+                  <View className="flex-1">
+                    <KPICard
+                      titulo="Balance Total"
+                      valor={`$${balanceTotal.toLocaleString('es-CO', { maximumFractionDigits: 0 })}`}
+                      icono="wallet"
+                      colorTema={balanceTotal >= 0 ? 'green' : 'red'}
+                      cambio={cambioPorcentaje}
+                    />
+                  </View>
+                  <View className="flex-1">
+                    <KPICard
+                      titulo="Este Mes"
+                      valor={`$${balanceMes.toLocaleString('es-CO', { maximumFractionDigits: 0 })}`}
+                      icono="calendar-month"
+                      colorTema={balanceMes >= 0 ? 'cyan' : 'red'}
+                      subtitulo={`${ingresosMes > 0 ? '+' : ''}${Math.round(ingresosMes).toLocaleString()} / -${Math.round(gastosMes).toLocaleString()}`}
+                    />
+                  </View>
+                </>
+              );
+            })()}
+          </View>
+        </View>
+
+        {/* Gráfico de Balance */}
         <View className="px-6">
-          <GraficoBalance balance={balanceTotal} onPressShowMore={onPressCharts} />
+          <GraficoBalance balance={balanceTotal} transacciones={allTransactions} onPressShowMore={onPressCharts} />
         </View>
 
         {/* Transacciones recientes */}

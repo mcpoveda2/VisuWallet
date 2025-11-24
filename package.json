@@ -12,17 +12,22 @@
   },
   "dependencies": {
     "@react-native-async-storage/async-storage": "^1.24.0",
+    "@shopify/react-native-skia": "2.2.12",
     "expo": "^54.0.0",
+    "expo-linear-gradient": "~15.0.7",
     "expo-status-bar": "~3.0.8",
     "firebase": "^12.5.0",
     "nativewind": "^4.2.1",
     "react": "19.1.0",
     "react-dom": "19.1.0",
     "react-native": "0.81.5",
+    "react-native-gifted-charts": "^1.4.68",
     "react-native-reanimated": "~4.1.1",
     "react-native-safe-area-context": "~5.6.0",
+    "react-native-svg": "15.12.1",
     "react-native-web": "^0.21.0",
     "react-native-worklets": "0.5.1",
+    "victory-native": "^41.20.2",
     "web": "^0.0.2"
   },
   "devDependencies": {

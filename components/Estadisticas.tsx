@@ -13,8 +13,17 @@ import {
   irAPeriodoSiguiente,
   FiltroRango
 } from '../utils/filtrosFecha';
-import { obtenerResumenFinanciero, ResumenFinanciero } from '../utils/agregaciones';
+import {
+  obtenerResumenFinanciero,
+  ResumenFinanciero,
+  calcularTasaAhorro,
+  calcularGastoPromedioDiario,
+  calcularIngresos,
+  calcularGastos,
+  obtenerMejorPeorCategoria
+} from '../utils/agregaciones';
 import NavBar from './NavBar';
+import KPICard from './KPICard';
 
 interface EstadisticasProps {
   onBack?: () => void;
@@ -213,7 +222,7 @@ export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressC
         </View>
 
         {/* Selector de Cuenta */}
-        <View className="bg-neutral-900 px-5 py-4 mb-4 mt-2">
+        <View className="bg-neutral-900 px-5 py-4">
           <Text className="text-xs text-neutral-400 mb-3 uppercase font-semibold">
             Cuenta
           </Text>
@@ -236,7 +245,7 @@ export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressC
         </View>
 
         {/* Selector de Período */}
-        <View className="bg-neutral-900 px-5 py-4 mb-4">
+        <View className="bg-neutral-900 px-5 py-4">
           <Text className="text-xs text-neutral-400 mb-3 uppercase font-semibold">
             Período
           </Text>
@@ -317,13 +326,13 @@ export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressC
         </View>
 
         {/* Tarjetas de Resumen */}
-        <View className="px-5 mb-6">
+        <View className="px-5 mb-6 mt-4">
           {/* Balance del Periodo */}
           <View className="bg-neutral-900 p-5 rounded-2xl mb-3">
             <Text className="text-xs text-neutral-400 uppercase font-semibold mb-1">
               Balance del Periodo
             </Text>
-            <Text className="text-4xl font-bold text-white">
+            <Text className={`text-4xl font-bold ${datos.balance >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               ${datos.balance.toLocaleString('es-CO')}
             </Text>
             {cuentaSeleccionada && (
@@ -335,8 +344,8 @@ export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressC
 
           {/* Gastos e Ingresos */}
           <View className="flex-row mb-3">
-            <View className="flex-1 bg-neutral-900 p-4 rounded-2xl mr-2 border border-red-900">
-              <Text className="text-xs text-red-400 uppercase font-semibold mb-1">
+            <View className="flex-1 bg-neutral-900 border border-red-900 p-4 rounded-2xl mr-2">
+              <Text className="text-xs text-neutral-400 uppercase font-semibold mb-1">
                 Gastos
               </Text>
               <Text className="text-2xl font-bold text-red-500">
@@ -344,8 +353,8 @@ export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressC
               </Text>
             </View>
 
-            <View className="flex-1 bg-neutral-900 p-4 rounded-2xl ml-2 border border-green-900">
-              <Text className="text-xs text-green-400 uppercase font-semibold mb-1">
+            <View className="flex-1 bg-neutral-900 border border-green-900 p-4 rounded-2xl ml-2">
+              <Text className="text-xs text-neutral-400 uppercase font-semibold mb-1">
                 Ingresos
               </Text>
               <Text className="text-2xl font-bold text-green-500">
@@ -355,9 +364,9 @@ export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressC
           </View>
 
           {/* Flujo de Efectivo */}
-          <View className="bg-neutral-900 p-5 rounded-2xl border border-blue-900">
+          <View className="bg-neutral-900 border border-blue-900 p-5 rounded-2xl">
             <View className="flex-row justify-between items-center mb-1">
-              <Text className="text-xs text-blue-400 uppercase font-semibold">
+              <Text className="text-xs text-neutral-400 uppercase font-semibold">
                 Flujo de Efectivo
               </Text>
               <View className={`px-3 py-1 rounded-full ${
@@ -422,6 +431,108 @@ export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressC
               </Text>
             </View>
           )}
+        </View>
+
+        {/* Análisis Financiero */}
+        <View className="px-5 mb-8">
+          <Text className="text-lg font-bold text-white mb-4">
+            Análisis Financiero
+          </Text>
+
+          {(() => {
+            // Calcular métricas adicionales
+            let transaccionesFiltradas = todasLasTransacciones;
+            if (cuentaSeleccionada) {
+              transaccionesFiltradas = todasLasTransacciones.filter(
+                t => t.accountId === cuentaSeleccionada.numero
+              );
+            }
+            const transaccionesRango = filtrarPorRangoFecha(transaccionesFiltradas, filtroSeleccionado, fechaReferencia);
+
+            const ingresos = transaccionesRango.filter(t => t.tipo === 'income').reduce((sum, t) => sum + t.monto, 0);
+            const gastos = transaccionesRango.filter(t => t.tipo === 'expense' || t.tipo === 'transfer').reduce((sum, t) => sum + t.monto, 0);
+
+            // Tasa de ahorro
+            const tasaAhorro = ingresos > 0 ? ((ingresos - gastos) / ingresos * 100) : 0;
+
+            // Promedio diario de gastos
+            const diasEnPeriodo = filtroSeleccionado === 'semana' ? 7 : filtroSeleccionado === 'mes' ? 30 : 365;
+            const promedioDiario = gastos / diasEnPeriodo;
+
+            // Proyección fin de mes
+            const hoy = new Date();
+            const diasRestantes = new Date(hoy.getFullYear(), hoy.getMonth() + 1, 0).getDate() - hoy.getDate();
+            const proyeccionMes = gastos + (promedioDiario * diasRestantes);
+
+            // Ratio Ingreso/Gasto
+            const ratioIngresoGasto = gastos > 0 ? (ingresos / gastos) : 0;
+
+            return (
+              <View className="gap-3">
+                {/* Tasa de Ahorro */}
+                <View className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-neutral-400 text-sm font-semibold">Tasa de Ahorro</Text>
+                    <MaterialCommunityIcons
+                      name={tasaAhorro >= 20 ? "chart-line-variant" : "alert-circle"}
+                      size={20}
+                      color={tasaAhorro >= 20 ? "#22C55E" : "#F59E0B"}
+                    />
+                  </View>
+                  <Text className={`text-3xl font-bold ${tasaAhorro >= 20 ? 'text-green-500' : tasaAhorro >= 10 ? 'text-yellow-500' : 'text-red-500'}`}>
+                    {tasaAhorro.toFixed(1)}%
+                  </Text>
+                  <Text className="text-xs text-neutral-500 mt-1">
+                    {tasaAhorro >= 20 ? 'Excelente ahorro' : tasaAhorro >= 10 ? 'Ahorro moderado' : 'Bajo ahorro'}
+                  </Text>
+                </View>
+
+                {/* Promedio Diario */}
+                <View className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-neutral-400 text-sm font-semibold">Gasto Promedio Diario</Text>
+                    <MaterialCommunityIcons name="calendar-today" size={20} color="#06B6D4" />
+                  </View>
+                  <Text className="text-3xl font-bold text-cyan-500">
+                    ${promedioDiario.toLocaleString('es-CO', { maximumFractionDigits: 0 })}
+                  </Text>
+                  <Text className="text-xs text-neutral-500 mt-1">
+                    Basado en {filtroSeleccionado}
+                  </Text>
+                </View>
+
+                {/* Proyección Fin de Mes */}
+                {filtroSeleccionado === 'mes' && diasRestantes > 0 && (
+                  <View className="bg-neutral-900 rounded-xl p-4 border border-purple-900">
+                    <View className="flex-row items-center justify-between mb-2">
+                      <Text className="text-neutral-400 text-sm font-semibold">Proyección Fin de Mes</Text>
+                      <MaterialCommunityIcons name="crystal-ball" size={20} color="#A855F7" />
+                    </View>
+                    <Text className="text-3xl font-bold text-purple-500">
+                      ${proyeccionMes.toLocaleString('es-CO', { maximumFractionDigits: 0 })}
+                    </Text>
+                    <Text className="text-xs text-neutral-500 mt-1">
+                      {diasRestantes} días restantes
+                    </Text>
+                  </View>
+                )}
+
+                {/* Ratio Ingreso/Gasto */}
+                <View className="bg-neutral-900 rounded-xl p-4 border border-neutral-800">
+                  <View className="flex-row items-center justify-between mb-2">
+                    <Text className="text-neutral-400 text-sm font-semibold">Ratio Ingreso/Gasto</Text>
+                    <MaterialCommunityIcons name="scale-balance" size={20} color="#8B5CF6" />
+                  </View>
+                  <Text className={`text-3xl font-bold ${ratioIngresoGasto >= 1.5 ? 'text-green-500' : ratioIngresoGasto >= 1 ? 'text-yellow-500' : 'text-red-500'}`}>
+                    {ratioIngresoGasto.toFixed(2)}x
+                  </Text>
+                  <Text className="text-xs text-neutral-500 mt-1">
+                    {ratioIngresoGasto >= 1.5 ? 'Salud financiera sólida' : ratioIngresoGasto >= 1 ? 'En equilibrio' : 'Gastando más de lo que ganas'}
+                  </Text>
+                </View>
+              </View>
+            );
+          })()}
         </View>
       </ScrollView>
 

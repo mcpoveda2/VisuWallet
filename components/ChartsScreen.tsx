@@ -3,18 +3,34 @@ import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Modal } fr
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { collection, getDocs } from 'firebase/firestore';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { CartesianChart, Bar, Line, Area } from 'victory-native';
 import { db } from '../utils/firebase.js';
 import { Transaccion } from '../types';
 import {
   filtrarPorRangoFecha,
-  obtenerPeriodoAnterior,
   obtenerTextoRango,
   irAPeriodoAnterior,
   irAPeriodoSiguiente,
   FiltroRango
 } from '../utils/filtrosFecha';
-import { agruparPorCategoria, obtenerTendenciaMensual } from '../utils/agregaciones';
+import {
+  agruparPorCategoria,
+  obtenerTendenciaMensual,
+  obtenerTendenciaAnual,
+  obtenerTendenciaSemestral,
+  formatearMonedaAdaptiva,
+  calcularDominioY,
+  calcularTasaAhorro,
+  calcularGastoPromedioDiario,
+  calcularIngresos,
+  calcularGastos,
+  obtenerMejorPeorCategoria
+} from '../utils/agregaciones';
 import GraficosPastel from './GraficosPastel';
+import GraficoBarrasHorizontales from './GraficoBarrasHorizontales';
+import GraficoBarrasSemanal from './GraficoBarrasSemanal';
+import GraficoEvolucionCuenta from './GraficoEvolucionCuenta';
+import KPICard from './KPICard';
 import NavBar from './NavBar';
 
 interface ChartsScreenProps {
@@ -74,7 +90,7 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
         );
         setCuentas(cuentasData);
 
-        // Cargar transacciones (patrón de Home.tsx)
+        // Cargar transacciones
         const snap = await getDocs(collection(db, 'registro'));
         const docs = snap.docs.map(d => {
           const data = d.data() as any;
@@ -156,13 +172,27 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
     // Datos para gráfico de categorías
     const categorias = agruparPorCategoria(transaccionesActuales);
 
-    // Datos para gráfico de tendencia mensual
-    const tendencia = obtenerTendenciaMensual(transaccionesFiltradas).slice(-6);
+    // Datos para gráfico de tendencia - varía según el filtro
+    let tendenciaRaw;
+    if (filtroSeleccionado === 'año') {
+      tendenciaRaw = obtenerTendenciaAnual(transaccionesFiltradas);
+    } else {
+      tendenciaRaw = obtenerTendenciaSemestral(transaccionesFiltradas);
+    }
+
+    // Preparar datos para CartesianChart
+    const tendenciaDataIngresos: Array<{x: number; ingresos: number; gastos: number}> = tendenciaRaw.map((item, index) => ({
+      x: index + 1,
+      ingresos: item.ingresos,
+      gastos: item.gastos
+    }));
 
     return {
       categorias,
-      tendencia,
-      transaccionesActuales
+      tendenciaRaw,
+      tendenciaDataIngresos,
+      transaccionesActuales,
+      transaccionesFiltradas
     };
   };
 
@@ -198,7 +228,7 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
         </View>
 
         {/* Selector de Cuenta */}
-        <View className="bg-neutral-900 px-5 py-4 mb-4 mt-2">
+        <View className="bg-neutral-900 px-5 py-4">
           <Text className="text-xs text-neutral-400 mb-3 uppercase font-semibold">
             Cuenta
           </Text>
@@ -220,8 +250,17 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
           </TouchableOpacity>
         </View>
 
+        {/* Gráfico de Evolución de Cuenta (solo cuando hay cuenta seleccionada) */}
+        {cuentaSeleccionada && (
+          <GraficoEvolucionCuenta
+            transacciones={datos.transaccionesFiltradas}
+            saldoActual={cuentaSeleccionada.saldo}
+            nombreCuenta={obtenerNombreCuentaSeleccionada()}
+          />
+        )}
+
         {/* Selector de Período */}
-        <View className="bg-neutral-900 px-5 py-4 mb-4">
+        <View className="bg-neutral-900 px-5 py-4">
           <Text className="text-xs text-neutral-400 mb-3 uppercase font-semibold">
             Período
           </Text>
@@ -302,7 +341,7 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
         </View>
 
         {/* Gráfico de Distribución por Categoría - Pastel */}
-        <View className="px-5 mb-6">
+        <View className="px-5 mb-6 mt-4">
           {datos.categorias.length > 0 ? (
             <GraficosPastel
               titulo="Gastos por Categoría"
@@ -331,62 +370,35 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
           )}
         </View>
 
-        {/* Gráfico de Tendencia Mensual */}
-        <View className="px-5 mb-8">
-          <Text className="text-lg font-bold text-white mb-4">
-            Tendencia de Últimos 6 Meses
-          </Text>
-          {datos.tendencia.length > 0 ? (
-            <View className="bg-neutral-900 rounded-2xl p-4">
-              {datos.tendencia.map((mes, index) => {
-                const maxMonto = Math.max(
-                  ...datos.tendencia.map(m => Math.max(m.ingresos, m.gastos))
-                );
-                const heightIngresos = maxMonto > 0 ? (mes.ingresos / maxMonto) * 80 : 0;
-                const heightGastos = maxMonto > 0 ? (mes.gastos / maxMonto) * 80 : 0;
+        {/* Gráfico de Barras Semanal - Solo se muestra cuando el filtro es "semana" */}
+        {filtroSeleccionado === 'semana' && (
+          <View className="px-5 mb-6">
+            <GraficoBarrasSemanal transacciones={datos.transaccionesFiltradas} />
+          </View>
+        )}
 
-                return (
-                  <View key={index} className="mb-4">
-                    <Text className="text-xs text-neutral-400 mb-2">
-                      {mes.mes}
-                    </Text>
-                    <View className="flex-row items-end h-24 gap-2">
-                      {/* Barra de Ingresos */}
-                      <View className="flex-1 items-center">
-                        <View
-                          className="w-full bg-green-500 rounded-t"
-                          style={{ height: `${heightIngresos || 8}px`, minHeight: 8 }}
-                        />
-                        <Text className="text-xs text-green-400 mt-1 text-center">
-                          ${Math.round(mes.ingresos / 1000)}k
-                        </Text>
-                      </View>
-
-                      {/* Barra de Gastos */}
-                      <View className="flex-1 items-center">
-                        <View
-                          className="w-full bg-red-500 rounded-t"
-                          style={{ height: `${heightGastos || 8}px`, minHeight: 8 }}
-                        />
-                        <Text className="text-xs text-red-400 mt-1 text-center">
-                          ${Math.round(mes.gastos / 1000)}k
-                        </Text>
-                      </View>
-                    </View>
-                  </View>
-                );
-              })}
-              <View className="flex-row justify-center gap-4 mt-4 pt-4 border-t border-neutral-800">
-                <View className="flex-row items-center">
-                  <View className="w-3 h-3 bg-green-500 rounded mr-2" />
-                  <Text className="text-xs text-neutral-400">Ingresos</Text>
-                </View>
-                <View className="flex-row items-center">
-                  <View className="w-3 h-3 bg-red-500 rounded mr-2" />
-                  <Text className="text-xs text-neutral-400">Gastos</Text>
-                </View>
-              </View>
-            </View>
+        {/* Gráfico de Distribución por Categoría - Barras Horizontales (Comparación) */}
+        <View className="px-5 mb-6">
+          {datos.categorias.length > 0 ? (
+            <GraficoBarrasHorizontales
+              titulo="Top 5 - Comparación Rápida"
+              datos={datos.categorias.map((cat, index) => ({
+                label: cat.categoria,
+                value: cat.monto,
+                color: [
+                  '#EF4444',
+                  '#F97316',
+                  '#EAB308',
+                  '#22C55E',
+                  '#06B6D4',
+                  '#EC4899',
+                  '#8B5CF6',
+                  '#06B6D4'
+                ][index % 8],
+                porcentaje: cat.porcentaje
+              }))}
+              limite={5}
+            />
           ) : (
             <View className="bg-neutral-900 rounded-2xl p-6">
               <Text className="text-center text-neutral-400">
@@ -396,45 +408,168 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
           )}
         </View>
 
-        {/* Resumen de Transacciones */}
+        {/* Gráfico de Tendencia - Líneas Suaves */}
+        <View className="px-5 mb-6">
+          <Text className="text-lg font-bold text-white mb-4">
+            {filtroSeleccionado === 'año' ? 'Tendencia Anual' : 'Tendencia Últimos 6 Meses'}
+          </Text>
+          {datos.tendenciaRaw.length > 0 ? (
+            (() => {
+              // Calcular dominio Y adaptivo para tendencia
+              const todosLosValores = [...datos.tendenciaDataIngresos.map((d: any) => d.ingresos), ...datos.tendenciaDataIngresos.map((d: any) => d.gastos)];
+              const [minYTendencia, maxYTendencia] = calcularDominioY(todosLosValores, 0.15);
+
+              // Calcular promedios
+              const promedioIngresos = datos.tendenciaRaw.reduce((s: number, m: any) => s + m.ingresos, 0) / datos.tendenciaRaw.length;
+              const promedioGastos = datos.tendenciaRaw.reduce((s: number, m: any) => s + m.gastos, 0) / datos.tendenciaRaw.length;
+
+              return (
+                <View className="bg-neutral-900 rounded-2xl p-4">
+                  {/* Indicadores de promedio */}
+                  <View className="flex-row justify-around mb-3 bg-neutral-800 rounded-lg p-3">
+                    <View className="items-center">
+                      <Text className="text-neutral-400 text-xs mb-1">Promedio Ingresos</Text>
+                      <Text className="text-green-500 font-bold text-sm">
+                        ${Math.round(promedioIngresos).toLocaleString('es-CO')}
+                      </Text>
+                    </View>
+                    <View className="w-px bg-neutral-700" />
+                    <View className="items-center">
+                      <Text className="text-neutral-400 text-xs mb-1">Promedio Gastos</Text>
+                      <Text className="text-red-500 font-bold text-sm">
+                        ${Math.round(promedioGastos).toLocaleString('es-CO')}
+                      </Text>
+                    </View>
+                  </View>
+
+                  <View style={{ height: 240 }}>
+                    <CartesianChart
+                      data={datos.tendenciaDataIngresos}
+                      xKey="x"
+                      yKeys={['ingresos', 'gastos'] as const}
+                      domainPadding={{ top: 20, bottom: 20 }}
+                      domain={{ y: [minYTendencia, maxYTendencia] }}
+                      axisOptions={{
+                        formatXLabel: (value: any) => {
+                          const index = Math.floor(value) - 1;
+                          if (index >= 0 && index < datos.tendenciaRaw.length) {
+                            return datos.tendenciaRaw[index].mesNombre || datos.tendenciaRaw[index].mes.split('-')[1];
+                          }
+                          return '';
+                        },
+                        formatYLabel: (value: any) => formatearMonedaAdaptiva(value, maxYTendencia)
+                      }}
+                    >
+                      {({ points }: any) => (
+                        <>
+                          <Line
+                            points={points.ingresos}
+                            color="#22C55E"
+                            strokeWidth={3}
+                            curveType="natural"
+                            animate={{ type: 'timing', duration: 300 }}
+                          />
+                          <Line
+                            points={points.gastos}
+                            color="#EF4444"
+                            strokeWidth={3}
+                            curveType="natural"
+                            animate={{ type: 'timing', duration: 300 }}
+                          />
+                        </>
+                      )}
+                    </CartesianChart>
+                  </View>
+
+                  {/* Leyenda */}
+                  <View className="flex-row justify-center gap-6 mt-3">
+                    <View className="flex-row items-center">
+                      <View className="w-3 h-3 bg-green-500 rounded-full mr-2" />
+                      <Text className="text-xs text-neutral-400 font-medium">Ingresos</Text>
+                    </View>
+                    <View className="flex-row items-center">
+                      <View className="w-3 h-3 bg-red-500 rounded-full mr-2" />
+                      <Text className="text-xs text-neutral-400 font-medium">Gastos</Text>
+                    </View>
+                  </View>
+                </View>
+              );
+            })()
+          ) : (
+            <View className="bg-neutral-900 rounded-2xl p-6">
+              <Text className="text-center text-neutral-400">
+                No hay datos para mostrar
+              </Text>
+            </View>
+          )}
+        </View>
+
+        {/* Gráfico de Balance Neto (Área) */}
         <View className="px-5 mb-8">
           <Text className="text-lg font-bold text-white mb-4">
-            Resumen del Período
+            Balance Neto del Período
           </Text>
-          <View className="bg-neutral-900 rounded-2xl p-4">
-            <View className="flex-row mb-3">
-              <View className="flex-1 bg-neutral-800 p-3 rounded-lg mr-2">
-                <Text className="text-xs text-red-400 uppercase font-semibold mb-1">
-                  Total Gastos
-                </Text>
-                <Text className="text-lg font-bold text-red-500">
-                  ${datos.transaccionesActuales
-                    .filter(t => t.tipo === 'expense' || t.tipo === 'transfer')
-                    .reduce((sum, t) => sum + t.monto, 0)
-                    .toLocaleString('es-CO')}
-                </Text>
-              </View>
-              <View className="flex-1 bg-neutral-800 p-3 rounded-lg ml-2">
-                <Text className="text-xs text-green-400 uppercase font-semibold mb-1">
-                  Total Ingresos
-                </Text>
-                <Text className="text-lg font-bold text-green-500">
-                  ${datos.transaccionesActuales
-                    .filter(t => t.tipo === 'income')
-                    .reduce((sum, t) => sum + t.monto, 0)
-                    .toLocaleString('es-CO')}
-                </Text>
-              </View>
-            </View>
-            <View className="bg-neutral-800 p-3 rounded-lg">
-              <Text className="text-xs text-blue-400 uppercase font-semibold mb-1">
-                Transacciones
+          {datos.tendenciaRaw.length > 0 ? (
+            (() => {
+              // Calcular datos de balance y dominio Y adaptivo
+              const balanceData = datos.tendenciaDataIngresos.map((item: any) => ({
+                x: item.x,
+                balance: item.ingresos - item.gastos
+              }));
+              const valoresBalance = balanceData.map((d: any) => d.balance);
+              const [minYBalance, maxYBalance] = calcularDominioY(valoresBalance, 0.15);
+
+              return (
+                <View className="bg-neutral-900 rounded-2xl p-4">
+                  <View style={{ height: 200 }}>
+                    <CartesianChart
+                      data={balanceData}
+                      xKey="x"
+                      yKeys={['balance'] as const}
+                      domainPadding={{ top: 20, bottom: 20 }}
+                      domain={{ y: [minYBalance, maxYBalance] }}
+                      axisOptions={{
+                        formatXLabel: (value: any) => {
+                          const index = Math.floor(value) - 1;
+                          if (index >= 0 && index < datos.tendenciaRaw.length) {
+                            return datos.tendenciaRaw[index].mesNombre || datos.tendenciaRaw[index].mes.split('-')[1];
+                          }
+                          return '';
+                        },
+                        formatYLabel: (value: any) => formatearMonedaAdaptiva(value, maxYBalance)
+                      }}
+                    >
+                      {({ points }: any) => (
+                        <Area
+                          points={points.balance}
+                          y0={minYBalance}
+                          color="#06B6D4"
+                          curveType="natural"
+                          animate={{ type: 'timing', duration: 300 }}
+                        />
+                      )}
+                    </CartesianChart>
+                  </View>
+
+                  {/* Indicador */}
+                  <View className="mt-3 flex-row justify-center">
+                    <View className="bg-blue-500/20 border border-blue-500/40 rounded-lg px-4 py-2 flex-row items-center gap-2">
+                      <View className="w-3 h-3 bg-blue-500 rounded-full" />
+                      <Text className="text-blue-400 text-sm font-semibold">
+                        Balance Neto: ${(datos.tendenciaRaw.reduce((s, m) => s + m.ingresos, 0) - datos.tendenciaRaw.reduce((s, m) => s + m.gastos, 0)).toLocaleString('es-CO', { maximumFractionDigits: 0 })}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              );
+            })()
+          ) : (
+            <View className="bg-neutral-900 rounded-2xl p-6">
+              <Text className="text-center text-neutral-400">
+                No hay datos para mostrar
               </Text>
-              <Text className="text-lg font-bold text-blue-500">
-                {datos.transaccionesActuales.length}
-              </Text>
             </View>
-          </View>
+          )}
         </View>
       </ScrollView>
 

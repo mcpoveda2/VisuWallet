@@ -1,5 +1,7 @@
 import { View, Text } from 'react-native';
+import { CartesianChart, Line } from 'victory-native';
 import { Transaccion } from '../types';
+import { formatearMonedaAdaptiva, calcularDominioY } from '../utils/agregaciones';
 
 interface GraficoUltimos30DiasProps {
   transacciones: Transaccion[];
@@ -29,6 +31,7 @@ export default function GraficoUltimos30Dias({ transacciones }: GraficoUltimos30
       .reduce((sum, t) => sum + t.monto, 0);
 
     return {
+      x: i + 1,
       dia: fecha.getDate(),
       gastos,
       ingresos,
@@ -36,12 +39,12 @@ export default function GraficoUltimos30Dias({ transacciones }: GraficoUltimos30
     };
   });
 
-  // Encontrar máximo para escalar
-  const maxValor = Math.max(...datos.map(d => Math.max(d.gastos, d.ingresos)), 1);
-  const heightBase = 70; // altura máxima en píxeles
-
   const totalGastos = datos.reduce((s, d) => s + d.gastos, 0);
   const totalIngresos = datos.reduce((s, d) => s + d.ingresos, 0);
+
+  // Calcular dominio Y con padding adaptivo
+  const todosLosValores = [...datos.map(d => d.ingresos), ...datos.map(d => d.gastos)];
+  const [minY, maxY] = calcularDominioY(todosLosValores, 0.15);
 
   return (
     <View className="bg-neutral-900 rounded-xl p-4">
@@ -64,52 +67,46 @@ export default function GraficoUltimos30Dias({ transacciones }: GraficoUltimos30
         </View>
       </View>
 
-      {/* Gráfico de barras comparativas */}
-      <View className="bg-neutral-800 rounded-lg p-4 mb-4">
-        <View className="h-48 flex-row items-flex-end justify-between gap-1">
-          {datos.map((dia, idx) => {
-            const heightGastos = (dia.gastos / maxValor) * heightBase;
-            const heightIngresos = (dia.ingresos / maxValor) * heightBase;
-
-            return (
-              <View key={idx} className="flex-1 flex-row items-flex-end justify-center gap-0.5">
-                {/* Barra de gastos (izquierda) */}
-                {dia.gastos > 0 && (
-                  <View
-                    className="rounded-t-sm"
-                    style={{
-                      width: '48%',
-                      height: Math.max(2, heightGastos),
-                      backgroundColor: '#EF4444',
-                      opacity: 0.85
-                    }}
-                  />
-                )}
-                {/* Barra de ingresos (derecha) */}
-                {dia.ingresos > 0 && (
-                  <View
-                    className="rounded-t-sm"
-                    style={{
-                      width: '48%',
-                      height: Math.max(2, heightIngresos),
-                      backgroundColor: '#22C55E',
-                      opacity: 0.85
-                    }}
-                  />
-                )}
-              </View>
-            );
-          })}
-        </View>
-
-        {/* Etiquetas de días (cada 5 días) */}
-        <View className="flex-row justify-between mt-2 px-1">
-          {[0, 5, 10, 15, 20, 25, 29].map(idx => (
-            <Text key={idx} className="text-neutral-500 text-xs">
-              {datos[idx].dia}
-            </Text>
-          ))}
-        </View>
+      {/* Gráfico de líneas con Victory Native */}
+      <View className="bg-neutral-800 rounded-lg mb-4" style={{ height: 200 }}>
+        <CartesianChart
+          data={datos}
+          xKey="x"
+          yKeys={['ingresos', 'gastos']}
+          domainPadding={{ top: 20, bottom: 20 }}
+          domain={{ y: [minY, maxY] }}
+          axisOptions={{
+            formatXLabel: (value: any) => {
+              const index = Math.floor(value) - 1;
+              if (index >= 0 && index < datos.length && index % 5 === 0) {
+                return `${datos[index].dia}`;
+              }
+              return '';
+            },
+            formatYLabel: (value: any) => formatearMonedaAdaptiva(value, maxY)
+          }}
+        >
+          {({ points }: any) => (
+            <>
+              {/* Línea de Ingresos (verde) */}
+              <Line
+                points={points.ingresos}
+                color="#22C55E"
+                strokeWidth={2.5}
+                curveType="natural"
+                animate={{ type: 'timing', duration: 300 }}
+              />
+              {/* Línea de Gastos (roja) */}
+              <Line
+                points={points.gastos}
+                color="#EF4444"
+                strokeWidth={2.5}
+                curveType="natural"
+                animate={{ type: 'timing', duration: 300 }}
+              />
+            </>
+          )}
+        </CartesianChart>
       </View>
 
       {/* Leyenda */}
