@@ -125,26 +125,42 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
 
         {/* Grid de cuentas */}
         <View className="px-6 mb-6">
-          <View className="flex-row flex-wrap justify-between">
-            {accounts.map((cuenta) => (
-              <CuentaCard
-                key={cuenta.id}
-                cuenta={{ id: cuenta.id, nombre: cuenta.nombre, balance: cuenta.balance }}
-                onPress={() => onPressAccount(cuenta)}
-              />
-            ))}
+          {accounts.length === 0 ? (
+            <View className="bg-neutral-900 rounded-2xl p-6 items-center">
+              <MaterialCommunityIcons name="bank-off-outline" size={48} color="#9CA3AF" />
+              <Text className="text-neutral-400 text-center mt-3 mb-4">
+                No tienes cuentas registradas
+              </Text>
+              <TouchableOpacity
+                onPress={() => setShowAddCuenta(true)}
+                className="bg-blue-500 rounded-lg px-6 py-3"
+                activeOpacity={0.8}
+              >
+                <Text className="text-white font-semibold">Crear primera cuenta</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View className="flex-row flex-wrap justify-between">
+              {accounts.map((cuenta) => (
+                <CuentaCard
+                  key={cuenta.id}
+                  cuenta={{ id: cuenta.id, nombre: cuenta.nombre, balance: cuenta.balance }}
+                  onPress={() => onPressAccount(cuenta)}
+                />
+              ))}
 
-            <TouchableOpacity
-              onPress={() => setShowAddCuenta(true)}
-              activeOpacity={0.8}
-              className="bg-neutral-800 rounded-2xl p-4 w-[48%] items-center justify-center mb-4"
-            >
-              <View className="w-10 h-10 bg-blue-500 rounded-full items-center justify-center mb-2">
-                <MaterialCommunityIcons name="plus" size={24} color="white" />
-              </View>
-              <Text className="text-white text-sm font-medium">Agregar cuenta</Text>
-            </TouchableOpacity>
-          </View>
+              <TouchableOpacity
+                onPress={() => setShowAddCuenta(true)}
+                activeOpacity={0.8}
+                className="bg-neutral-800 rounded-2xl p-4 w-[48%] items-center justify-center mb-4"
+              >
+                <View className="w-10 h-10 bg-blue-500 rounded-full items-center justify-center mb-2">
+                  <MaterialCommunityIcons name="plus" size={24} color="white" />
+                </View>
+                <Text className="text-white text-sm font-medium">Agregar cuenta</Text>
+              </TouchableOpacity>
+            </View>
+          )}
         </View>
 
         {/* KPIs Compactos - Dashboard */}
@@ -225,18 +241,32 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
             <Text className="text-white text-xl font-bold">
               Transacciones recientes
             </Text>
-            <TouchableOpacity onPress={() => setShowAllTransactions(true)}>
-              <MaterialCommunityIcons name="chevron-right" size={24} color="#737373" />
-            </TouchableOpacity>
+            {transactions.length > 0 && (
+              <TouchableOpacity onPress={() => setShowAllTransactions(true)}>
+                <MaterialCommunityIcons name="chevron-right" size={24} color="#737373" />
+              </TouchableOpacity>
+            )}
           </View>
 
-          {transactions.map((transaccion) => (
-            <TransaccionItem
-              key={transaccion.id}
-              transaccion={transaccion}
-              onPress={() => setSelectedTx(transaccion)}
-            />
-          ))}
+          {transactions.length === 0 ? (
+            <View className="bg-neutral-900 rounded-2xl p-6 items-center">
+              <MaterialCommunityIcons name="receipt-text-outline" size={48} color="#9CA3AF" />
+              <Text className="text-neutral-400 text-center mt-3">
+                No hay transacciones registradas
+              </Text>
+              <Text className="text-neutral-500 text-center text-sm mt-2">
+                Agrega tu primera transacción usando el botón +
+              </Text>
+            </View>
+          ) : (
+            transactions.map((transaccion) => (
+              <TransaccionItem
+                key={transaccion.id}
+                transaccion={transaccion}
+                onPress={() => setSelectedTx(transaccion)}
+              />
+            ))
+          )}
         </View>
       </ScrollView>
 
