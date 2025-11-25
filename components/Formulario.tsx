@@ -19,10 +19,20 @@ import { collection, addDoc, getDocs, query, where, deleteDoc, doc, serverTimest
 
 
 interface FormularioProps {
-  onBack: () => void;  
+  onBack: () => void;
+  ocrData?: any;
 }
 
-export default function Formulario({onBack}:FormularioProps) {
+export default function Formulario({onBack, ocrData}:FormularioProps) {
+  // Autocompletar campos si hay datos OCR
+  React.useEffect(() => {
+    if (ocrData) {
+      if (ocrData.amount) setAmount(ocrData.amount);
+      if (ocrData.date) setDateTime(ocrData.date);
+      if (ocrData.rawText) setNote(ocrData.rawText);
+      // Puedes agregar más campos según el backend
+    }
+  }, [ocrData]);
   const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
   const [amount, setAmount] = useState<string>("");
   const [account, setAccount] = useState<string>("Cuenta transaccional");

@@ -8,6 +8,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import Home from "components/Home";
 import Inicio from "components/Inicio";
 import Formulario from "components/Formulario";
+
 import DetalleCuenta from "components/DetalleCuenta";
 import Estadisticas from "components/Estadisticas";
 import ChartsScreen from "components/ChartsScreen";
@@ -23,6 +24,7 @@ export default function App() {
   // Estado para guardar la cuenta seleccionada
   const [selectedAccount, setSelectedAccount] = useState<Cuenta | null>(null);
   const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [ocrResult, setOcrResult] = useState<any>(null);
 
   // Función para cambiar de pantalla
   const navigateTo = (screen: 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts' | 'photoPreview') => {
@@ -59,10 +61,18 @@ export default function App() {
         />
       )}
       {currentScreen === 'photoPreview' && (
-        <PhotoPreview uri={photoUri} onBack={() => { setPhotoUri(null); navigateTo('home'); }} />
+        <PhotoPreview 
+          uri={photoUri} 
+          onBack={() => { setPhotoUri(null); navigateTo('home'); }}
+          onOcrResult={(ocrData) => {
+            // Guardar los datos OCR en un estado temporal y navegar a formulario
+            setOcrResult(ocrData);
+            navigateTo('formulario');
+          }}
+        />
       )}
       {currentScreen === 'formulario' ? (
-        <Formulario onBack={() => navigateTo('home')} />
+        <Formulario onBack={() => navigateTo('home')} ocrData={ocrResult} />
       ) : null}
       
       {currentScreen === 'detalleCuenta' && selectedAccount && (
