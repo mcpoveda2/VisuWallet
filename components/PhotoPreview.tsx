@@ -21,7 +21,7 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
     setLoading(true);
     try {
       const base64 = await getBase64FromUri(uri);
-      const response = await fetch('http://192.168.1.6:3001/ocr', {
+      const response = await fetch('https://ocr-backend-visu-wallet.vercel.app/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ imageBase64: base64 }),
