@@ -1,6 +1,3 @@
-// App.tsx
-// App.tsx
-
 import "global.css";
 import { useState } from "react";
 // import { SafeAreaView } from "react-native-safe-area-context";
