@@ -14,7 +14,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Categorias from "./Categorias";
-import { db, ensureAnonymousSignIn } from "utils/firebase.js";
+import { db } from "utils/firebase.js";
 import { collection, addDoc, getDocs, query, where, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 import { getCuentasFromUserDoc, addTransaccionAndUpdateBalance } from '../firebase/firestoreService';
 import { getAuth } from 'firebase/auth';
@@ -184,8 +184,22 @@ export default function Formulario({onBack}:FormularioProps) {
         return;
       }
 
-      // fallback: legacy registro
-      await addDoc(collection(db, 'registro'), { ...toSave });
+      // fallback: write to top-level `transacciones` (legacy `registro` is deprecated)
+      const auth = getAuth();
+      const user = auth.currentUser;
+      const txDoc = {
+        cuentaId: accountId ?? '',
+        ownerUid: user ? user.uid : null,
+        createdByUid: user ? user.uid : null,
+        tipo: toSave.type ?? 'expense',
+        categoria: toSave.category ?? '',
+        monto: Number(toSave.amount) || 0,
+        fecha: toSave.date ?? new Date().toISOString(),
+        descripcion: toSave.details ?? '',
+        createdAt: serverTimestamp(),
+      } as any;
+
+      await addDoc(collection(db, 'transacciones'), txDoc);
       Alert.alert('Success', 'Record saved successfully!');
       console.log('Record saved:', toSave);
       onBack();  // ← : llamar a la función onBack

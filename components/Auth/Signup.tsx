@@ -11,6 +11,8 @@ export default function SignupScreen({ onSignupSuccess, onBack }: SignupProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [displayName, setDisplayName] = useState('');
+  const [phone, setPhone] = useState('');
   const [error, setError] = useState('');
 
   const handleSignup = async () => {
@@ -22,7 +24,7 @@ export default function SignupScreen({ onSignupSuccess, onBack }: SignupProps) {
     }
 
     try {
-      await signUp(email, password);
+      await signUp(email, password, displayName.trim() || undefined, phone.trim() || undefined);
       if (onSignupSuccess) onSignupSuccess();
     } catch (e: any) {
       setError(e.message);
@@ -71,6 +73,25 @@ export default function SignupScreen({ onSignupSuccess, onBack }: SignupProps) {
           autoCapitalize="none"
           value={email}
           onChangeText={setEmail}
+        />
+
+        {/* Input: Nombre completo */}
+        <TextInput
+          className="mb-4 w-full rounded-xl border border-zinc-700 bg-zinc-700 p-4 text-white placeholder-zinc-400 focus:border-teal-500"
+          placeholder="Nombre completo"
+          placeholderTextColor="#A1A1AA"
+          value={displayName}
+          onChangeText={setDisplayName}
+        />
+
+        {/* Input: Teléfono (opcional) */}
+        <TextInput
+          className="mb-4 w-full rounded-xl border border-zinc-700 bg-zinc-700 p-4 text-white placeholder-zinc-400 focus:border-teal-500"
+          placeholder="Teléfono (opcional)"
+          placeholderTextColor="#A1A1AA"
+          keyboardType="phone-pad"
+          value={phone}
+          onChangeText={setPhone}
         />
 
         {/* Input: Contraseña */}

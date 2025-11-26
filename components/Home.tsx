@@ -14,7 +14,7 @@ import AddCuenta from './AddCuenta';
 
 import { mockTransactions } from "../datosPrueba";
 import { db } from "utils/firebase.js";
-import { collection, getDocs } from "firebase/firestore";
+import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { getCuentasFromUserDoc, getRecentTransactionsForUser } from '../firebase/firestoreService';
 import { getAuth } from 'firebase/auth';
 import { Transaccion, Cuenta } from "../types";
@@ -31,7 +31,7 @@ interface HomeProps {
 
 export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, onPressCharts, onPressHome, onPressPerfil }: HomeProps) {
   const insets = useSafeAreaInsets();
-  const nombreUsuario = "Sebas";
+  const [nombreUsuario, setNombreUsuario] = useState<string>('');
   const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
   const [transactions, setTransactions] = useState<Transaccion[]>(mockTransactions);
   const balanceTotal = accounts.reduce((s, a) => s + (a.balance || 0), 0);
@@ -47,6 +47,22 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
         const auth = getAuth();
         const user = auth.currentUser;
         if (user) {
+          // load user profile (displayName) from users/{uid}
+          try {
+            const userRef = doc(db, 'users', user.uid);
+            const userSnap = await getDoc(userRef);
+            if (userSnap.exists()) {
+              const ud: any = userSnap.data();
+              const nameFromDoc = ud.displayName || ud.nombre || '';
+              const fallback = user.displayName || (user.email ? user.email.split('@')[0] : '') || 'Usuario';
+              setNombreUsuario(nameFromDoc || fallback);
+            } else {
+              const fallback = user.displayName || (user.email ? user.email.split('@')[0] : '') || 'Usuario';
+              setNombreUsuario(fallback);
+            }
+          } catch (err) {
+            console.warn('Failed to load user profile', err);
+          }
           const txs = await getRecentTransactionsForUser(user.uid, 50);
           const docs = txs.map((d: any) => ({
             id: d.id,
