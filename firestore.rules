@@ -1,0 +1,25 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /transacciones/{txId} {
+      allow create: if request.auth != null
+        && request.auth.uid == request.resource.data.createdByUid
+        && request.resource.data.ownerUid == request.auth.uid
+        && (request.resource.data.cuentaId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.cuentasIds);
+
+      allow get, list: if request.auth != null && request.auth.uid == resource.data.ownerUid;
+      allow update, delete: if false;
+    }
+
+    // optional legacy collection read (if you keep registro)
+    match /registro/{docId} {
+      allow read: if request.auth != null && resource.data.ownerUid == request.auth.uid;
+      allow create: if request.auth != null && request.resource.data.createdByUid == request.auth.uid;
+    }
+  }
+}

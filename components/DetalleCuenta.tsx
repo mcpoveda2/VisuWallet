@@ -7,65 +7,45 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import TransaccionItem from "./ItemTransaccion";  // ← REUTILIZAR
 import GraficoUltimos30Dias from "./GraficoUltimos30Dias";
-import NavBar from "./NavBar";
-import { Cuenta } from "../types";
-import { mockTransactions } from "../datosPrueba";
+import { Cuenta, Transaccion } from "../types";
 import { db } from 'utils/firebase.js';
 import { collection, getDocs, query, where, orderBy } from 'firebase/firestore';
+import { getRecentTransactionsForUser } from '../firebase/firestoreService';
+import { getAuth } from 'firebase/auth';
 
-import { Transaccion } from '../types';
 
 interface DetalleCuentaProps {
   cuenta: Cuenta;
   onBack: () => void;
-  onPressAdd?: () => void;
-  onPressHome?: () => void;
-  onPressEstadisticas?: () => void;
-  onPressCharts?: () => void;
 }
 
-export default function DetalleCuenta({ cuenta, onBack, onPressAdd, onPressHome, onPressEstadisticas, onPressCharts }: DetalleCuentaProps) {
+export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
   const insets = useSafeAreaInsets();
   const [transactions, setTransactions] = useState<Transaccion[]>([]);
 
   useEffect(() => {
     const loadForAccount = async () => {
       try {
-        // If cuenta.numero is available, query by accountId field in Firestore
-        if (cuenta && (cuenta as any).numero) {
-          const accNum = (cuenta as any).numero;
-          // query registro where accountId == accNum ordered by date desc
-          const q = query(collection(db, 'registro'), where('accountId', '==', accNum), orderBy('date', 'desc'));
-          const snap = await getDocs(q);
-          const docs = snap.docs.map(d => {
-            const data = d.data() as any;
-            return {
-              id: d.id,
-              tipo: data.type ?? data.tipo ?? 'expense',
-              categoria: data.category ?? data.categoria ?? '',
-              monto: Number(data.amount ?? data.monto ?? 0),
-              fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
-            } as Transaccion;
-          });
-          setTransactions(docs);
-          return;
-        }
+        // Load recent transactions for the current user and filter locally
+        const auth = getAuth();
+          const user = auth.currentUser;
+          if (!user) {
+            setTransactions([]);
+            return;
+          }
 
-        // Fallback: load all and filter by name/id (best-effort)
-        const snap = await getDocs(collection(db, 'registro'));
-        const docs = snap.docs.map(d => {
-          const data = d.data() as any;
-          return {
+          const txs = await getRecentTransactionsForUser(user.uid, 200);
+          const docs = txs.map((d: any) => ({
             id: d.id,
-            tipo: data.type ?? data.tipo ?? 'expense',
-            categoria: data.category ?? data.categoria ?? '',
-            monto: Number(data.amount ?? data.monto ?? 0),
-            fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
-            account: data.account ?? data.cuenta ?? '',
-          } as any;
-        });
+            tipo: d.tipo ?? d.type ?? d.tipo ?? 'expense',
+            categoria: d.categoria ?? d.category ?? '',
+            monto: Number(d.monto ?? d.amount ?? 0),
+            fecha: d.fecha ?? d.date ?? (d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toString() : d.createdAt) : ''),
+            account: d.account ?? d.cuenta ?? '',
+            accountId: d.cuentaId ?? d.accountId ?? '',
+          } as any));
 
-        const filtered = docs.filter((t: any) => {
+          const filtered = docs.filter((t: any) => {
           if (!t.account) return false;
           return t.account === cuenta.nombre || t.account.includes(cuenta.nombre) || t.account.includes(cuenta.id || '');
         });
@@ -76,7 +56,7 @@ export default function DetalleCuenta({ cuenta, onBack, onPressAdd, onPressHome,
           return tb - ta;
         });
 
-        setTransactions(filtered as Transaccion[]);
+          setTransactions(filtered as Transaccion[]);
       } catch (e) {
         console.warn('Failed to load transactions for account', e);
         setTransactions([]);
@@ -87,13 +67,14 @@ export default function DetalleCuenta({ cuenta, onBack, onPressAdd, onPressHome,
 
   return (
     <SafeAreaView
-      className="flex-1 bg-black"
+      className="flex-1 bg-black m-safe p-safe"
       style={{
-        paddingBottom: 0,
+        paddingTop: insets.top,
+        paddingBottom: insets.bottom,
       }}
     >
       {/* Header */}
-      <View className="flex-row items-center justify-between px-4 pt-4">
+      <View className="flex-row items-center justify-between px-4 -mt-16">
         <TouchableOpacity onPress={onBack} activeOpacity={0.7} className="flex-row items-center">
           <MaterialCommunityIcons name="chevron-left" size={28} color="#3b82f6" />
           <Text className="text-blue-500 text-base font-medium">Back</Text>
@@ -108,12 +89,9 @@ export default function DetalleCuenta({ cuenta, onBack, onPressAdd, onPressHome,
         </TouchableOpacity>
       </View>
 
-      <ScrollView
+      <ScrollView 
         className="flex-1"
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={{
-          paddingBottom: 90
-        }}
       >
         {/* Balance Card */}
         <View className="mx-4 mt-4 mb-6 bg-neutral-900 rounded-2xl p-4">
@@ -157,14 +135,23 @@ export default function DetalleCuenta({ cuenta, onBack, onPressAdd, onPressHome,
         </View>
       </ScrollView>
 
-      {/* NavBar */}
-      <NavBar
-        onPressAdd={onPressAdd || (() => {})}
-        onPressHome={onPressHome || (() => {})}
-        onPressEstadisticas={onPressEstadisticas || (() => {})}
-        onPressCharts={onPressCharts || (() => {})}
-        activeScreen="home"
-      />
+      {/* Botón Record */}
+      <View className="absolute bottom-6 right-6">
+        <TouchableOpacity
+          className="bg-blue-500 flex-row items-center px-6 py-3 rounded-full"
+          activeOpacity={0.8}
+          style={{
+            shadowColor: '#3b82f6',
+            shadowOffset: { width: 0, height: 4 },
+            shadowOpacity: 0.3,
+            shadowRadius: 8,
+            elevation: 8,
+          }}
+        >
+          <MaterialCommunityIcons name="plus-circle" size={24} color="white" />
+          <Text className="text-white font-semibold text-base ml-2">Record</Text>
+        </TouchableOpacity>
+      </View>
     </SafeAreaView>
   );
 }
