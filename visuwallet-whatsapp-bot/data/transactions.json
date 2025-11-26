@@ -1,0 +1,25 @@
+[
+  {
+    "id": "1764193732431",
+    "monto": 2,
+    "categoria": "comida",
+    "descripcion": "gaste 2 dolares en sushi",
+    "tipo": "expense",
+    "confidence": 0.8,
+    "origen": "whatsapp",
+    "fecha": "2025-11-26",
+    "cuentaId": "default",
+    "createdAt": "2025-11-26T21:48:52.431Z"
+  },
+  {
+    "id": "1764193784821",
+    "tipo": "expense",
+    "categoria": "ropa",
+    "monto": 90,
+    "descripcion": "zapatos Nike",
+    "origen": "whatsapp",
+    "fecha": "2025-11-26",
+    "cuentaId": "default",
+    "createdAt": "2025-11-26T21:49:44.821Z"
+  }
+]
