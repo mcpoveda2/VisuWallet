@@ -155,7 +155,7 @@ export default function Formulario({onBack}:FormularioProps) {
         setUserLabels(next);
         setNewLabel('');
       } catch (err) {
-        console.error('Failed to persist label locally', err);
+        console.error('Failed to persist label locally a ', err);
       }
     }
   };
