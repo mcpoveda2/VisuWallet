@@ -33,26 +33,38 @@ interface FormularioProps {
 
 export default function Formulario({ onBack, ocrData }: FormularioProps) {
   // Autocompletar campos si hay datos OCR
-  React.useEffect(() => {
-    if (ocrData) {
-      if (ocrData.amount) setAmount(ocrData.amount);
-      if (ocrData.date) setDateTime(ocrData.date);
-      if (ocrData.rawText) setNote(ocrData.rawText);
-      // Puedes agregar más campos según el backend
-      if (ocrData.labels && ocrData.labels.length > 0) {
-        const top5 = ocrData.labels.slice(0, 5);
-        setSelectedLabels(top5);
-      }
-    }
-  }, [ocrData]);
   const [type, setType] = useState<'expense' | 'income' | 'transfer'>('expense');
   const [amount, setAmount] = useState<string>('');
   const [account, setAccount] = useState<string>('Cuenta transaccional');
   const [category, setCategory] = useState<string | null>(null);
   const [dateTime, setDateTime] = useState<string>(new Date().toString());
-  const [labels, setLabels] = useState<string>(''); // could be an array later
+  const [labels, setLabels] = useState<string>('');
   const [note, setNote] = useState<string>('');
   const [payee, setPayee] = useState<string>('');
+  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+  const [userLabels, setUserLabels] = useState<{ id: string; name: string }[]>([]);
+
+  React.useEffect(() => {
+    if (ocrData) {
+      if (ocrData.amount) {
+        setAmount(ocrData.amount);
+        console.log('OCR amount set:', ocrData.amount);
+      }
+      if (ocrData.date) {
+        setDateTime(ocrData.date);
+        console.log('OCR date set:', ocrData.date);
+      }
+      if (ocrData.rawText) {
+        setNote(ocrData.rawText);
+        console.log('OCR rawText set to note:', ocrData.rawText.substring(0, 50));
+      }
+      if (ocrData.labels && ocrData.labels.length > 0) {
+        setSelectedLabels(ocrData.labels);
+        console.log('OCR labels set:', ocrData.labels);
+      }
+    }
+  }, [ocrData]);
+
   const [showCategories, setShowCategories] = useState<boolean>(false);
   const [showAccountsModal, setShowAccountsModal] = useState<boolean>(false);
   const [accounts, setAccounts] = useState<
@@ -70,8 +82,6 @@ export default function Formulario({ onBack, ocrData }: FormularioProps) {
   const [showPayeeModal, setShowPayeeModal] = useState<boolean>(false);
   const [showLabelsModal, setShowLabelsModal] = useState<boolean>(false);
   const recommendedLabels = ['Food', 'Transport', 'Shopping', 'Salary', 'Rent'];
-  const [userLabels, setUserLabels] = useState<{ id: string; name: string }[]>([]);
-  const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
   const [newLabel, setNewLabel] = useState<string>('');
 
   const initialState = {
