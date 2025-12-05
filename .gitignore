@@ -21,3 +21,9 @@ android
 
 # Temporary files created by Metro to check the health of the file watcher
 .metro-health-check*
+
+#del chatbot:
+visuwallet-whatsapp-bot/node_modules
+visuwallet-whatsapp-bot/.env
+visuwallet-whatsapp-bot/firebase-service-account.json
+visuwallet-whatsapp-bot/data/transactions.json
