@@ -6,9 +6,11 @@ import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 interface InicioProps {
   onPressManual: () => void;  // ← NUEVA PROP
   onBack: () => void;          // ← NUEVA PROP
+  onPressCamera?: () => void;
+  onPressGallery?: () => void;
 }
 
-export default function Inicio({ onPressManual, onBack }: InicioProps) {  // ← RECIBIR PROPS
+export default function Inicio({ onPressManual, onBack, onPressCamera, onPressGallery }: InicioProps) {  // ← RECIBIR PROPS
   
 
   return (
@@ -24,23 +26,32 @@ export default function Inicio({ onPressManual, onBack }: InicioProps) {  // ←
       </View>
 
       <View className="flex-1 items-center justify-center px-6">
-        <Text className="text-3xl font-bold text-white mb-10 text-center">
+        <Text className="text-3xl font-bold text-white mt-20 mb-10 text-center">
           Empieza a controlar tus finanzas desde un click
         </Text>
 
         <View className="w-full space-y-5">
           <TouchableOpacity
             activeOpacity={0.8}
-            className="bg-sky-600 py-4 rounded-2xl items-center shadow-lg shadow-sky-800 mb-10 mt-20 w-full"
+            className="bg-sky-600 py-4 rounded-2xl items-center shadow-lg shadow-sky-800 mb-10 mt-10 w-full"
           >
             <Text className="text-white text-lg font-semibold">Telegram</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
             activeOpacity={0.8}
-            className="bg-emerald-600 py-4 rounded-2xl items-center shadow-lg shadow-emerald-800 mt-20 mb-20 w-full"
+            onPress={() => { if (onPressCamera) onPressCamera(); }}
+            className="bg-red-600 py-4 rounded-2xl items-center shadow-lg shadow-emerald-800 mt-10 mb-10 w-full"
           >
             <Text className="text-white text-lg font-semibold">Cámara</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => { if (onPressGallery) onPressGallery(); }}
+            className="bg-emerald-600 py-4 rounded-2xl items-center shadow-lg shadow-emerald-800 mt-10 mb-10 w-full"
+          >
+            <Text className="text-white text-lg font-semibold"> Galeria</Text>
           </TouchableOpacity>
 
           <TouchableOpacity

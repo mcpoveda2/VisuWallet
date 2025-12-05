@@ -20,9 +20,10 @@ import { collection, addDoc, getDocs, query, where, deleteDoc, doc, serverTimest
 
 interface FormularioProps {
   onBack: () => void;  
+  ocrData?: { rawText?: string; amount?: number | string; date?: string; labels?: string[] } | null;
 }
 
-export default function Formulario({onBack}:FormularioProps) {
+export default function Formulario({onBack, ocrData}:FormularioProps) {
   const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
   const [amount, setAmount] = useState<string>("");
   const [account, setAccount] = useState<string>("Cuenta transaccional");
@@ -89,6 +90,13 @@ export default function Formulario({onBack}:FormularioProps) {
   };
 
   useEffect(() => {
+    // Si viene ocrData desde PhotoPreview, autocompletar note (y opcionalmente amount/labels)
+    if (ocrData && ocrData.rawText) {
+      setNote(ocrData.rawText);
+      handleChange('details', ocrData.rawText);
+      handleChange('note', ocrData.rawText);
+    }
+
     const load = async () => {
       try {
         const labelsCol = collection(db, 'labels');
