@@ -3,8 +3,6 @@ import { View, Image, Button, ActivityIndicator, Alert, Text } from 'react-nativ
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from 'expo-file-system/legacy';
 import * as ImageManipulator from 'expo-image-manipulator';
-import Constants from 'expo-constants';
-import parseOcrText from 'utils/ocrService';
 
 interface PhotoPreviewProps {
   uri: string | null;
@@ -16,28 +14,51 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
 
-  async function compressAndEncodeImage(uri: string): Promise<string> {
+  async function compressImageTo1MB(uri: string): Promise<string> {
     try {
       setStatus('Comprimiendo imagen...');
       console.log('Imagen original:', uri);
 
-      // Redimensionar y comprimir
-      const resized = await ImageManipulator.manipulateAsync(
-        uri,
-        [{ resize: { width: 800 } }],
-        { compress: 0.7, format: ImageManipulator.SaveFormat.JPEG }
-      );
+      let currentUri = uri;
+      let quality = 0.9;
+      let width = 1200;
 
-      // Obtener base64
-      setStatus('Codificando imagen...');
-      const base64String = await FileSystem.readAsStringAsync(resized.uri, {
-        encoding: 'base64',
-      });
+      // Reducir calidad y tamaño hasta llegar a ~1MB
+      while (true) {
+        const resized = await ImageManipulator.manipulateAsync(
+          currentUri,
+          [{ resize: { width } }],
+          { compress: quality, format: ImageManipulator.SaveFormat.JPEG }
+        );
 
-      console.log('Imagen comprimida, base64 size:', base64String.length);
-      return base64String;
+        const base64String = await FileSystem.readAsStringAsync(resized.uri, {
+          encoding: 'base64',
+        });
+
+        // Aproximar tamaño en bytes (base64 es ~1.33x el tamaño binario)
+        const sizeInBytes = (base64String.length * 3) / 4;
+        const sizeInMB = sizeInBytes / (1024 * 1024);
+
+        console.log(
+          `Intento - Width: ${width}, Quality: ${quality.toFixed(2)}, Size: ${sizeInMB.toFixed(2)}MB`
+        );
+
+        if (sizeInMB <= 1 || quality < 0.3) {
+          console.log(`✅ Imagen comprimida a ${sizeInMB.toFixed(2)}MB`);
+          return base64String;
+        }
+
+        // Reducir calidad o ancho para próximo intento
+        if (quality > 0.5) {
+          quality -= 0.1;
+        } else {
+          width -= 100;
+        }
+
+        currentUri = resized.uri;
+      }
     } catch (e) {
-      console.error('compressAndEncodeImage error', e);
+      console.error('compressImageTo1MB error', e);
       throw e;
     }
   }
@@ -48,33 +69,30 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
     setStatus('Preparando imagen...');
 
     try {
-      // Comprimir y codificar
-      const base64 = await compressAndEncodeImage(uri);
+      // Comprimir a máximo 1MB
+      setStatus('Comprimiendo a máximo 1MB...');
+      const base64 = await compressImageTo1MB(uri);
 
-      // Enviar a OCR.Space (API key desde app extras)
-      setStatus('Enviando a OCR.Space...');
-      const OCR_KEY = (Constants.manifest && (Constants.manifest.extra && Constants.manifest.extra.OCR_SPACE_KEY)) ||
-        (Constants.expoConfig && (Constants.expoConfig.extra && Constants.expoConfig.extra.OCR_SPACE_KEY)) ||
-        (process.env.OCR_SPACE_KEY || '');
+      // Enviar al backend con GPT
+      setStatus('Enviando al backend con GPT-4o-mini-vision...');
+      const BACKEND_URL = 'https://ocr-backend-visu-wallet.vercel.app/api/analyze-image';
 
-      if (!OCR_KEY) {
-        throw new Error('OCR API key no encontrada. Añade OCR_SPACE_KEY en .env');
-      }
+      const payload = { imageBase64: base64 };
 
-      const form = new FormData();
-      form.append('apikey', OCR_KEY);
-      form.append('isOverlayRequired', 'false');
-      form.append('language', 'spa');
-      // OCR.Space expects data URI prefix for base64 payload
-      form.append('base64Image', `data:image/jpeg;base64,${base64}`);
+      console.log('Enviando al backend:', BACKEND_URL);
+      console.log(
+        'Payload size:',
+        (JSON.stringify(payload).length * 3) / (4 * 1024 * 1024),
+        'MB'
+      );
 
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 60000);
+      const timeoutId = setTimeout(() => controller.abort(), 180000); // 90 segundos para GPT
 
-      const resp = await fetch('https://api.ocr.space/parse/image', {
+      const resp = await fetch(BACKEND_URL, {
         method: 'POST',
-        body: form as any,
-        // DO NOT set Content-Type; let fetch set the multipart boundary
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
         signal: controller.signal,
       });
 
@@ -82,44 +100,59 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
 
       if (!resp.ok) {
         const txt = await resp.text();
-        console.error('OCR.Space response error:', resp.status, txt.substring(0, 300));
-        throw new Error(`OCR.Space error: ${resp.status} - ${txt.substring(0, 200)}`);
+        console.error('Backend response error:', resp.status, txt.substring(0, 300));
+        throw new Error(
+          `Backend error: ${resp.status}${txt ? ' - ' + txt.substring(0, 200) : ''}`
+        );
       }
 
-      setStatus('Procesando respuesta de OCR.Space...');
+      setStatus('Procesando respuesta del backend...');
       const json = await resp.json();
-      console.log('OCR.Space response:', json);
+      console.log('Backend response:', json);
 
-      const parsedText = json.ParsedResults && json.ParsedResults[0] && json.ParsedResults[0].ParsedText
-        ? json.ParsedResults[0].ParsedText
-        : (json.ParsedResults && json.ParsedResults[0] && json.ParsedResults[0].TextOverlay && json.ParsedResults[0].TextOverlay.lines ? json.ParsedResults[0].TextOverlay.lines.map((l:any)=>l.LineText).join('\n') : '');
+      // Parsear respuesta de GPT
+      // Esperamos: { monto_total, etiquetas, descripcion }
+      let parsedResponse = json;
 
-      if (!parsedText || parsedText.trim().length === 0) {
-        throw new Error('No se detectó texto en la imagen (OCR.Space).');
+      // Si la respuesta está dentro de un objeto "choices" (formato OpenAI)
+      if (json.choices && json.choices[0] && json.choices[0].message) {
+        const messageContent = json.choices[0].message.content;
+        try {
+          parsedResponse = JSON.parse(messageContent);
+        } catch (e) {
+          console.warn('Could not parse GPT response as JSON, using raw:', messageContent);
+          parsedResponse = { descripcion: messageContent };
+        }
       }
 
-      setStatus('Extrayendo datos...');
-      const parsed = parseOcrText(parsedText);
+      const montTotal = parsedResponse.monto_total || parsedResponse.amount || null;
+      const etiquetas = parsedResponse.etiquetas || parsedResponse.labels || [];
+      const descripcion = parsedResponse.descripcion || parsedResponse.description || '';
+
+      if (!montTotal && !etiquetas && !descripcion) {
+        throw new Error('No se extrajeron datos significativos de la imagen.');
+      }
+
+      setStatus('Preparando datos...');
 
       const ocrDataForForm = {
-        amount: parsed.amount,
-        date: parsed.date,
-        rawText: parsedText,
-        labels: parsed.labels,
+        amount: montTotal ? parseFloat(montTotal) : null,
+        labels: Array.isArray(etiquetas) ? etiquetas : [etiquetas],
+        rawText: descripcion,
       };
 
       console.log('OCR data parsed:', ocrDataForForm);
 
       if (onOcrResult) onOcrResult(ocrDataForForm);
 
-      Alert.alert('✅ OCR completado', 'Datos extraídos listos para autocompletar.');
+      Alert.alert('✅ Análisis completado', 'Datos extraídos listos para autocompletar.');
     } catch (e: any) {
-      console.error('OCR Error:', e);
+      console.error('Análisis Error:', e);
       const errorMsg =
         e.name === 'AbortError'
-          ? 'Timeout: El servidor tardó demasiado. Intenta con una imagen más pequeña o clara.'
+          ? 'Timeout: El servidor tardó demasiado. Intenta con una imagen más clara.'
           : e.message || 'Error procesando la imagen';
-      Alert.alert('❌ Error OCR', errorMsg);
+      Alert.alert('❌ Error', errorMsg);
     } finally {
       setLoading(false);
       setStatus('');
@@ -141,8 +174,15 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
         {loading && (
           <View style={{ position: 'absolute', top: '50%', alignItems: 'center', width: '100%' }}>
             <ActivityIndicator size="large" color="#00BFFF" />
-            <Text style={{ color: '#00BFFF', marginTop: 12, fontSize: 14, textAlign: 'center', paddingHorizontal: 20 }}>
-              {status || 'Procesando OCR...'}
+            <Text
+              style={{
+                color: '#00BFFF',
+                marginTop: 12,
+                fontSize: 14,
+                textAlign: 'center',
+                paddingHorizontal: 20,
+              }}>
+              {status || 'Procesando...'}
             </Text>
           </View>
         )}

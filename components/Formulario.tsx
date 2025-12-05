@@ -673,7 +673,7 @@ export default function Formulario({onBack, ocrData}:FormularioProps) {
               {/* OCR Suggested Labels */}
               {ocrData?.labels && ocrData.labels.length > 0 && (
                 <>
-                  <Text className="mb-2 text-sm text-neutral-400">Suggested by OCR</Text>
+                  <Text className="mb-2 text-sm text-neutral-400">Suggested by AI</Text>
                   <View className="mb-3 flex-row flex-wrap">
                     {ocrData.labels.slice(0, 5).map((l: string) => {
                       const active = selectedLabels.includes(l);
