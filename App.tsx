@@ -1,10 +1,7 @@
-// App.tsx
-// App.tsx
-
 import "global.css";
 import { useState } from "react";
+// import { SafeAreaView } from "react-native-safe-area-context";
 import { SafeAreaProvider } from "react-native-safe-area-context";
-
 import Home from "components/Home";
 import Inicio from "components/Inicio";
 import Formulario from "components/Formulario";
@@ -15,6 +12,7 @@ import DetalleCuenta from "components/DetalleCuenta";
 import Estadisticas from "components/Estadisticas";
 import ChartsScreen from "components/ChartsScreen";
 
+
 import { Cuenta } from "./types";
 
 
@@ -24,9 +22,11 @@ export default function App() {
 
   // Estado para guardar la cuenta seleccionada
   const [selectedAccount, setSelectedAccount] = useState<Cuenta | null>(null);
+  const [photoUri, setPhotoUri] = useState<string | null>(null);
+  const [ocrResult, setOcrResult] = useState<any>(null);
 
   // Función para cambiar de pantalla
-  const navigateTo = (screen: 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts') => {
+  const navigateTo = (screen: 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts' | 'photoPreview') => {
     setCurrentScreen(screen);
   };
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 // components/Home.tsx
 
 import { View, Text, TouchableOpacity, ScrollView } from "react-native";
-import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
+import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 
 import CuentaCard from "./CuentaCard";
@@ -16,10 +16,9 @@ import KPICard from './KPICard';
 import { mockTransactions } from "../datosPrueba";
 import { db } from "utils/firebase.js";
 import { collection, getDocs } from "firebase/firestore";
-import { Transaccion } from "../types";
+import { Transaccion, Cuenta } from "../types";
 import TransactionDetails from './TransactionDetails';
 
-import { Cuenta } from "../types";
 
 interface HomeProps {
   onPressAdd: () => void;
@@ -29,7 +28,7 @@ interface HomeProps {
 }
 
 export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, onPressCharts }: HomeProps) {
-  const insets = useSafeAreaInsets();
+  // const insets = useSafeAreaInsets();
   const nombreUsuario = "Sebas";
   const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
   const [transactions, setTransactions] = useState<Transaccion[]>(mockTransactions);

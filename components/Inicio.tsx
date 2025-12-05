@@ -1,7 +1,8 @@
 import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import * as ImagePicker from 'expo-image-picker';
 
 interface InicioProps {
   onPressManual: () => void;  // ← NUEVA PROP
@@ -16,7 +17,6 @@ export default function Inicio({ onPressManual, onBack, onPressCamera, onPressGa
   return (
     <SafeAreaView
       className="flex-1 bg-black p-safe m-safe"
-
     >
       {/* Botón de volver */}
       <View className="px-6 py-4 -mt-16">
@@ -57,7 +57,7 @@ export default function Inicio({ onPressManual, onBack, onPressCamera, onPressGa
           <TouchableOpacity
             onPress={onPressManual}  
             activeOpacity={0.8}
-            className="bg-violet-600 py-4 rounded-2xl items-center shadow-lg shadow-violet-800 mt-5 mb-30 w-full"
+            className="bg-violet-600 py-4 rounded-2xl items-center shadow-lg shadow-violet-800 mt-10 mb-30 w-full"
           >
             <Text className="text-white text-lg font-semibold">Manual</Text>
           </TouchableOpacity>
