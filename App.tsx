@@ -4,6 +4,7 @@
 import "global.css";
 import { useState } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { AuthProvider, useAuth } from "./contexts/AuthContext";
 
 import Home from "components/Home";
 import Inicio from "components/Inicio";
@@ -11,13 +12,15 @@ import Formulario from "components/Formulario";
 import DetalleCuenta from "components/DetalleCuenta";
 import Estadisticas from "components/Estadisticas";
 import ChartsScreen from "components/ChartsScreen";
+import Login from "components/Login";
 
 import { Cuenta } from "./types";
 
 
-export default function App() {
+function AppContent() {
   // Estado para controlar qué pantalla mostrar
   const [currentScreen, setCurrentScreen] = useState<'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts'>('home');
+  const { user, isLoading } = useAuth();
 
   // Estado para guardar la cuenta seleccionada
   const [selectedAccount, setSelectedAccount] = useState<Cuenta | null>(null);
@@ -33,11 +36,23 @@ export default function App() {
     setCurrentScreen('detalleCuenta');
   };
 
+  if (isLoading) {
+    return (
+      <SafeAreaProvider>
+        {/* loading state */}
+      </SafeAreaProvider>
+    );
+  }
+
+  const isLoggedIn = !!user;
+
   return (
-    <SafeAreaProvider>
+      <SafeAreaProvider>
       {/* Renderizar la pantalla según el estado */}
 
-      {currentScreen === 'home' && (
+      {!isLoggedIn ? (
+        <Login onContinue={() => setCurrentScreen('home')} />
+      ) : currentScreen === 'home' && (
         <Home
           onPressAdd={() => navigateTo('inicio')}
           onPressAccount={navigateToAccountDetail}
@@ -84,6 +99,14 @@ export default function App() {
           onPressEstadisticas={() => navigateTo('estadisticas')}
         />
       )}
-    </SafeAreaProvider>
+      </SafeAreaProvider>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 }

@@ -2,6 +2,8 @@ import React from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
+import { useAuth } from "../contexts/AuthContext";
+import { signInWithGoogle } from "../utils/firebase";
 
 interface InicioProps {
   onPressManual: () => void;  // ← NUEVA PROP
@@ -9,7 +11,15 @@ interface InicioProps {
 }
 
 export default function Inicio({ onPressManual, onBack }: InicioProps) {  // ← RECIBIR PROPS
-  
+  const { user } = useAuth();
+
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithGoogle();
+    } catch (e) {
+      // optionally show a toast
+    }
+  };
 
   return (
     <SafeAreaView
@@ -29,6 +39,17 @@ export default function Inicio({ onPressManual, onBack }: InicioProps) {  // ←
         </Text>
 
         <View className="w-full space-y-5">
+          {/* Google Sign-In */}
+          <TouchableOpacity
+            onPress={handleGoogleSignIn}
+            activeOpacity={0.8}
+            className="bg-red-600 py-4 rounded-2xl items-center shadow-lg shadow-red-800 mb-6 w-full"
+          >
+            <Text className="text-white text-lg font-semibold">
+              {user?.providerData?.[0]?.providerId === 'google.com' ? 'Conectado con Google' : 'Iniciar sesión con Google'}
+            </Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             activeOpacity={0.8}
             className="bg-sky-600 py-4 rounded-2xl items-center shadow-lg shadow-sky-800 mb-10 mt-20 w-full"

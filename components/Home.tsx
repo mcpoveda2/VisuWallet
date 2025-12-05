@@ -15,11 +15,14 @@ import KPICard from './KPICard';
 
 import { mockTransactions } from "../datosPrueba";
 import { db } from "utils/firebase.js";
+import { useAuth } from "../contexts/AuthContext";
+import { signOutUser, ensureAnonymousSignIn } from "../utils/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { Transaccion } from "../types";
 import TransactionDetails from './TransactionDetails';
 
 import { Cuenta } from "../types";
+import { listCuentas } from "../services/firestore";
 
 interface HomeProps {
   onPressAdd: () => void;
@@ -30,7 +33,17 @@ interface HomeProps {
 
 export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, onPressCharts }: HomeProps) {
   const insets = useSafeAreaInsets();
-  const nombreUsuario = "Sebas";
+  const { user } = useAuth();
+  const nombreUsuario = user?.displayName || user?.email || 'Invitado';
+  const handleLogout = async () => {
+    try {
+      await signOutUser();
+      // optionally ensure anonymous session after logout
+      await ensureAnonymousSignIn();
+    } catch (e) {
+      console.warn('No se pudo cerrar sesión');
+    }
+  };
   const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
   const [transactions, setTransactions] = useState<Transaccion[]>(mockTransactions);
   const [allTransactions, setAllTransactions] = useState<Transaccion[]>([]); // Todas las transacciones para gráficos
@@ -43,7 +56,7 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
   const loadAll = async () => {
     try {
       // transactions
-      const snap = await getDocs(collection(db, 'registro'));
+      const snap = await getDocs(collection(db, 'transacciones'));
       const docs = snap.docs.map(d => {
         const data = d.data() as any;
         return {
@@ -63,16 +76,13 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
       setTransactions(docs.slice(0,4)); // Solo las primeras 4 para mostrar
 
       // accounts
-      const snapAcc = await getDocs(collection(db, 'cuentas'));
-      const accs = snapAcc.docs.map(d => {
-        const data = d.data() as any;
-        return {
-          id: d.id,
-          nombre: data.propietario ?? data.nombre ?? `Cuenta ${d.id}`,
-          balance: Number(data.saldo ?? data.balance ?? 0),
-          numero: data.numero ?? '',
-        };
-      });
+      const accsRaw = await listCuentas(user?.uid || undefined);
+      const accs = accsRaw.map(d => ({
+        id: d.id,
+        nombre: d.propietario ?? `Cuenta ${d.id}`,
+        balance: Number(d.saldo ?? 0),
+        numero: d.numero ?? '',
+      }));
       setAccounts(accs);
     } catch (e) {
       console.warn('Failed to load data from Firestore, using fallbacks', e);
@@ -104,6 +114,9 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
             <Text className="text-white text-2xl font-bold">
               Hola, <Text className="text-blue-500">{nombreUsuario}</Text>
             </Text>
+            <Text className="text-neutral-400 text-xs mt-1">
+              Auth: {user?.providerData?.[0]?.providerId ?? 'anonymous'}
+            </Text>
           </View>
 
           <View className="flex-row gap-3">
@@ -115,10 +128,11 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
             </TouchableOpacity>
 
             <TouchableOpacity 
+              onPress={handleLogout}
               className="w-10 h-10 bg-neutral-800 rounded-full items-center justify-center"
               activeOpacity={0.7}
             >
-              <MaterialCommunityIcons name="cog" size={20} color="white" />
+              <MaterialCommunityIcons name="logout" size={20} color="white" />
             </TouchableOpacity>
           </View>
         </View>

@@ -34,8 +34,8 @@ export default function DetalleCuenta({ cuenta, onBack, onPressAdd, onPressHome,
         // If cuenta.numero is available, query by accountId field in Firestore
         if (cuenta && (cuenta as any).numero) {
           const accNum = (cuenta as any).numero;
-          // query registro where accountId == accNum ordered by date desc
-          const q = query(collection(db, 'registro'), where('accountId', '==', accNum), orderBy('date', 'desc'));
+          // query transacciones where cuentaNumero == accNum ordered by fecha desc
+          const q = query(collection(db, 'transacciones'), where('cuentaNumero', '==', accNum), orderBy('fecha', 'desc'));
           const snap = await getDocs(q);
           const docs = snap.docs.map(d => {
             const data = d.data() as any;
@@ -52,7 +52,7 @@ export default function DetalleCuenta({ cuenta, onBack, onPressAdd, onPressHome,
         }
 
         // Fallback: load all and filter by name/id (best-effort)
-        const snap = await getDocs(collection(db, 'registro'));
+        const snap = await getDocs(collection(db, 'transacciones'));
         const docs = snap.docs.map(d => {
           const data = d.data() as any;
           return {

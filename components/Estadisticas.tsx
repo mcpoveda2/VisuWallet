@@ -84,7 +84,7 @@ export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressC
         setCuentas(cuentasData);
 
         // Cargar transacciones (patrón de Home.tsx)
-        const snap = await getDocs(collection(db, 'registro'));
+        const snap = await getDocs(collection(db, 'transacciones'));
         const docs = snap.docs.map(d => {
           const data = d.data() as any;
           return {

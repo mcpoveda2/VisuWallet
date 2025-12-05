@@ -91,7 +91,7 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
         setCuentas(cuentasData);
 
         // Cargar transacciones
-        const snap = await getDocs(collection(db, 'registro'));
+        const snap = await getDocs(collection(db, 'transacciones'));
         const docs = snap.docs.map(d => {
           const data = d.data() as any;
           return {

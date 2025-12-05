@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { db } from 'utils/firebase.js';
-import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
+import { addCuenta } from '../services/firestore';
+import { useAuth } from '../contexts/AuthContext';
 
 interface Props {
   visible: boolean;
@@ -11,6 +11,7 @@ interface Props {
 }
 
 export default function AddCuenta({ visible, onClose, onSaved }: Props) {
+  const { user } = useAuth();
   const [tipo, setTipo] = useState<'corriente' | 'ahorros'>('corriente');
   const [numero, setNumero] = useState('');
   const [saldo, setSaldo] = useState('0');
@@ -42,16 +43,16 @@ export default function AddCuenta({ visible, onClose, onSaved }: Props) {
       cedula,
       propietario,
       email: email || null,
-      createdAt: serverTimestamp(),
+      ownerUid: user?.uid ?? null,
     } as any;
 
     setSaving(true);
     try {
-      const ref = await addDoc(collection(db, 'cuentas'), payload);
-      console.log('Cuenta creada', ref.id, payload);
+      const id = await addCuenta(payload, user?.uid);
+      console.log('Cuenta creada', id, payload);
       reset();
       onClose();
-      onSaved?.(ref.id);
+      onSaved?.(id);
     } catch (e) {
       console.warn('Failed to save account to Firestore, falling back to console', e);
       // Fallback: just log and close

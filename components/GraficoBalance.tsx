@@ -26,7 +26,9 @@ export default function GraficoBalance({ balance, transacciones = [], onPressSho
       const fechaStr = fecha.toISOString().split('T')[0];
 
       const transaccionesDia = transacciones.filter(t => {
-        const fechaTransaccion = new Date(t.fecha).toISOString().split('T')[0];
+        const ts = Date.parse(t.fecha as any);
+        if (isNaN(ts)) return false;
+        const fechaTransaccion = new Date(ts).toISOString().split('T')[0];
         return fechaTransaccion === fechaStr;
       });
 
@@ -49,7 +51,9 @@ export default function GraficoBalance({ balance, transacciones = [], onPressSho
       const fechaStr = fecha.toISOString().split('T')[0];
 
       const transaccionesDia = transacciones.filter(t => {
-        const fechaTransaccion = new Date(t.fecha).toISOString().split('T')[0];
+        const ts = Date.parse(t.fecha as any);
+        if (isNaN(ts)) return false;
+        const fechaTransaccion = new Date(ts).toISOString().split('T')[0];
         return fechaTransaccion === fechaStr;
       });
 
