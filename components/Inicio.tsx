@@ -2,7 +2,6 @@ import React from "react";
 import { Text, TouchableOpacity, View, Alert } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import * as ImagePicker from 'expo-image-picker';
 
 interface InicioProps {
   onPressManual: () => void;  // ← NUEVA PROP

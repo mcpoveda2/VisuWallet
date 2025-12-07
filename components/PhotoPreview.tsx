@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import { View, Image, Button, ActivityIndicator, Alert, Text } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
 import * as FileSystem from 'expo-file-system/legacy';
-import * as ImageManipulator from 'expo-image-manipulator';
 
 interface PhotoPreviewProps {
   uri: string | null;
