@@ -61,8 +61,8 @@ app.post("/analyze", async (req, res) => {
   }
 });
 
-// app.listen(3001, () => console.log("API lista en http://localhost:3001"));
+
 
 app.listen(3001, "0.0.0.0", () => {
-  console.log("API lista en http://192.168.1.8:3001");
+  console.log("API lista en http://192.168.1.8:3001"); // CAMBIAR A IP PERSONAL AQUI 
 });

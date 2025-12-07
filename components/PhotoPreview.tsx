@@ -61,8 +61,8 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
       const base64 = await compressImageTo1MB(uri);
 
       // 2. URL del backend local o remoto
-      const BACKEND_URL = "http://192.168.1.8:3001/analyze"; 
-      // Cambia por tu IP local o localhost si usas Android emulator
+      const BACKEND_URL = "http://192.168.1.8:3001/analyze"; // CAMBIAR A IP PERSONAL AQUI 
+    
 
       setStatus('Enviando al backend con OLLAMA...');
 
