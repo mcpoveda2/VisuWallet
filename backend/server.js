@@ -7,7 +7,7 @@ app.use(cors({
     methods: "GET,POST",
     allowedHeaders: "Content-Type",
 }));
-app.use(express.json({ limit: "10mb" }));
+app.use(express.json({ limit: "20mb" }));
 
 // Ruta para recibir la imagen
 app.post("/analyze", async (req, res) => {
@@ -29,13 +29,13 @@ app.post("/analyze", async (req, res) => {
         Responde SIEMPRE en formato JSON así:
 
         {
-          "monto_total": "0.00",
+          "monto_total": "valor numerico con separacion de centavos con punto",
           "etiquetas": ["", "", ""],
           "descripcion": ""
         }
 
         Reglas:
-        - monto_total debe tener decimales con punto
+        - monto_total debe tener centavos con punto
         - 4 etiquetas que deben describir la imagen, pueden ser palabra o pocas palabras (en español)
         - descripcion máximo 10 palabras (en español)
         - si ves en la imagen total, USD, o similares, añadelo como monto_total

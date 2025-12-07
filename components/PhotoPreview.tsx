@@ -14,42 +14,75 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
   const [loading, setLoading] = useState(false);
   const [status, setStatus] = useState('');
 
-  async function compressImageTo1MB(uri: string): Promise<string> {
+  // async function compressImageTo1MB(uri: string): Promise<string> {
+  //   try {
+  //     setStatus('Comprimiendo imagen...');
+  //     let currentUri = uri;
+  //     let quality = 0.9;
+  //     let width = 1200;
+
+  //     while (true) {
+  //       const resized = await ImageManipulator.manipulateAsync(
+  //         currentUri,
+  //         [{ resize: { width } }],
+  //         { compress: quality, format: ImageManipulator.SaveFormat.JPEG }
+  //       );
+
+  //       const base64String = await FileSystem.readAsStringAsync(resized.uri, {
+  //         encoding: 'base64',
+  //       });
+
+  //       const sizeInBytes = (base64String.length * 3) / 4;
+  //       const sizeInMB = sizeInBytes / (1024 * 1024);
+
+  //       if (sizeInMB <= 1 || quality < 0.3) {
+  //         return base64String;
+  //       }
+
+  //       if (quality > 0.5) quality -= 0.1;
+  //       else width -= 100;
+
+  //       currentUri = resized.uri;
+  //     }
+  //   } catch (e) {
+  //     console.error('compressImageTo1MB error', e);
+  //     throw e;
+  //   }
+  // }
+
+//   async function compressImageTo2MB(uri: string): Promise<string> {
+//   let currentUri = uri;
+//   let quality = 0.95;
+//   let width = 1600;
+
+//   while (true) {
+//     const resized = await ImageManipulator.manipulateAsync(
+//       currentUri,
+//       [{ resize: { width } }],
+//       { compress: quality, format: ImageManipulator.SaveFormat.JPEG }
+//     );
+
+//     const base64String = await FileSystem.readAsStringAsync(resized.uri, { encoding: 'base64' });
+//     const sizeInMB = (base64String.length * 3) / 4 / (1024*1024);
+
+//     if (sizeInMB <= 2 || quality < 0.4) return base64String;
+
+//     if (quality > 0.6) quality -= 0.1;
+//     else width -= 100;
+
+//     currentUri = resized.uri;
+//   }
+// }
+
+  async function imageToBase64(uri: string): Promise<string> {
     try {
-      setStatus('Comprimiendo imagen...');
-      let currentUri = uri;
-      let quality = 0.9;
-      let width = 1200;
-
-      while (true) {
-        const resized = await ImageManipulator.manipulateAsync(
-          currentUri,
-          [{ resize: { width } }],
-          { compress: quality, format: ImageManipulator.SaveFormat.JPEG }
-        );
-
-        const base64String = await FileSystem.readAsStringAsync(resized.uri, {
-          encoding: 'base64',
-        });
-
-        const sizeInBytes = (base64String.length * 3) / 4;
-        const sizeInMB = sizeInBytes / (1024 * 1024);
-
-        if (sizeInMB <= 1 || quality < 0.3) {
-          return base64String;
-        }
-
-        if (quality > 0.5) quality -= 0.1;
-        else width -= 100;
-
-        currentUri = resized.uri;
-      }
+      const base64 = await FileSystem.readAsStringAsync(uri, { encoding: 'base64' });
+      return base64;
     } catch (e) {
-      console.error('compressImageTo1MB error', e);
+      console.error('imageToBase64 error', e);
       throw e;
     }
   }
-
   async function analizarImagen() {
     if (!uri) return;
 
@@ -58,7 +91,7 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
 
     try {
       // 1. Comprimir
-      const base64 = await compressImageTo1MB(uri);
+      const base64 = await imageToBase64(uri);
 
       // 2. URL del backend local o remoto
       const BACKEND_URL = "http://192.168.1.8:3001/analyze"; // CAMBIAR A IP PERSONAL AQUI 
