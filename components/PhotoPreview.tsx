@@ -1,3 +1,201 @@
+// import React, { useState } from 'react';
+// import { View, Image, Button, ActivityIndicator, Alert, Text } from 'react-native';
+// import { SafeAreaView } from "react-native-safe-area-context";
+// import * as FileSystem from 'expo-file-system/legacy';
+// import * as ImageManipulator from 'expo-image-manipulator';
+
+// interface PhotoPreviewProps {
+//   uri: string | null;
+//   onBack: () => void;
+//   onOcrResult?: (data: any) => void;
+// }
+
+// export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewProps) {
+//   const [loading, setLoading] = useState(false);
+//   const [status, setStatus] = useState('');
+
+//   async function compressImageTo1MB(uri: string): Promise<string> {
+//     try {
+//       setStatus('Comprimiendo imagen...');
+//       console.log('Imagen original:', uri);
+
+//       let currentUri = uri;
+//       let quality = 0.9;
+//       let width = 1200;
+
+//       // Reducir calidad y tamaño hasta llegar a ~1MB
+//       while (true) {
+//         const resized = await ImageManipulator.manipulateAsync(
+//           currentUri,
+//           [{ resize: { width } }],
+//           { compress: quality, format: ImageManipulator.SaveFormat.JPEG }
+//         );
+
+//         const base64String = await FileSystem.readAsStringAsync(resized.uri, {
+//           encoding: 'base64',
+//         });
+
+//         // Aproximar tamaño en bytes (base64 es ~1.33x el tamaño binario)
+//         const sizeInBytes = (base64String.length * 3) / 4;
+//         const sizeInMB = sizeInBytes / (1024 * 1024);
+
+//         console.log(
+//           `Intento - Width: ${width}, Quality: ${quality.toFixed(2)}, Size: ${sizeInMB.toFixed(2)}MB`
+//         );
+
+//         if (sizeInMB <= 1 || quality < 0.3) {
+//           console.log(`✅ Imagen comprimida a ${sizeInMB.toFixed(2)}MB`);
+//           return base64String;
+//         }
+
+//         // Reducir calidad o ancho para próximo intento
+//         if (quality > 0.5) {
+//           quality -= 0.1;
+//         } else {
+//           width -= 100;
+//         }
+
+//         currentUri = resized.uri;
+//       }
+//     } catch (e) {
+//       console.error('compressImageTo1MB error', e);
+//       throw e;
+//     }
+//   }
+
+//   async function analizarImagen() {
+//     if (!uri) return;
+//     setLoading(true);
+//     setStatus('Preparando imagen...');
+
+//     try {
+//       // Comprimir a máximo 1MB
+//       setStatus('Comprimiendo a máximo 1MB...');
+//       const base64 = await compressImageTo1MB(uri);
+
+//       // Enviar al backend con GPT
+//       setStatus('Enviando al backend con GPT-4o-mini-vision...');
+//       const BACKEND_URL = 'https://ocr-backend-visu-wallet.vercel.app/api/analyze-image';
+
+//       const payload = { imageBase64: base64 };
+
+//       console.log('Enviando al backend:', BACKEND_URL);
+//       console.log(
+//         'Payload size:',
+//         (JSON.stringify(payload).length * 3) / (4 * 1024 * 1024),
+//         'MB'
+//       );
+
+//       const controller = new AbortController();
+//       const timeoutId = setTimeout(() => controller.abort(), 180000); // 90 segundos para GPT
+
+//       const resp = await fetch(BACKEND_URL, {
+//         method: 'POST',
+//         headers: { 'Content-Type': 'application/json' },
+//         body: JSON.stringify(payload),
+//         signal: controller.signal,
+//       });
+
+//       clearTimeout(timeoutId);
+
+//       if (!resp.ok) {
+//         const txt = await resp.text();
+//         console.error('Backend response error:', resp.status, txt.substring(0, 300));
+//         throw new Error(
+//           `Backend error: ${resp.status}${txt ? ' - ' + txt.substring(0, 200) : ''}`
+//         );
+//       }
+
+//       setStatus('Procesando respuesta del backend...');
+//       const json = await resp.json();
+//       console.log('Backend response:', json);
+
+//       // Parsear respuesta de GPT
+//       // Esperamos: { monto_total, etiquetas, descripcion }
+//       let parsedResponse = json;
+
+//       // Si la respuesta está dentro de un objeto "choices" (formato OpenAI)
+//       if (json.choices && json.choices[0] && json.choices[0].message) {
+//         const messageContent = json.choices[0].message.content;
+//         try {
+//           parsedResponse = JSON.parse(messageContent);
+//         } catch (e) {
+//           console.warn('Could not parse GPT response as JSON, using raw:', messageContent);
+//           parsedResponse = { descripcion: messageContent };
+//         }
+//       }
+
+//       const montTotal = parsedResponse.monto_total || parsedResponse.amount || null;
+//       const etiquetas = parsedResponse.etiquetas || parsedResponse.labels || [];
+//       const descripcion = parsedResponse.descripcion || parsedResponse.description || '';
+
+//       if (!montTotal && !etiquetas && !descripcion) {
+//         throw new Error('No se extrajeron datos significativos de la imagen.');
+//       }
+
+//       setStatus('Preparando datos...');
+
+//       const ocrDataForForm = {
+//         amount: montTotal ? parseFloat(montTotal) : null,
+//         labels: Array.isArray(etiquetas) ? etiquetas : [etiquetas],
+//         rawText: descripcion,
+//       };
+
+//       console.log('OCR data parsed:', ocrDataForForm);
+
+//       if (onOcrResult) onOcrResult(ocrDataForForm);
+
+//       Alert.alert('✅ Análisis completado', 'Datos extraídos listos para autocompletar.');
+//     } catch (e: any) {
+//       console.error('Análisis Error:', e);
+//       const errorMsg =
+//         e.name === 'AbortError'
+//           ? 'Timeout: El servidor tardó demasiado. Intenta con una imagen más clara.'
+//           : e.message || 'Error procesando la imagen';
+//       Alert.alert('❌ Error', errorMsg);
+//     } finally {
+//       setLoading(false);
+//       setStatus('');
+//     }
+//   }
+
+//   return (
+//     <SafeAreaView className="flex-1 bg-black p-safe m-safe">
+//       <View className="flex-1 items-center justify-center p-4">
+//         {uri ? (
+//           <Image
+//             source={{ uri }}
+//             style={{ width: '100%', height: '70%' }}
+//             resizeMode="contain"
+//           />
+//         ) : (
+//           <View />
+//         )}
+//         {loading && (
+//           <View style={{ position: 'absolute', top: '50%', alignItems: 'center', width: '100%' }}>
+//             <ActivityIndicator size="large" color="#00BFFF" />
+//             <Text
+//               style={{
+//                 color: '#00BFFF',
+//                 marginTop: 12,
+//                 fontSize: 14,
+//                 textAlign: 'center',
+//                 paddingHorizontal: 20,
+//               }}>
+//               {status || 'Procesando...'}
+//             </Text>
+//           </View>
+//         )}
+//       </View>
+
+//       <View className="p-4 flex-row justify-between">
+//         <Button title="Volver" onPress={onBack} disabled={loading} />
+//         <Button title="Analizar imagen" onPress={analizarImagen} disabled={loading} />
+//       </View>
+//     </SafeAreaView>
+//   );
+// }
+
 import React, { useState } from 'react';
 import { View, Image, Button, ActivityIndicator, Alert, Text } from 'react-native';
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -17,13 +215,10 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
   async function compressImageTo1MB(uri: string): Promise<string> {
     try {
       setStatus('Comprimiendo imagen...');
-      console.log('Imagen original:', uri);
-
       let currentUri = uri;
       let quality = 0.9;
       let width = 1200;
 
-      // Reducir calidad y tamaño hasta llegar a ~1MB
       while (true) {
         const resized = await ImageManipulator.manipulateAsync(
           currentUri,
@@ -35,25 +230,15 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
           encoding: 'base64',
         });
 
-        // Aproximar tamaño en bytes (base64 es ~1.33x el tamaño binario)
         const sizeInBytes = (base64String.length * 3) / 4;
         const sizeInMB = sizeInBytes / (1024 * 1024);
 
-        console.log(
-          `Intento - Width: ${width}, Quality: ${quality.toFixed(2)}, Size: ${sizeInMB.toFixed(2)}MB`
-        );
-
         if (sizeInMB <= 1 || quality < 0.3) {
-          console.log(`✅ Imagen comprimida a ${sizeInMB.toFixed(2)}MB`);
           return base64String;
         }
 
-        // Reducir calidad o ancho para próximo intento
-        if (quality > 0.5) {
-          quality -= 0.1;
-        } else {
-          width -= 100;
-        }
+        if (quality > 0.5) quality -= 0.1;
+        else width -= 100;
 
         currentUri = resized.uri;
       }
@@ -65,94 +250,105 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
 
   async function analizarImagen() {
     if (!uri) return;
+
     setLoading(true);
     setStatus('Preparando imagen...');
 
     try {
-      // Comprimir a máximo 1MB
-      setStatus('Comprimiendo a máximo 1MB...');
+      // 1. Comprimir
       const base64 = await compressImageTo1MB(uri);
 
-      // Enviar al backend con GPT
-      setStatus('Enviando al backend con GPT-4o-mini-vision...');
-      const BACKEND_URL = 'https://ocr-backend-visu-wallet.vercel.app/api/analyze-image';
+      // 2. URL del backend local o remoto
+      const BACKEND_URL = "http://192.168.1.8:3001/analyze"; 
+      // Cambia por tu IP local o localhost si usas Android emulator
 
-      const payload = { imageBase64: base64 };
-
-      console.log('Enviando al backend:', BACKEND_URL);
-      console.log(
-        'Payload size:',
-        (JSON.stringify(payload).length * 3) / (4 * 1024 * 1024),
-        'MB'
-      );
-
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 180000); // 90 segundos para GPT
+      setStatus('Enviando al backend con OLLAMA...');
 
       const resp = await fetch(BACKEND_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-        signal: controller.signal,
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ imageBase64: base64 })
       });
 
-      clearTimeout(timeoutId);
-
       if (!resp.ok) {
-        const txt = await resp.text();
-        console.error('Backend response error:', resp.status, txt.substring(0, 300));
-        throw new Error(
-          `Backend error: ${resp.status}${txt ? ' - ' + txt.substring(0, 200) : ''}`
-        );
+        const msg = await resp.text();
+        throw new Error("Backend error: " + msg);
       }
 
-      setStatus('Procesando respuesta del backend...');
-      const json = await resp.json();
-      console.log('Backend response:', json);
+      const result = await resp.json();
+      console.log("🔍 Result from backend:", result);
 
-      // Parsear respuesta de GPT
-      // Esperamos: { monto_total, etiquetas, descripcion }
-      let parsedResponse = json;
+      // El backend puede devolver la respuesta embebida en distintos campos.
+      // Por ejemplo: { model, created_at, response: "{ \"monto_total\": \"4.36\", ... }" }
+      let parsed: any = result;
 
-      // Si la respuesta está dentro de un objeto "choices" (formato OpenAI)
-      if (json.choices && json.choices[0] && json.choices[0].message) {
-        const messageContent = json.choices[0].message.content;
-        try {
-          parsedResponse = JSON.parse(messageContent);
-        } catch (e) {
-          console.warn('Could not parse GPT response as JSON, using raw:', messageContent);
-          parsedResponse = { descripcion: messageContent };
+      if (result && typeof result === 'object') {
+        // Si existe campo `response` como string, intentar parsearlo
+        if (typeof result.response === 'string') {
+          const raw = result.response;
+          try {
+            parsed = JSON.parse(raw);
+          } catch (err) {
+            // Extract JSON substring if possible
+            const first = raw.indexOf('{');
+            const last = raw.lastIndexOf('}');
+            if (first !== -1 && last !== -1 && last > first) {
+              try {
+                parsed = JSON.parse(raw.substring(first, last + 1));
+              } catch (err2) {
+                console.warn('Could not parse nested response JSON', err2);
+                parsed = { descripcion: raw };
+              }
+            } else {
+              parsed = { descripcion: raw };
+            }
+          }
+        }
+
+        // Si viene en formato OpenAI (choices[].message.content), intentar parsear
+        if (result.choices && Array.isArray(result.choices) && result.choices[0] && result.choices[0].message) {
+          const msg = result.choices[0].message.content;
+          if (typeof msg === 'string') {
+            try {
+              parsed = JSON.parse(msg);
+            } catch (e) {
+              const first = msg.indexOf('{');
+              const last = msg.lastIndexOf('}');
+              if (first !== -1 && last !== -1 && last > first) {
+                try {
+                  parsed = JSON.parse(msg.substring(first, last + 1));
+                } catch (_err) {
+                  parsed = { descripcion: msg };
+                }
+              } else {
+                parsed = { descripcion: msg };
+              }
+            }
+          } else if (typeof msg === 'object') {
+            parsed = msg;
+          }
         }
       }
 
-      const montTotal = parsedResponse.monto_total || parsedResponse.amount || null;
-      const etiquetas = parsedResponse.etiquetas || parsedResponse.labels || [];
-      const descripcion = parsedResponse.descripcion || parsedResponse.description || '';
+      // Extraer campos esperados: monto_total, etiquetas, descripcion
+      const montoRaw = parsed.monto_total ?? parsed.amount ?? parsed.total ?? null;
+      const etiquetasRaw = parsed.etiquetas ?? parsed.labels ?? parsed.etiquetas_sugeridas ?? [];
+      const descripcionRaw = parsed.descripcion ?? parsed.description ?? parsed.descripcion_corta ?? parsed.rawText ?? '';
 
-      if (!montTotal && !etiquetas && !descripcion) {
-        throw new Error('No se extrajeron datos significativos de la imagen.');
-      }
-
-      setStatus('Preparando datos...');
-
-      const ocrDataForForm = {
-        amount: montTotal ? parseFloat(montTotal) : null,
-        labels: Array.isArray(etiquetas) ? etiquetas : [etiquetas],
-        rawText: descripcion,
+      const ocrData = {
+        amount: montoRaw != null ? montoRaw : null,
+        labels: Array.isArray(etiquetasRaw) ? etiquetasRaw : (etiquetasRaw ? [etiquetasRaw] : []),
+        rawText: descripcionRaw || ''
       };
 
-      console.log('OCR data parsed:', ocrDataForForm);
+      console.log('Normalized OCR data:', ocrData);
 
-      if (onOcrResult) onOcrResult(ocrDataForForm);
+      if (onOcrResult) onOcrResult(ocrData);
 
-      Alert.alert('✅ Análisis completado', 'Datos extraídos listos para autocompletar.');
+      Alert.alert("Éxito", "Datos extraídos correctamente.");
     } catch (e: any) {
-      console.error('Análisis Error:', e);
-      const errorMsg =
-        e.name === 'AbortError'
-          ? 'Timeout: El servidor tardó demasiado. Intenta con una imagen más clara.'
-          : e.message || 'Error procesando la imagen';
-      Alert.alert('❌ Error', errorMsg);
+      console.error("Analyze error:", e);
+      Alert.alert("Error", e.message || "Error analizando imagen.");
     } finally {
       setLoading(false);
       setStatus('');
@@ -171,19 +367,11 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
         ) : (
           <View />
         )}
+
         {loading && (
           <View style={{ position: 'absolute', top: '50%', alignItems: 'center', width: '100%' }}>
-            <ActivityIndicator size="large" color="#00BFFF" />
-            <Text
-              style={{
-                color: '#00BFFF',
-                marginTop: 12,
-                fontSize: 14,
-                textAlign: 'center',
-                paddingHorizontal: 20,
-              }}>
-              {status || 'Procesando...'}
-            </Text>
+            <ActivityIndicator size="large" />
+            <Text style={{ marginTop: 12, color: 'white' }}>{status}</Text>
           </View>
         )}
       </View>
@@ -195,3 +383,4 @@ export default function PhotoPreview({ uri, onBack, onOcrResult }: PhotoPreviewP
     </SafeAreaView>
   );
 }
+

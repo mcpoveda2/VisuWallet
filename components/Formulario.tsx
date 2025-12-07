@@ -45,20 +45,28 @@ export default function Formulario({onBack, ocrData}:FormularioProps) {
 
   React.useEffect(() => {
     if (ocrData) {
-      if (ocrData.amount) {
-        setAmount(ocrData.amount);
-        console.log('OCR amount set:', ocrData.amount);
+      if (ocrData.amount !== undefined && ocrData.amount !== null) {
+        const amtStr = String(ocrData.amount);
+        setAmount(amtStr);
+        handleChange('amount', amtStr);
+        console.log('OCR amount set:', amtStr);
       }
       if (ocrData.date) {
         setDateTime(ocrData.date);
+        handleChange('date', ocrData.date);
         console.log('OCR date set:', ocrData.date);
       }
       if (ocrData.rawText) {
         setNote(ocrData.rawText);
+        handleChange('details', ocrData.rawText);
+        handleChange('note', ocrData.rawText);
         console.log('OCR rawText set to note:', ocrData.rawText.substring(0, 50));
       }
       if (ocrData.labels && ocrData.labels.length > 0) {
         setSelectedLabels(ocrData.labels);
+        const labelsStr = ocrData.labels.join(', ');
+        setLabels(labelsStr);
+        handleChange('labels', labelsStr);
         console.log('OCR labels set:', ocrData.labels);
       }
     }
