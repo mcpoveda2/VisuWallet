@@ -6,10 +6,11 @@ interface NavBarProps {
   onPressHome?: () => void;  // Función que se ejecuta al tocar "Resumen"
   onPressEstadisticas?: () => void;  // Función que se ejecuta al tocar "Estadísticas"
   onPressCharts?: () => void;  // Función que se ejecuta al tocar "Gráficos"
-  activeScreen?: 'home' | 'estadisticas' | 'charts';  // Pantalla activa
+  onPressPerfil?: () => void; // Función que se ejecuta al tocar "Perfil"
+  activeScreen?: 'home' | 'estadisticas' | 'charts' | 'perfil';  // Pantalla activa
 }
 
-export default function NavBar({ onPressAdd, onPressHome, onPressEstadisticas, onPressCharts, activeScreen = 'home' }: NavBarProps) {
+export default function NavBar({ onPressAdd, onPressHome, onPressEstadisticas, onPressCharts, onPressPerfil, activeScreen = 'home' }: NavBarProps) {
   return (
     <View className="absolute bottom-0 left-0 right-0 bg-neutral-900 border-t border-neutral-800">
       <View className="flex-row items-center justify-around py-3">
@@ -79,11 +80,18 @@ export default function NavBar({ onPressAdd, onPressHome, onPressEstadisticas, o
 
         {/* Perfil */}
         <TouchableOpacity 
+          onPress={onPressPerfil}
           className="items-center justify-center px-4 py-2"
           activeOpacity={0.7}
         >
-          <MaterialCommunityIcons name="account" size={24} color="#737373" />
-          <Text className="text-neutral-500 text-xs mt-1">Perfil</Text>
+          <MaterialCommunityIcons
+            name="account"
+            size={24}
+            color={activeScreen === 'perfil' ? 'white' : '#737373'}
+          />
+          <Text className={`text-xs mt-1 ${activeScreen === 'perfil' ? 'text-white' : 'text-neutral-500'}`}>
+            Perfil
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

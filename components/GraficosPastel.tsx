@@ -1,5 +1,4 @@
 import { View, Text } from 'react-native';
-import { PieChart } from 'react-native-gifted-charts';
 
 interface PieSegmentData {
   label: string;
@@ -27,31 +26,58 @@ export default function GraficosPastel({ datos, titulo }: GraficosPastelProps) {
   // Ordenar por valor descendente
   const datosOrdenados = [...datos].sort((a, b) => b.value - a.value);
 
-  // Transformar datos para Gifted Charts
-  const pieData = datosOrdenados.map(d => ({
-    value: d.value,
-    color: d.color,
-    text: `${Math.round((d.value / total) * 100)}%`,
-    label: d.label
-  }));
+  // Calcular ángulos acumulados
+  let anguloAcumulado = 0;
+  const segmentos = datosOrdenados.map(d => {
+    const angulo = (d.value / total) * 360;
+    const inicio = anguloAcumulado;
+    anguloAcumulado += angulo;
+    return { ...d, angulo, inicioAngulo: inicio };
+  });
 
   return (
     <View className="bg-neutral-900 rounded-2xl p-5">
       <Text className="text-white text-lg font-bold mb-6">{titulo}</Text>
 
-      {/* Gráfico de pastel con Gifted Charts */}
+      {/* Gráfico de pastel completo */}
       <View className="items-center mb-8">
-        <PieChart
-          data={pieData}
-          radius={110}
-          showText
-          textColor="#fff"
-          textSize={14}
-          fontWeight="bold"
-          focusOnPress
-          sectionAutoFocus
-          labelsPosition="outward"
-        />
+        <View className="relative w-56 h-56">
+          {/* Segmentos del pastel */}
+          {segmentos.map((seg, idx) => {
+            // Solo mostrar si el ángulo es significativo
+            if (seg.angulo < 1) return null;
+
+            return (
+              <View
+                key={idx}
+                className="absolute w-56 h-56 items-center justify-center overflow-hidden rounded-full"
+              >
+                <View
+                  className="absolute w-56 h-28"
+                  style={{
+                    backgroundColor: seg.color,
+                    top: 0,
+                    transform: [{ rotate: `${seg.inicioAngulo}deg` }],
+                    transformOrigin: 'center bottom',
+                    opacity: 0.95
+                  }}
+                />
+                {seg.angulo > 180 && (
+                  <View
+                    className="absolute w-56 h-28"
+                    style={{
+                      backgroundColor: seg.color,
+                      top: 0,
+                      transform: [{ rotate: `${seg.inicioAngulo + 180}deg` }],
+                      transformOrigin: 'center bottom',
+                      opacity: 0.95
+                    }}
+                  />
+                )}
+              </View>
+            );
+          })}
+        </View>
       </View>
 
       {/* Leyenda */}
@@ -76,7 +102,7 @@ export default function GraficosPastel({ datos, titulo }: GraficosPastelProps) {
               </Text>
             </View>
             <Text className="text-white font-bold text-sm bg-neutral-700 px-2 py-1 rounded">
-              {Math.round((d.value / total) * 100)}%
+              {d.porcentaje}%
             </Text>
           </View>
         ))}

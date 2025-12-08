@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { addCuenta } from '../services/firestore';
-import { useAuth } from '../contexts/AuthContext';
+import { db } from 'utils/firebase.js';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 interface Props {
   visible: boolean;
@@ -43,20 +43,20 @@ export default function AddCuenta({ visible, onClose, onSaved }: Props) {
       cedula,
       propietario,
       email: email || null,
-      ownerUid: user?.uid ?? null,
+      createdAt: serverTimestamp(),
     } as any;
 
     setSaving(true);
     try {
-      const id = await addCuenta(payload, user?.uid);
-      console.log('Cuenta creada', id, payload);
+      const ref = await addDoc(collection(db, 'cuentas'), payload);
+      console.log('Cuenta creada', ref.id, payload);
       reset();
       onClose();
-      onSaved?.(id);
+      onSaved?.(ref.id);
     } catch (e) {
-      console.warn('Failed to save account to Firestore, falling back to console', e);
+      console.warn('Failed to save embedded account to user doc', e);
       // Fallback: just log and close
-      console.log('Fallback cuenta', payload);
+      console.log('Fallback cuenta', { tipo, numero, saldo: parsedSaldo, propietario, email });
       reset();
       onClose();
     } finally {

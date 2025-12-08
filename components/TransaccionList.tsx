@@ -3,7 +3,8 @@ import { Modal, View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import TransaccionItem from './ItemTransaccion';
 import { Transaccion } from '../types';
-import { listTransactions } from 'services/firestore';
+import { db } from 'utils/firebase.js';
+import { collection, getDocs } from 'firebase/firestore';
 
 interface Props {
   visible: boolean;
@@ -16,15 +17,18 @@ export default function TransaccionList({ visible, onClose }: Props) {
   useEffect(() => {
     const load = async () => {
       try {
-        const docs = await listTransactions();
-        const mapped = docs.map((d) => ({
-          id: d.id,
-          tipo: (d.tipo as any) ?? 'expense',
-          categoria: d.categoria ?? '',
-          monto: Number(d.monto ?? 0),
-          fecha: d.fecha ?? (d.createdAt && d.createdAt.toDate ? d.createdAt.toDate().toString() : ''),
-        })) as Transaccion[];
-        mapped.sort((a, b) => {
+        const snap = await getDocs(collection(db, 'registro'));
+        const docs = snap.docs.map(d => {
+          const data = d.data() as any;
+          return {
+            id: d.id,
+            tipo: data.type ?? data.tipo ?? 'expense',
+            categoria: data.category ?? data.categoria ?? '',
+            monto: Number(data.amount ?? data.monto ?? 0),
+            fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
+          } as Transaccion;
+        });
+        docs.sort((a,b) => {
           const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
           const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
           return tb - ta;

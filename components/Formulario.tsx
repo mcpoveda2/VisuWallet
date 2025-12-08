@@ -14,9 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Categorias from "./Categorias";
-import { db } from "utils/firebase.js";
-import { collection, addDoc, getDocs, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
-import { addTransaction, listCuentas } from "services/firestore";
+import { db, ensureAnonymousSignIn } from "utils/firebase.js";
+import { collection, addDoc, getDocs, query, where, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
 
 
 interface FormularioProps {
@@ -27,7 +26,6 @@ export default function Formulario({onBack}:FormularioProps) {
   const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
   const [amount, setAmount] = useState<string>("");
   const [account, setAccount] = useState<string>("Cuenta transaccional");
-  const [accountCode, setAccountCode] = useState<string>("");
   const [category, setCategory] = useState<string | null>(null);
   const [dateTime, setDateTime] = useState<string>(new Date().toString());
   const [labels, setLabels] = useState<string>(""); // could be an array later
@@ -116,18 +114,22 @@ export default function Formulario({onBack}:FormularioProps) {
 
   const loadAccounts = async () => {
     try {
-      const accs = await listCuentas();
-      const mapped = accs.map((c) => ({
-        id: c.id,
-        tipo: c.tipo,
-        numero: c.numero,
-        saldo: c.saldo,
-        cedula: c.cedula,
-        propietario: c.propietario,
-        email: c.email,
-      }));
-      mapped.sort((a,b) => (a.propietario || '').localeCompare(b.propietario || '') || (a.numero || '').localeCompare(b.numero || ''));
-      setAccounts(mapped);
+      const snapAcc = await getDocs(collection(db, 'cuentas'));
+      const accs = snapAcc.docs.map(d => {
+        const data = d.data() as any;
+        return {
+          id: d.id,
+          tipo: data.tipo || 'corriente',
+          numero: data.numero || '',
+          saldo: data.saldo ? Number(data.saldo) : 0,
+          cedula: data.cedula || '',
+          propietario: data.propietario || data.titular || '',
+          email: data.email || '',
+        };
+      });
+      // sort by propietario then numero
+      accs.sort((a,b) => (a.propietario || '').localeCompare(b.propietario || '') || (a.numero || '').localeCompare(b.numero || ''));
+      setAccounts(accs);
     } catch (e) {
       console.warn('Failed to load cuentas', e);
       setAccounts([]);
@@ -168,21 +170,10 @@ export default function Formulario({onBack}:FormularioProps) {
   const saveRecord = async (rec?: typeof record) => {
     const toSave = rec ?? record;
     try {
-      await addTransaction({
-        tipo: toSave.type as any,
-        categoria: toSave.category,
-        monto: Number(toSave.amount) || 0,
-        fecha: toSave.date,
-        descripcion: toSave.details,
-        account: toSave.account,
-        cuentaCodigo: (toSave as any).accountCode || accountCode || '',
-        // pass account id when available so refCuenta is created in transaction
-        cuentaId: accounts.find(a => `${a.propietario ? `${a.propietario} — ` : ''}${a.numero || ''}` === (toSave.account || account))?.id,
-        labels: Array.isArray(toSave.labels) ? toSave.labels : [],
-        payee: toSave.payee,
-      });
-      Alert.alert('Success', 'Transaction saved successfully!');
-      onBack();
+      await addDoc(collection(db, 'registro'), { ...toSave });
+      Alert.alert('Success', 'Record saved successfully!');
+      console.log('Record saved:', toSave);
+      onBack();  // ← : llamar a la función onBack
     } catch (e: unknown) {
       console.error(e);
       Alert.alert('Error', 'Failed to save transaction.');
@@ -348,7 +339,6 @@ export default function Formulario({onBack}:FormularioProps) {
                           onPress={() => {
                             const display = c.propietario ? `${c.propietario} — ${c.numero || ''}` : (c.numero || 'Cuenta');
                             setAccount(display);
-                            setAccountCode(c.numero || '');
                             handleChange('account', display);
                             setShowAccountsModal(false);
                           }}
