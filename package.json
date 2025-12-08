@@ -16,12 +16,19 @@
     "@react-navigation/native": "^7.1.21",
     "@react-navigation/native-stack": "^7.7.0",
     "expo": "^54.0.0",
+<<<<<<< HEAD
+    "expo-auth-session": "^7.0.9",
+    "expo-linear-gradient": "~15.0.7",
+    "expo-status-bar": "~3.0.8",
+    "expo-web-browser": "^15.0.9",
+=======
     "expo-auth-session": "~7.0.8",
     "expo-build-properties": "~1.0.9",
     "expo-crypto": "~15.0.7",
     "expo-dev-client": "~6.0.17",
     "expo-status-bar": "~3.0.8",
     "expo-web-browser": "~15.0.9",
+>>>>>>> origin/main
     "firebase": "^12.5.0",
     "nativewind": "latest",
     "react": "19.1.0",

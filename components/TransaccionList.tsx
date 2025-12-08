@@ -5,8 +5,6 @@ import TransaccionItem from './ItemTransaccion';
 import { Transaccion } from '../types';
 import { db } from 'utils/firebase.js';
 import { collection, getDocs } from 'firebase/firestore';
-import { getRecentTransactionsForUser } from '../firebase/firestoreService';
-import { getAuth } from 'firebase/auth';
 
 interface Props {
   visible: boolean;
@@ -19,23 +17,23 @@ export default function TransaccionList({ visible, onClose }: Props) {
   useEffect(() => {
     const load = async () => {
       try {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (!user) return;
-        const snap = await getRecentTransactionsForUser(user.uid, 200);
-        const docs = snap.map((d: any) => ({
-          id: d.id,
-          tipo: d.tipo ?? d.type ?? 'expense',
-          categoria: d.categoria ?? d.category ?? '',
-          monto: Number(d.monto ?? d.amount ?? 0),
-          fecha: d.fecha ?? d.date ?? (d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toString() : d.createdAt) : ''),
-        } as Transaccion));
+        const snap = await getDocs(collection(db, 'registro'));
+        const docs = snap.docs.map(d => {
+          const data = d.data() as any;
+          return {
+            id: d.id,
+            tipo: data.type ?? data.tipo ?? 'expense',
+            categoria: data.category ?? data.categoria ?? '',
+            monto: Number(data.amount ?? data.monto ?? 0),
+            fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
+          } as Transaccion;
+        });
         docs.sort((a,b) => {
           const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
           const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
           return tb - ta;
         });
-        setTransactions(docs);
+        setTransactions(mapped);
       } catch (e) {
         console.warn('Failed to load transactions for list', e);
       }

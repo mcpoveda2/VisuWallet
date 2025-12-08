@@ -14,11 +14,11 @@ import AddCuenta from './AddCuenta';
 
 import { mockTransactions } from "../datosPrueba";
 import { db } from "utils/firebase.js";
-import { collection, getDocs, doc, getDoc } from "firebase/firestore";
-import { getCuentasFromUserDoc, getRecentTransactionsForUser } from '../firebase/firestoreService';
-import { getAuth } from 'firebase/auth';
-import { Transaccion, Cuenta } from "../types";
+import { collection, getDocs } from "firebase/firestore";
+import { Transaccion } from "../types";
 import TransactionDetails from './TransactionDetails';
+
+import { Cuenta } from "../types";
 
 interface HomeProps {
   onPressAdd: () => void;
@@ -31,7 +31,7 @@ interface HomeProps {
 
 export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, onPressCharts, onPressHome, onPressPerfil }: HomeProps) {
   const insets = useSafeAreaInsets();
-  const [nombreUsuario, setNombreUsuario] = useState<string>('');
+  const nombreUsuario = "Sebas";
   const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
   const [transactions, setTransactions] = useState<Transaccion[]>(mockTransactions);
   const balanceTotal = accounts.reduce((s, a) => s + (a.balance || 0), 0);
@@ -42,56 +42,38 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
   // Load transactions and accounts from Firestore
   const loadAll = async () => {
     try {
-      // transactions: use new transacciones collection via service
-      try {
-        const auth = getAuth();
-        const user = auth.currentUser;
-        if (user) {
-          // load user profile (displayName) from users/{uid}
-          try {
-            const userRef = doc(db, 'users', user.uid);
-            const userSnap = await getDoc(userRef);
-            if (userSnap.exists()) {
-              const ud: any = userSnap.data();
-              const nameFromDoc = ud.displayName || ud.nombre || '';
-              const fallback = user.displayName || (user.email ? user.email.split('@')[0] : '') || 'Usuario';
-              setNombreUsuario(nameFromDoc || fallback);
-            } else {
-              const fallback = user.displayName || (user.email ? user.email.split('@')[0] : '') || 'Usuario';
-              setNombreUsuario(fallback);
-            }
-          } catch (err) {
-            console.warn('Failed to load user profile', err);
-          }
-          const txs = await getRecentTransactionsForUser(user.uid, 50);
-          const docs = txs.map((d: any) => ({
-            id: d.id,
-            tipo: d.tipo ?? d.type ?? d.tipo ?? 'expense',
-            categoria: d.categoria ?? d.category ?? '',
-            monto: Number(d.monto ?? d.amount ?? 0),
-            fecha: d.fecha ?? d.date ?? (d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toString() : d.createdAt) : ''),
-          } as Transaccion));
-          docs.sort((a,b) => {
-            const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
-            const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
-            return tb - ta;
-          });
-          setTransactions(docs.slice(0,4));
-        }
-      } catch (err) {
-        console.warn('Failed to load transactions from service', err);
-      }
+      // transactions
+      const snap = await getDocs(collection(db, 'registro'));
+      const docs = snap.docs.map(d => {
+        const data = d.data() as any;
+        return {
+          id: d.id,
+          tipo: data.type ?? data.tipo ?? 'expense',
+          categoria: data.category ?? data.categoria ?? '',
+          monto: Number(data.amount ?? data.monto ?? 0),
+          fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
+        } as Transaccion;
+      });
+      docs.sort((a,b) => {
+        const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
+        const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
+        return tb - ta;
+      });
+      setAllTransactions(docs); // Guardar todas las transacciones
+      setTransactions(docs.slice(0,4)); // Solo las primeras 4 para mostrar
 
-      // accounts: read embedded cuentas from users/{uid}
-      try {
-        const accs = await getCuentasFromUserDoc();
-        // ensure shape matches Cuenta interface (id, nombre, balance)
-        const mapped = accs.map((c: any) => ({ id: c.id, nombre: c.nombre || c.propietario || 'Cuenta', balance: Number(c.balance ?? c.saldo ?? 0), numero: c.numero ?? '' }));
-        setAccounts(mapped);
-      } catch (err) {
-        console.warn('Failed to load embedded cuentas from user doc', err);
-        setAccounts([]);
-      }
+      // accounts
+      const snapAcc = await getDocs(collection(db, 'cuentas'));
+      const accs = snapAcc.docs.map(d => {
+        const data = d.data() as any;
+        return {
+          id: d.id,
+          nombre: data.propietario ?? data.nombre ?? `Cuenta ${d.id}`,
+          balance: Number(data.saldo ?? data.balance ?? 0),
+          numero: data.numero ?? '',
+        };
+      });
+      setAccounts(accs);
     } catch (e) {
       console.warn('Failed to load data from Firestore, using fallbacks', e);
       // leave transactions as mocks and accounts empty
@@ -123,6 +105,9 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
             <Text className="text-white text-2xl font-bold">
               Hola, <Text className="text-pink-500">{nombreUsuario}</Text>
             </Text>
+            <Text className="text-neutral-400 text-xs mt-1">
+              Auth: {user?.providerData?.[0]?.providerId ?? 'anonymous'}
+            </Text>
           </View>
 
           <View className="flex-row gap-3">
@@ -134,24 +119,40 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
             </TouchableOpacity>
 
             <TouchableOpacity 
+              onPress={handleLogout}
               className="w-10 h-10 bg-neutral-800 rounded-full items-center justify-center"
               activeOpacity={0.7}
             >
-              <MaterialCommunityIcons name="cog" size={20} color="white" />
+              <MaterialCommunityIcons name="logout" size={20} color="white" />
             </TouchableOpacity>
           </View>
         </View>
 
         {/* Grid de cuentas */}
         <View className="px-6 mb-6">
-          <View className="flex-row flex-wrap justify-between">
-            {accounts.map((cuenta) => (
-              <CuentaCard
-                key={cuenta.id}
-                cuenta={{ id: cuenta.id, nombre: cuenta.nombre, balance: cuenta.balance }}
-                onPress={() => onPressAccount(cuenta)}
-              />
-            ))}
+          {accounts.length === 0 ? (
+            <View className="bg-neutral-900 rounded-2xl p-6 items-center">
+              <MaterialCommunityIcons name="bank-off-outline" size={48} color="#9CA3AF" />
+              <Text className="text-neutral-400 text-center mt-3 mb-4">
+                No tienes cuentas registradas
+              </Text>
+              <TouchableOpacity
+                onPress={() => setShowAddCuenta(true)}
+                className="bg-blue-500 rounded-lg px-6 py-3"
+                activeOpacity={0.8}
+              >
+                <Text className="text-white font-semibold">Crear primera cuenta</Text>
+              </TouchableOpacity>
+            </View>
+          ) : (
+            <View className="flex-row flex-wrap justify-between">
+              {accounts.map((cuenta) => (
+                <CuentaCard
+                  key={cuenta.id}
+                  cuenta={{ id: cuenta.id, nombre: cuenta.nombre, balance: cuenta.balance }}
+                  onPress={() => onPressAccount(cuenta)}
+                />
+              ))}
 
             <TouchableOpacity
               onPress={() => setShowAddCuenta(true)}

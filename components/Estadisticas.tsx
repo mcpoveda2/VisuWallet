@@ -79,32 +79,29 @@ export default function Estadisticas({ onBack, onPressAdd, onPressHome, onPressC
           setCuentas([]);
         }
 
-        // Cargar transacciones top-level
-        try {
-          const auth = getAuth();
-          const user = auth.currentUser;
-          if (user) {
-            const snapTx = await getRecentTransactionsForUser(user.uid, 200);
-            const docs = snapTx.map((d: any) => ({
-              id: d.id,
-              tipo: d.tipo ?? d.type ?? 'expense',
-              categoria: d.categoria ?? d.category ?? '',
-              monto: Number(d.monto ?? d.amount ?? 0),
-              fecha: d.fecha ?? d.date ?? (d.createdAt ? (d.createdAt.toDate ? d.createdAt.toDate().toString() : d.createdAt) : ''),
-              account: d.account ?? d.cuenta ?? '',
-              accountId: d.cuentaId ?? d.accountId ?? '',
-            } as TransaccionConCuenta));
-            docs.sort((a: TransaccionConCuenta, b: TransaccionConCuenta) => {
-              const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
-              const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
-              return tb - ta;
-            });
-            setTodasLasTransacciones(docs);
-          }
-        } catch (err) {
-          console.warn('Error cargando transacciones', err);
-          setTodasLasTransacciones([]);
-        }
+        // Cargar transacciones (patrón de Home.tsx)
+        const snap = await getDocs(collection(db, 'registro'));
+        const docs = snap.docs.map(d => {
+          const data = d.data() as any;
+          return {
+            id: d.id,
+            tipo: data.type ?? data.tipo ?? 'expense',
+            categoria: data.category ?? data.categoria ?? '',
+            monto: Number(data.amount ?? data.monto ?? 0),
+            fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
+            account: data.account ?? data.cuenta ?? '',
+            accountId: data.accountId ?? '',
+          } as TransaccionConCuenta;
+        });
+
+        // Ordenar por fecha descendente
+        docs.sort((a, b) => {
+          const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
+          const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
+          return tb - ta;
+        });
+
+        setTodasLasTransacciones(docs);
       } catch (error) {
         console.warn('Error cargando datos:', error);
         setTodasLasTransacciones([]);

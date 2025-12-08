@@ -1,27 +1,22 @@
 // App.tsx
 // App.tsx
 
-import 'global.css';
-import { useState } from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import "global.css";
+import { useState } from "react";
+import { SafeAreaProvider } from "react-native-safe-area-context";
 
-import Home from 'components/Home';
-import Inicio from 'components/Inicio';
-import Formulario from 'components/Formulario';
-import DetalleCuenta from 'components/DetalleCuenta';
-import Estadisticas from 'components/Estadisticas';
-import ChartsScreen from 'components/ChartsScreen';
-import Perfil from 'components/Perfil';
-import Login from 'components/Auth/Login';
-import Signup from 'components/Auth/Signup';
+import Home from "components/Home";
+import Inicio from "components/Inicio";
+import Formulario from "components/Formulario";
+import DetalleCuenta from "components/DetalleCuenta";
+import Estadisticas from "components/Estadisticas";
+import ChartsScreen from "components/ChartsScreen";
 
 import { Cuenta } from './types';
 
-export default function App() {
+function AppContent() {
   // Estado para controlar qué pantalla mostrar
-  const [currentScreen, setCurrentScreen] = useState<
-    'login' | 'signup' | 'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts' | 'perfil'
-  >('login');
+  const [currentScreen, setCurrentScreen] = useState<'home' | 'inicio' | 'formulario' | 'detalleCuenta' | 'estadisticas' | 'charts'>('home');
 
   // Estado para guardar la cuenta seleccionada
   const [selectedAccount, setSelectedAccount] = useState<Cuenta | null>(null);
@@ -39,8 +34,18 @@ export default function App() {
     setCurrentScreen('detalleCuenta');
   };
 
+  if (isLoading) {
+    return (
+      <SafeAreaProvider>
+        {/* loading state */}
+      </SafeAreaProvider>
+    );
+  }
+
+  const isLoggedIn = !!user;
+
   return (
-    <SafeAreaProvider>
+      <SafeAreaProvider>
       {/* Renderizar la pantalla según el estado */}
 
       {currentScreen === 'login' && (
@@ -51,7 +56,9 @@ export default function App() {
         <Signup onSignupSuccess={() => navigateTo('home')} onBack={() => navigateTo('login')} />
       )}
 
-      {currentScreen === 'home' && (
+      {!isLoggedIn ? (
+        <Login onContinue={() => setCurrentScreen('home')} />
+      ) : currentScreen === 'home' && (
         <Home
           onPressAdd={() => navigateTo('inicio')}
           onPressAccount={navigateToAccountDetail}
@@ -89,10 +96,6 @@ export default function App() {
           onPressEstadisticas={() => navigateTo('estadisticas')}
           onPressPerfil={() => navigateTo('perfil')}
         />
-      )}
-
-      {currentScreen === 'perfil' && (
-        <Perfil onBack={() => navigateTo('home')} />
       )}
     </SafeAreaProvider>
   );

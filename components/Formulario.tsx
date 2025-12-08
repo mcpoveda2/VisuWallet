@@ -14,10 +14,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import Categorias from "./Categorias";
-import { db } from "utils/firebase.js";
+import { db, ensureAnonymousSignIn } from "utils/firebase.js";
 import { collection, addDoc, getDocs, query, where, deleteDoc, doc, serverTimestamp } from "firebase/firestore";
-import { getCuentasFromUserDoc, addTransaccionAndUpdateBalance } from '../firebase/firestoreService';
-import { getAuth } from 'firebase/auth';
 
 
 interface FormularioProps {
@@ -28,7 +26,6 @@ export default function Formulario({onBack}:FormularioProps) {
   const [type, setType] = useState<"expense" | "income" | "transfer">("expense");
   const [amount, setAmount] = useState<string>("");
   const [account, setAccount] = useState<string>("Cuenta transaccional");
-  const [accountId, setAccountId] = useState<string | null>(null);
   const [category, setCategory] = useState<string | null>(null);
   const [dateTime, setDateTime] = useState<string>(new Date().toString());
   const [labels, setLabels] = useState<string>(""); // could be an array later
@@ -117,16 +114,20 @@ export default function Formulario({onBack}:FormularioProps) {
 
   const loadAccounts = async () => {
     try {
-      const accsRaw = await getCuentasFromUserDoc();
-      const accs = accsRaw.map((d: any) => ({
-        id: d.id,
-        tipo: d.tipo || 'corriente',
-        numero: d.numero || '',
-        saldo: d.balance ? Number(d.balance) : Number(d.saldo ?? 0),
-        cedula: d.cedula || '',
-        propietario: d.nombre || d.propietario || d.titular || '',
-        email: d.email || '',
-      }));
+      const snapAcc = await getDocs(collection(db, 'cuentas'));
+      const accs = snapAcc.docs.map(d => {
+        const data = d.data() as any;
+        return {
+          id: d.id,
+          tipo: data.tipo || 'corriente',
+          numero: data.numero || '',
+          saldo: data.saldo ? Number(data.saldo) : 0,
+          cedula: data.cedula || '',
+          propietario: data.propietario || data.titular || '',
+          email: data.email || '',
+        };
+      });
+      // sort by propietario then numero
       accs.sort((a,b) => (a.propietario || '').localeCompare(b.propietario || '') || (a.numero || '').localeCompare(b.numero || ''));
       setAccounts(accs);
     } catch (e) {
@@ -169,43 +170,13 @@ export default function Formulario({onBack}:FormularioProps) {
   const saveRecord = async (rec?: typeof record) => {
     const toSave = rec ?? record;
     try {
-      // If accountId is set use the service to write transaction and update embedded balance
-      if (accountId) {
-        await addTransaccionAndUpdateBalance(accountId, {
-          tipo: toSave.type ?? toSave.type ?? 'expense',
-          monto: Number(toSave.amount ?? toSave.monto ?? 0),
-          categoria: toSave.category ?? toSave.category ?? '',
-          fecha: toSave.date ?? new Date().toISOString(),
-          descripcion: toSave.details ?? toSave.note ?? '',
-        });
-        Alert.alert('Success', 'Record saved successfully!');
-        console.log('Record saved via service:', toSave);
-        onBack();
-        return;
-      }
-
-      // fallback: write to top-level `transacciones` (legacy `registro` is deprecated)
-      const auth = getAuth();
-      const user = auth.currentUser;
-      const txDoc = {
-        cuentaId: accountId ?? '',
-        ownerUid: user ? user.uid : null,
-        createdByUid: user ? user.uid : null,
-        tipo: toSave.type ?? 'expense',
-        categoria: toSave.category ?? '',
-        monto: Number(toSave.amount) || 0,
-        fecha: toSave.date ?? new Date().toISOString(),
-        descripcion: toSave.details ?? '',
-        createdAt: serverTimestamp(),
-      } as any;
-
-      await addDoc(collection(db, 'transacciones'), txDoc);
+      await addDoc(collection(db, 'registro'), { ...toSave });
       Alert.alert('Success', 'Record saved successfully!');
       console.log('Record saved:', toSave);
       onBack();  // ← : llamar a la función onBack
     } catch (e: unknown) {
       console.error(e);
-      Alert.alert('Error', 'Failed to save record.');
+      Alert.alert('Error', 'Failed to save transaction.');
     }
   };
   const createAgain = () => {
@@ -238,6 +209,7 @@ export default function Formulario({onBack}:FormularioProps) {
 
             const recToSave = {
               account,
+              accountCode,
               category: category ?? '',
               date: dateTime,
               details: note,
@@ -367,7 +339,6 @@ export default function Formulario({onBack}:FormularioProps) {
                           onPress={() => {
                             const display = c.propietario ? `${c.propietario} — ${c.numero || ''}` : (c.numero || 'Cuenta');
                             setAccount(display);
-                            setAccountId(c.id);
                             handleChange('account', display);
                             setShowAccountsModal(false);
                           }}

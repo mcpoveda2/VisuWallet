@@ -26,16 +26,31 @@ export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
   useEffect(() => {
     const loadForAccount = async () => {
       try {
-        // Load recent transactions for the current user and filter locally
-        const auth = getAuth();
-          const user = auth.currentUser;
-          if (!user) {
-            setTransactions([]);
-            return;
-          }
+        // If cuenta.numero is available, query by accountId field in Firestore
+        if (cuenta && (cuenta as any).numero) {
+          const accNum = (cuenta as any).numero;
+          // query registro where accountId == accNum ordered by date desc
+          const q = query(collection(db, 'registro'), where('accountId', '==', accNum), orderBy('date', 'desc'));
+          const snap = await getDocs(q);
+          const docs = snap.docs.map(d => {
+            const data = d.data() as any;
+            return {
+              id: d.id,
+              tipo: data.type ?? data.tipo ?? 'expense',
+              categoria: data.category ?? data.categoria ?? '',
+              monto: Number(data.amount ?? data.monto ?? 0),
+              fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
+            } as Transaccion;
+          });
+          setTransactions(docs);
+          return;
+        }
 
-          const txs = await getRecentTransactionsForUser(user.uid, 200);
-          const docs = txs.map((d: any) => ({
+        // Fallback: load all and filter by name/id (best-effort)
+        const snap = await getDocs(collection(db, 'registro'));
+        const docs = snap.docs.map(d => {
+          const data = d.data() as any;
+          return {
             id: d.id,
             tipo: d.tipo ?? d.type ?? d.tipo ?? 'expense',
             categoria: d.categoria ?? d.category ?? '',
@@ -87,6 +102,23 @@ export default function DetalleCuenta({ cuenta, onBack }: DetalleCuentaProps) {
         <TouchableOpacity activeOpacity={0.7}>
           <Text className="text-blue-500 text-base font-medium">Edit</Text>
         </TouchableOpacity>
+      </View>
+
+      {/* Detalles de la cuenta */}
+      <View className="mx-4 mt-4 bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+        <Text className="text-neutral-400 text-xs font-semibold mb-3">DETALLES DE LA CUENTA</Text>
+        <View className="flex-row justify-between mb-2">
+          <Text className="text-neutral-400 text-sm">Número</Text>
+          <Text className="text-white text-sm">{(cuenta as any).numero || '—'}</Text>
+        </View>
+        <View className="flex-row justify-between mb-2">
+          <Text className="text-neutral-400 text-sm">Tipo</Text>
+          <Text className="text-white text-sm">{(cuenta as any).tipo ? ((cuenta as any).tipo as string).toUpperCase() : '—'}</Text>
+        </View>
+        <View className="flex-row justify-between">
+          <Text className="text-neutral-400 text-sm">Balance</Text>
+          <Text className="text-white text-sm font-semibold">${cuenta.balance.toFixed(2)}</Text>
+        </View>
       </View>
 
       <ScrollView 

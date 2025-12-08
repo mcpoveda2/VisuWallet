@@ -78,6 +78,31 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
           setCuentas([]);
         }
 
+<<<<<<< HEAD
+        // Cargar transacciones
+        const snap = await getDocs(collection(db, 'transacciones'));
+        const docs = snap.docs.map(d => {
+          const data = d.data() as any;
+          return {
+            id: d.id,
+            tipo: data.type ?? data.tipo ?? 'expense',
+            categoria: data.category ?? data.categoria ?? '',
+            monto: Number(data.amount ?? data.monto ?? 0),
+            fecha: data.date ?? data.fecha ?? (data.createdAt ? data.createdAt.toDate().toString() : ''),
+            account: data.account ?? data.cuenta ?? '',
+            accountId: data.accountId ?? '',
+          } as TransaccionConCuenta;
+        });
+
+        // Ordenar por fecha descendente
+        docs.sort((a, b) => {
+          const ta = a.fecha ? new Date(a.fecha).getTime() : 0;
+          const tb = b.fecha ? new Date(b.fecha).getTime() : 0;
+          return tb - ta;
+        });
+
+        setTodasLasTransacciones(docs);
+=======
         // Cargar transacciones desde la colección top-level `transacciones`
         try {
           const auth = getAuth();
@@ -104,6 +129,7 @@ export default function ChartsScreen({ onBack, onPressAdd, onPressHome, onPressE
           console.warn('Error cargando transacciones', err);
           setTodasLasTransacciones([]);
         }
+>>>>>>> origin/main
       } catch (error) {
         console.warn('Error cargando datos:', error);
         setTodasLasTransacciones([]);

@@ -5,6 +5,7 @@ export interface Cuenta {
     nombre:string;
   balance:number;
   numero?: string;
+  tipo?: string;
 }
 
 // se podría colocar tambien una interface Transaccoin con id, tipo, categoria, monto, date.

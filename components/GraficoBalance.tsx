@@ -5,17 +5,87 @@ interface GraficoBalanceProps {
   onPressShowMore?: () => void;
 }
 
-export default function GraficoBalance({ balance, onPressShowMore }: GraficoBalanceProps) {
-  // Generar datos de ejemplo (últimos 7 días)
-  const daysAgo = 7;
-  const balances = Array.from({ length: daysAgo }, (_, i) => ({
-    day: i + 1,
-    value: Math.max(0, balance - (Math.random() * balance * 0.3))
-  }));
+export default function GraficoBalance({ balance, transacciones = [], onPressShowMore }: GraficoBalanceProps) {
+  // Generar datos de últimos 7 días basados en transacciones reales
+  const generarDatos7Dias = () => {
+    const hoy = new Date();
+    const datos: { value: number; label: string; dataPointText: string }[] = [];
 
-  const maxBalance = Math.max(...balances.map(b => b.value), balance);
-  const minBalance = Math.min(...balances.map(b => b.value), 0);
-  const range = maxBalance - minBalance || 1;
+    // Calcular balance hacia atrás desde hoy
+    const hace7Dias = new Date(hoy);
+    hace7Dias.setDate(hace7Dias.getDate() - 6);
+
+    // Calcular balance inicial (hace 7 días)
+    let balanceInicial = balance;
+    for (let i = 0; i < 7; i++) {
+      const fecha = new Date(hoy);
+      fecha.setDate(fecha.getDate() - i);
+      const fechaStr = fecha.toISOString().split('T')[0];
+
+      const transaccionesDia = transacciones.filter(t => {
+        const ts = Date.parse(t.fecha as any);
+        if (isNaN(ts)) return false;
+        const fechaTransaccion = new Date(ts).toISOString().split('T')[0];
+        return fechaTransaccion === fechaStr;
+      });
+
+      const ingresosdia = transaccionesDia
+        .filter(t => t.tipo === 'income')
+        .reduce((sum, t) => sum + t.monto, 0);
+
+      const gastosdia = transaccionesDia
+        .filter(t => t.tipo === 'expense' || t.tipo === 'transfer')
+        .reduce((sum, t) => sum + t.monto, 0);
+
+      balanceInicial -= (ingresosdia - gastosdia);
+    }
+
+    // Ahora calcular hacia adelante para construir la serie
+    let balanceAcumulado = balanceInicial;
+    for (let i = 0; i < 7; i++) {
+      const fecha = new Date(hace7Dias);
+      fecha.setDate(fecha.getDate() + i);
+      const fechaStr = fecha.toISOString().split('T')[0];
+
+      const transaccionesDia = transacciones.filter(t => {
+        const ts = Date.parse(t.fecha as any);
+        if (isNaN(ts)) return false;
+        const fechaTransaccion = new Date(ts).toISOString().split('T')[0];
+        return fechaTransaccion === fechaStr;
+      });
+
+      const ingresosdia = transaccionesDia
+        .filter(t => t.tipo === 'income')
+        .reduce((sum, t) => sum + t.monto, 0);
+
+      const gastosdia = transaccionesDia
+        .filter(t => t.tipo === 'expense' || t.tipo === 'transfer')
+        .reduce((sum, t) => sum + t.monto, 0);
+
+      balanceAcumulado += (ingresosdia - gastosdia);
+
+      datos.push({
+        value: balanceAcumulado,
+        label: fecha.toLocaleDateString('es-ES', { weekday: 'short' }).charAt(0).toUpperCase(),
+        dataPointText: `$${(balanceAcumulado / 1000).toFixed(1)}k`
+      });
+    }
+
+    return datos;
+  };
+
+  const datos = generarDatos7Dias();
+  const balanceInicial = datos[0]?.value || 0;
+  const balanceFinal = balance;
+  const cambio = balanceInicial !== 0
+    ? ((balanceFinal - balanceInicial) / Math.abs(balanceInicial)) * 100
+    : 0;
+  const cambioFormateado = cambio.toFixed(1);
+
+  // Calcular máximo y mínimo para el gráfico
+  const valoresY = datos.map(d => d.value);
+  const maxValor = Math.max(...valoresY);
+  const minValor = Math.min(...valoresY);
 
   return (
     <View className="bg-neutral-900 rounded-2xl p-5 mb-6 border border-neutral-800">

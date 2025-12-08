@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TextInput, TouchableOpacity, Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { createCuentaEmbedded } from '../firebase/firestoreService';
+import { db } from 'utils/firebase.js';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 interface Props {
   visible: boolean;
@@ -10,6 +11,7 @@ interface Props {
 }
 
 export default function AddCuenta({ visible, onClose, onSaved }: Props) {
+  const { user } = useAuth();
   const [tipo, setTipo] = useState<'corriente' | 'ahorros'>('corriente');
   const [numero, setNumero] = useState('');
   const [saldo, setSaldo] = useState('0');
@@ -34,14 +36,23 @@ export default function AddCuenta({ visible, onClose, onSaved }: Props) {
     }
 
     const parsedSaldo = Number(saldo) || 0;
+    const payload = {
+      tipo,
+      numero,
+      saldo: parsedSaldo,
+      cedula,
+      propietario,
+      email: email || null,
+      createdAt: serverTimestamp(),
+    } as any;
 
     setSaving(true);
     try {
-      const cuenta = await createCuentaEmbedded({ nombre: propietario || 'Cuenta', balance: parsedSaldo, tipo, numero });
-      console.log('Cuenta embebida creada', cuenta);
+      const ref = await addDoc(collection(db, 'cuentas'), payload);
+      console.log('Cuenta creada', ref.id, payload);
       reset();
       onClose();
-      onSaved?.(cuenta.id);
+      onSaved?.(ref.id);
     } catch (e) {
       console.warn('Failed to save embedded account to user doc', e);
       // Fallback: just log and close
