@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth, ensureAnonymousSignIn } from '../utils/firebase';
+import { auth } from '../utils/firebase';
 import { upsertUser } from '../services/firestore';
 
 type AuthContextValue = {
@@ -16,7 +16,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   useEffect(() => {
     // Ensure there's at least an anonymous session
-    ensureAnonymousSignIn().catch(() => {});
+    // Anonymous sign-in removed; user must sign in explicitly.
 
     const unsub = onAuthStateChanged(auth, async (u) => {
       setUser(u);

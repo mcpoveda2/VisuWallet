@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, TextInput } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
-import { ensureAnonymousSignIn, signInWithEmail, signUpWithEmail } from '../utils/firebase';
+import { signInWithEmail, signUpWithEmail } from '../utils/firebase';
 import { upsertUser } from '../services/firestore';
 import { useAuth } from '../contexts/AuthContext';
 
@@ -20,14 +20,7 @@ export default function Login({ onContinue }: LoginProps) {
   const [error, setError] = useState<string | null>(null);
   const [showPassword, setShowPassword] = useState(false);
 
-  const handleAnon = async () => {
-    try {
-      await ensureAnonymousSignIn();
-      onContinue();
-    } catch {
-      setError('Fallo al continuar como invitado');
-    }
-  };
+  // Anonymous login removed per policy; users must authenticate.
 
   const handleEmailAuth = async () => {
     setError(null);
@@ -108,14 +101,7 @@ export default function Login({ onContinue }: LoginProps) {
           )}
         </View>
 
-        <View className="w-full mt-6">
-          <TouchableOpacity onPress={handleAnon} activeOpacity={0.8} className="bg-neutral-800 py-4 rounded-2xl items-center shadow-lg shadow-neutral-900 w-full">
-            <View className="flex-row items-center gap-2">
-              <MaterialCommunityIcons name="account-off" size={20} color="white" />
-              <Text className="text-white text-lg font-semibold">Continuar como invitado</Text>
-            </View>
-          </TouchableOpacity>
-        </View>
+        {/* Anonymous access removed */}
       </View>
     </SafeAreaView>
   );

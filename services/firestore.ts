@@ -1,4 +1,4 @@
-import { db, ensureAnonymousSignIn } from 'utils/firebase.js';
+import { db, auth } from 'utils/firebase.js';
 import {
   addDoc,
   collection,
@@ -48,8 +48,7 @@ export type FirestoreCuenta = {
 
 // Add a transaction to 'transacciones' with audit fields
 export async function addTransaction(tx: FirestoreTransaction & { cuentaId?: string }) {
-  const user = await ensureAnonymousSignIn();
-  const ownerUid = user?.uid ?? undefined;
+  const ownerUid = auth.currentUser?.uid;
   const payload = {
     ...tx,
     ownerUid,
@@ -105,8 +104,7 @@ export async function upsertUser(user: FirestoreUser) {
 // List 'cuentas' collection
 export async function listCuentas(ownerUid?: string): Promise<({ id: string } & FirestoreCuenta)[]> {
   if (!ownerUid) {
-    const u = await ensureAnonymousSignIn();
-    ownerUid = u?.uid;
+    ownerUid = auth.currentUser?.uid;
   }
   const base = collection(db, 'usuarios', ownerUid as string, 'cuentas');
   const snap = await getDocs(base);
@@ -123,7 +121,7 @@ export async function listCuentas(ownerUid?: string): Promise<({ id: string } & 
 
 // Subscribe to cuentas changes
 export function onCuentas(cb: (items: ({ id: string } & FirestoreCuenta)[]) => void, ownerUid?: string) {
-  const base = collection(db, 'usuarios', (ownerUid || 'unknown') as string, 'cuentas');
+  const base = collection(db, 'usuarios', (ownerUid || auth.currentUser?.uid || 'unknown') as string, 'cuentas');
   return onSnapshot(base, (snap) => {
     const items = snap.docs.map((d) => ({ id: d.id, ...(d.data() as any) }));
     cb(items.map((c) => ({
@@ -140,8 +138,7 @@ export function onCuentas(cb: (items: ({ id: string } & FirestoreCuenta)[]) => v
 export async function addCuenta(data: FirestoreCuenta, ownerUid?: string) {
   let uid = ownerUid;
   if (!uid) {
-    const u = await ensureAnonymousSignIn();
-    uid = u?.uid;
+    uid = auth.currentUser?.uid;
   }
   if (!uid) throw new Error('No authenticated user');
   const base = collection(db, 'usuarios', uid as string, 'cuentas');

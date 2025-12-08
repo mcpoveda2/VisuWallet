@@ -16,7 +16,7 @@ import KPICard from './KPICard';
 import { mockTransactions } from "../datosPrueba";
 import { db } from "utils/firebase.js";
 import { useAuth } from "../contexts/AuthContext";
-import { signOutUser, ensureAnonymousSignIn } from "../utils/firebase";
+import { signOutUser } from "../utils/firebase";
 import { collection, getDocs } from "firebase/firestore";
 import { Transaccion } from "../types";
 import TransactionDetails from './TransactionDetails';
@@ -39,12 +39,12 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
     try {
       await signOutUser();
       // optionally ensure anonymous session after logout
-      await ensureAnonymousSignIn();
+      // Anonymous login removed; require user to sign in
     } catch (e) {
       console.warn('No se pudo cerrar sesión');
     }
   };
-  const [accounts, setAccounts] = useState<{id:string; nombre:string; balance:number}[]>([]);
+  const [accounts, setAccounts] = useState<Cuenta[]>([]);
   const [transactions, setTransactions] = useState<Transaccion[]>(mockTransactions);
   const [allTransactions, setAllTransactions] = useState<Transaccion[]>([]); // Todas las transacciones para gráficos
   const balanceTotal = accounts.reduce((s, a) => s + (a.balance || 0), 0);
@@ -77,11 +77,12 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
 
       // accounts
       const accsRaw = await listCuentas(user?.uid || undefined);
-      const accs = accsRaw.map(d => ({
+      const accs: Cuenta[] = accsRaw.map(d => ({
         id: d.id,
         nombre: d.propietario ?? `Cuenta ${d.id}`,
         balance: Number(d.saldo ?? 0),
         numero: d.numero ?? '',
+        tipo: d.tipo ?? 'corriente',
       }));
       setAccounts(accs);
     } catch (e) {
@@ -158,7 +159,7 @@ export default function Home({ onPressAdd, onPressAccount, onPressEstadisticas, 
               {accounts.map((cuenta) => (
                 <CuentaCard
                   key={cuenta.id}
-                  cuenta={{ id: cuenta.id, nombre: cuenta.nombre, balance: cuenta.balance }}
+                  cuenta={cuenta}
                   onPress={() => onPressAccount(cuenta)}
                 />
               ))}

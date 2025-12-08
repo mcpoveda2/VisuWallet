@@ -32,7 +32,7 @@ async function ensureAnonymousSignIn() {
     return null;
   }
 }
-
+// Anonymous sign-in removed per project policy.
 /**
  * Sign in with Google using Expo AuthSession and Firebase Auth.
  * Requires setting EXPO_PUBLIC_GOOGLE_CLIENT_ID (web) and/or platform client IDs in env.
@@ -109,7 +109,7 @@ async function signInWithEmail(email, password) {
   }
 }
 
-export { db, auth, ensureAnonymousSignIn, signInWithGoogle, signUpWithEmail, signInWithEmail };
+export { db, auth, signInWithGoogle, signUpWithEmail, signInWithEmail };
 
 async function signOutUser() {
   try {

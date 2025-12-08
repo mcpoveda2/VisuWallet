@@ -108,6 +108,23 @@ export default function DetalleCuenta({ cuenta, onBack, onPressAdd, onPressHome,
         </TouchableOpacity>
       </View>
 
+      {/* Detalles de la cuenta */}
+      <View className="mx-4 mt-4 bg-neutral-900 rounded-2xl p-4 border border-neutral-800">
+        <Text className="text-neutral-400 text-xs font-semibold mb-3">DETALLES DE LA CUENTA</Text>
+        <View className="flex-row justify-between mb-2">
+          <Text className="text-neutral-400 text-sm">Número</Text>
+          <Text className="text-white text-sm">{(cuenta as any).numero || '—'}</Text>
+        </View>
+        <View className="flex-row justify-between mb-2">
+          <Text className="text-neutral-400 text-sm">Tipo</Text>
+          <Text className="text-white text-sm">{(cuenta as any).tipo ? ((cuenta as any).tipo as string).toUpperCase() : '—'}</Text>
+        </View>
+        <View className="flex-row justify-between">
+          <Text className="text-neutral-400 text-sm">Balance</Text>
+          <Text className="text-white text-sm font-semibold">${cuenta.balance.toFixed(2)}</Text>
+        </View>
+      </View>
+
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
