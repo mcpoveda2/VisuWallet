@@ -3,8 +3,9 @@ require('dotenv').config();
 
 // Inicializar Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-/**
+// parser/parser.js
+// Cambiamos a 1.5-flash que es más estable y tiene mejor Free Tier
+const model = genAI.getGenerativeModel({ model: "gemini-flash-latest" });/**
  * 1. REGLAS MANUALES (Rápido, Gratis, Determinista)
  * Intenta extraer datos usando Regex y Diccionarios.
  */
